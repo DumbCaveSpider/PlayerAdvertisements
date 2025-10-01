@@ -28,7 +28,7 @@ bool AdManager::setup()
     titleLabel->setScale(0.4f);
     bg1->addChild(titleLabel);
 
-    auto titleLabel2 = CCLabelBMFont::create("Ads Stats", "bigFont.fnt");
+    auto titleLabel2 = CCLabelBMFont::create("Statistics", "bigFont.fnt");
     titleLabel2->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height + 10.f});
     titleLabel2->setScale(0.4f);
     bg2->addChild(titleLabel2);
