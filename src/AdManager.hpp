@@ -7,7 +7,8 @@ class AdManager : public Popup<>
 {
 protected:
     bool setup() override;
-
-public:
+    
+    public:
     static AdManager *create();
+    void onWebButton(CCObject* sender);
 };

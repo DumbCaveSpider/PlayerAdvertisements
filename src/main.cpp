@@ -96,13 +96,11 @@ class $modify(MyPauseLayer, PauseLayer)
         auto rightButtonMenu = getChildByID("right-button-menu");
         if (rightButtonMenu)
         {
-            auto adButton = CircleButtonSprite::createWithSprite(
-                "GJ_bigMoon_001.png",
-                0.85f,
+            auto adButton = CircleButtonSprite::createWithSpriteFrameName(
+                "GJ_freeStuffBtn_001.png",
+                0.875f,
                 CircleBaseColor::Green,
-                CircleBaseSize::MediumAlt);
-            adButton->setPosition({0.f, 0.f});
-            adButton->setScale(0.7f);
+                CircleBaseSize::Medium);
 
             auto popupButton = CCMenuItemSpriteExtra::create(
                 adButton,
