@@ -61,6 +61,6 @@ AdManager *AdManager::create()
 
 void AdManager::onWebButton(CCObject *sender)
 {
-    geode::utils::web::openLinkInBrowser("https://arcticwoof.com.au/");
+    geode::utils::web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
     Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
 }

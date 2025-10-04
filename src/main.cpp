@@ -74,11 +74,11 @@ class $modify(MyPauseLayer, PauseLayer)
             this->addChild(adMenu);
         }
         // add funny banner
-        auto adBanner = LazySprite::create({722.f, 84.f}, true);
+        auto adBanner = LazySprite::create({1456.f, 180.f}, true);
         auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
         tempBanner->setVisible(false);
         auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(MyPauseLayer::onAdClicked));
-        adBanner->loadFromUrl("https://john.citrons.xyz/static/img/merrybot-2.png");
+        adBanner->loadFromUrl("https://john.citrons.xyz/static/img/merrybot-2.png"); // insert like a api url that serves ads here
 
         if (levelName)
         {
