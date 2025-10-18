@@ -3,12 +3,11 @@
 
 using namespace geode::prelude;
 
-class AdManager : public Popup<>
-{
+class AdManager : public Popup<> {
 protected:
     bool setup() override;
-    
-    public:
-    static AdManager *create();
+
+public:
+    static AdManager* create();
     void onWebButton(CCObject* sender);
 };
