@@ -40,9 +40,9 @@ void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> onComplete
             if (res->ok()) {
                 GEODE_UNWRAP_INTO(auto json, res->json());
 
-                unsigned int id = json["id"].asInt().unwrapOrDefault();
-                std::string_view image = json["image"].asString().unwrapOrDefault();
-                int level = json["level"].asInt().unwrapOrDefault();
+                unsigned int id = json["ad_id"].asInt().unwrapOrDefault();
+                std::string_view image = json["image_url"].asString().unwrapOrDefault();
+                int level = json["level_id"].asInt().unwrapOrDefault();
                 int type = json["type"].asInt().unwrapOrDefault();
 
                 Ad advert(id, image, level, static_cast<AdType>(type));
