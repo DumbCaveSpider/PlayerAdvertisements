@@ -1,28 +1,36 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/RetryLevelLayer.hpp>
+#include <Advertisements.hpp>
 
 using namespace geode::prelude;
 
-class $modify(MyRetryLayer, RetryLevelLayer) {
-    void customSetup() override {
+class $modify(MyRetryLayer, RetryLevelLayer)
+{
+    void customSetup() override
+    {
         log::debug("RetryLevelLayer customSetup - layer is being set up");
         RetryLevelLayer::customSetup();
         // remove all CCLabelBMFont and i swear all of the labels doesnt have a freaking tag
         // this is so stupid why would you not tag them
         // robtop i hate you
-        if (this->m_mainLayer) {
-            cocos2d::CCArray* children = this->m_mainLayer->getChildren();
-            if (children) {
+        if (this->m_mainLayer)
+        {
+            cocos2d::CCArray *children = this->m_mainLayer->getChildren();
+            if (children)
+            {
                 int count = static_cast<int>(children->count());
-                for (int i = count - 1; i >= 0; --i) {
-                    cocos2d::CCObject* obj = children->objectAtIndex(static_cast<unsigned int>(i));
+                for (int i = count - 1; i >= 0; --i)
+                {
+                    cocos2d::CCObject *obj = children->objectAtIndex(static_cast<unsigned int>(i));
                     if (!obj)
                         continue;
-                    if (auto label = typeinfo_cast<CCLabelBMFont*>(obj)) {
+                    if (auto label = typeinfo_cast<CCLabelBMFont *>(obj))
+                    {
                         this->m_mainLayer->removeChild(label, true);
                     }
                     // gonna remove that progress bar too
-                    if (auto sprite = typeinfo_cast<CCSprite*>(obj)) {
+                    if (auto sprite = typeinfo_cast<CCSprite *>(obj))
+                    {
                         this->m_mainLayer->removeChild(sprite, true);
                     }
                 }
@@ -30,18 +38,30 @@ class $modify(MyRetryLayer, RetryLevelLayer) {
 
             // add funny banner
             auto winSize = CCDirector::sharedDirector()->getWinSize();
-            auto adBanner = LazySprite::create({ 1100.f, 685.f }, true);
-            auto tempBanner = CCSprite::create("squareTemp.png"_spr);
+
+            // create ad banner and temporary sprite used as a menu item
+            auto adBanner = LazySprite::create(Advertisements::getAdSize(Square), true);
+            auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
             tempBanner->setVisible(false);
+            
             auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(RetryLevelLayer::onReplay));
-            adBanner->loadFromUrl("https://john.citrons.xyz/static/img/merrybot-2.png"); // insert like a api url that serves ads here
+            Advertisements::getRandomAd(Square, [adBanner](Ad ad) {
+                auto sprite = Advertisements::loadAdImage(ad);
+                if (sprite) {
+                    sprite->setPosition({0, 0});
+                    adBanner->addChild(sprite);
+                    log::debug("Loaded ad from url: {}", ad.image);
+                } else {
+                    log::error("Failed to create LazySprite for ad id {}", ad.id);
+                }
+            });
 
             // banner to the menu
+            m_mainMenu->addChild(adBanner);
             m_mainMenu->addChild(adButton);
-            adButton->addChild(adBanner, -1);
 
-            // center the adbutton
-            adBanner->setPosition({ adButton->getContentSize().width / 2, adButton->getContentSize().height / 2 });
+            // child the real ad and center it on the button
+            adBanner->setPosition(adButton->getPosition());
         }
     }
 };

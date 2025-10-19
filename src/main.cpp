@@ -1,11 +1,12 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include "AdManager.hpp"
+#include <Advertisements.hpp>
 
 using namespace geode::prelude;
 
 class $modify(MyPauseLayer, PauseLayer) {
-    void customSetup() {
+    void customSetup() override {
         PauseLayer::customSetup();
 
         // get level name label
@@ -66,13 +67,23 @@ class $modify(MyPauseLayer, PauseLayer) {
             adMenu->setID("ad-menu");
             adMenu->setPosition({ 0.f, 0.f });
             this->addChild(adMenu);
-        }
+        }S
         // add funny banner
-        auto adBanner = LazySprite::create({ 1456.f, 180.f }, true);
+        auto adBanner = LazySprite::create(Advertisements::getAdSize(Banner), true);
         auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
         tempBanner->setVisible(false);
         auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(MyPauseLayer::onAdClicked));
-        adBanner->loadFromUrl("https://john.citrons.xyz/static/img/merrybot-2.png"); // insert like a api url that serves ads here
+        log::debug("Created ad banner and button");
+        Advertisements::getRandomAd(Banner, [adBanner](Ad ad) {
+            auto sprite = Advertisements::loadAdImage(ad);
+            if (sprite) {
+                sprite->setPosition({ 0, 0 });
+                adBanner->addChild(sprite);
+                log::debug("Loaded ad from url: {}", ad.image);
+            } else {
+                log::error("Failed to create LazySprite for ad id {}", ad.id);
+            }
+        });
 
         if (levelName) {
             adButton->setPosition({ levelName->getPositionX(), levelName->getPositionY() });
