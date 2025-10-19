@@ -42,7 +42,7 @@ public:
     static CCSize getAdSize(AdType type);
 
     static void getRandomAd(AdType type, std::function<void(Ad)> onComplete);
+    static void getAdByID(int id, std::function<void(Ad)> onComplete);
 
-    static Ad getAdByID(int id, std::function<void(Ad)> onComplete);
     static LazySprite* loadAdImage(Ad);
 };

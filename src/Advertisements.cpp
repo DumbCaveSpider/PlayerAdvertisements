@@ -50,18 +50,24 @@ void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> onComplete
             } else {
                 log::error("Failed to fetch ad: HTTP {}", res->code());
             };
+        } else if (web::WebProgress* p = e->getProgress()) {
+            log::debug("ad progress: {}", (float)p->downloadProgress().value_or(0.f));
+        } else if (e->isCancelled()) {
+            log::error("Ad web request failed");
+        } else {
+            log::error("Unknown ad web request error");
         };
                   });
 
     auto request = web::WebRequest();
-    request.userAgent("AdFetcher/1.0");
+    request.userAgent("PlayerAdvertisements/1.0");
     request.timeout(std::chrono::seconds(15));
     request.param("type", static_cast<int>(type));
     listener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
 };
 
-Ad Advertisements::getAdByID(int id, std::function<void(Ad)> onComplete) {
-    return Ad(); // finish later
+void Advertisements::getAdByID(int id, std::function<void(Ad)> onComplete) {
+    return; // finish later
 };
 
 LazySprite* Advertisements::loadAdImage(Ad ad) {
