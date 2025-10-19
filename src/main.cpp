@@ -73,31 +73,23 @@ class $modify(MyPauseLayer, PauseLayer)
             adMenu->setPosition({0.f, 0.f});
             this->addChild(adMenu);
         }
-
-        // create banner parent and a hidden sprite used as menu item
-        auto adBanner = LazySprite::create(Advertisements::getAdSize(Banner), true);
-        auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
-        tempBanner->setVisible(false);
-
-        auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(MyPauseLayer::onAdClicked));
-        adButton->setPosition(levelName->getPosition());
-
-        adMenu->addChild(adBanner);
-        adMenu->addChild(adButton);
-        adBanner->setPosition(adButton->getPosition());
-
         // fetch a random ad and load its image into the banner
-        Advertisements::getRandomAd(Banner, [adBanner](Ad ad)
+        Advertisements::getRandomAd(Banner, [&](Ad ad)
                                     {
-    auto sprite = Advertisements::loadAdImage(ad); // returns LazySprite*
-    if (!sprite) {
-        log::error("Failed to create LazySprite for ad id {}", ad.id);
-        return;
-    }
+                                    log::debug("Fetching ad id {} from url: {}", ad.id, ad.image);
+                                    LazySprite *sprite = Advertisements::loadAdImage(ad); // returns LazySprite*
+                                    if (!sprite) {
+                                        log::error("Failed to create LazySprite for ad id {}", ad.id);
+                                        return;
+                                    }
 
-    sprite->setPosition({0, 0});
-    adBanner->addChild(sprite);
-    log::debug("Loaded ad from url: {}", ad.image); });
+                                    sprite->setPosition({0, 0});
+                                    log::debug("Loaded ad from url: {}", ad.image);
+
+                                    auto adButton = CCMenuItemSpriteExtra::create(sprite, this, menu_selector(MyPauseLayer::onAdClicked));
+                                    adButton->setPosition(levelName->getPosition());
+                                    adMenu->addChild(adButton);
+                                    sprite->setPosition(adButton->getPosition()); });
         // im confused
         // add a button on the side on the menu
         auto rightButtonMenu = getChildByID("right-button-menu");
