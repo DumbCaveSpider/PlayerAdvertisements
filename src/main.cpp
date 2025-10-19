@@ -4,6 +4,7 @@
 #include <Advertisements.hpp>
 
 using namespace geode::prelude;
+using namespace ads;
 
 class $modify(MyPauseLayer, PauseLayer) {
     void customSetup() override {
@@ -68,11 +69,14 @@ class $modify(MyPauseLayer, PauseLayer) {
             adMenu->setPosition({ 0.f, 0.f });
             this->addChild(adMenu);
         }
+
+        auto adManager = Advertisements::create();
+
         // fetch a random ad and load its image into the banner
-        Advertisements::getRandomAd(Banner, [&](Ad ad) {
+        adManager->getRandomAd(Banner, [&](Ad ad) {
             log::debug("Fetching ad id {} from url: {}", ad.id, ad.image);
 
-            if (LazySprite* sprite = Advertisements::loadAdImage(ad)) {
+            if (LazySprite* sprite = adManager->loadAdImage(ad)) {
                 sprite->setPosition({ 0, 0 });
                 log::debug("Loaded ad from url: {}", ad.image);
 
@@ -83,7 +87,7 @@ class $modify(MyPauseLayer, PauseLayer) {
             } else {
                 log::error("Failed to create LazySprite for ad id {}", ad.id);
             };
-                                    });
+                               });
 
         // im confused
         // add a button on the side on the menu

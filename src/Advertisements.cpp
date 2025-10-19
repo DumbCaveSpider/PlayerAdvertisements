@@ -5,37 +5,38 @@
 #include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
+using namespace ads;
 
-CCSize Advertisements::getAdSize(AdType type) {
-    auto banner = CCSize({ 1456.f, 180.f });
-    auto square = CCSize({ 1456.f, 1456.f });
-    auto skyscraper = CCSize({ 180.f, 1456.f });
+namespace ads {
+    CCSize getAdSize(AdType type) {
+        auto banner = CCSize({ 1456.f, 180.f });
+        auto square = CCSize({ 1456.f, 1456.f });
+        auto skyscraper = CCSize({ 180.f, 1456.f });
 
-    CCSize contentSize = banner;
+        CCSize contentSize = banner;
 
-    switch (type) {
-    case Banner:
-        contentSize = banner;
-        break;
-    case Square:
-        contentSize = square;
-        break;
-    case Skyscraper:
-        contentSize = skyscraper;
-        break;
+        switch (type) {
+        case Banner:
+            contentSize = banner;
+            break;
+        case Square:
+            contentSize = square;
+            break;
+        case Skyscraper:
+            contentSize = skyscraper;
+            break;
 
-    default:
-        contentSize = banner;
-        break;
+        default:
+            contentSize = banner;
+            break;
+        };
+
+        return contentSize;
     };
-
-    return contentSize;
 };
 
 void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> callBack) {
-    EventListener<web::WebTask> listener;
-
-    listener.bind([callBack](web::WebTask::Event* e) {
+    m_adListener.bind([callBack](web::WebTask::Event* e) {
         if (web::WebResponse* res = e->getValue()) {
             if (res->ok()) {
                 GEODE_UNWRAP_INTO(auto json, res->json());
@@ -57,13 +58,15 @@ void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> callBack) 
         } else {
             log::error("Unknown ad web request error");
         };
-                  });
+                      });
+
+    log::debug("Requesting ad of type {}", static_cast<int>(type));
 
     auto request = web::WebRequest();
     request.userAgent("PlayerAdvertisements/1.0");
     request.timeout(std::chrono::seconds(15));
     request.param("type", static_cast<int>(type));
-    listener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
+    m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
 };
 
 void Advertisements::getAdByID(int id, std::function<void(Ad)> callBack) {
@@ -85,3 +88,7 @@ LazySprite* Advertisements::loadAdImage(Ad ad) {
     adSprite->loadFromUrl(std::string(ad.image).c_str(), CCImage::kFmtUnKnown, true);
     return adSprite;
 };
+
+std::shared_ptr<Advertisements> Advertisements::create() {
+    return std::make_shared<Advertisements>();
+}
