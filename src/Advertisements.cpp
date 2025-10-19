@@ -32,10 +32,10 @@ CCSize Advertisements::getAdSize(AdType type) {
     return contentSize;
 };
 
-void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> onComplete) {
+void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> callBack) {
     EventListener<web::WebTask> listener;
 
-    listener.bind([onComplete](web::WebTask::Event* e) {
+    listener.bind([callBack](web::WebTask::Event* e) {
         if (web::WebResponse* res = e->getValue()) {
             if (res->ok()) {
                 GEODE_UNWRAP_INTO(auto json, res->json());
@@ -46,7 +46,7 @@ void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> onComplete
                 int type = json["type"].asInt().unwrapOrDefault();
 
                 Ad advert(id, image, level, static_cast<AdType>(type));
-                onComplete(advert);
+                callBack(advert);
             } else {
                 log::error("Failed to fetch ad: HTTP {}", res->code());
             };
@@ -66,7 +66,7 @@ void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> onComplete
     listener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
 };
 
-void Advertisements::getAdByID(int id, std::function<void(Ad)> onComplete) {
+void Advertisements::getAdByID(int id, std::function<void(Ad)> callBack) {
     return; // finish later
 };
 

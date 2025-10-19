@@ -39,10 +39,30 @@ struct Ad {
 
 class Advertisements {
 public:
+    /**
+     * Get the size of an ad based on its type
+     * @param type The type of ad
+     * @returns The size of the ad
+     */
     static CCSize getAdSize(AdType type);
 
-    static void getRandomAd(AdType type, std::function<void(Ad)> onComplete);
-    static void getAdByID(int id, std::function<void(Ad)> onComplete);
+    /**
+     * Get a random ad of the given type
+     * @param type The type of ad
+     * @param callBack The callback that fires with a constructed Ad struct parameter once the ad loads
+     */
+    static void getRandomAd(AdType type, std::function<void(Ad)> callBack);
+    /**
+     * Get an ad by its ID
+     * @param id The ID of the ad
+     * @param callBack The callback that fires with a constructed Ad struct parameter once the ad loads
+     */
+    static void getAdByID(int id, std::function<void(Ad)> callBack);
 
+    /**
+     * Load an ad's image into a LazySprite
+     * @param ad The ad to load the image for
+     * @returns The LazySprite containing the ad image
+     */
     static LazySprite* loadAdImage(Ad);
 };
