@@ -20,21 +20,20 @@ using namespace geode::prelude;
 
 namespace ads {
     enum AdType {
-        None = 0,
         Banner = 1,
         Square = 2,
         Skyscraper = 3
     };
 
     struct Ad {
-        unsigned int id;
-        std::string_view image;
+        int id;
+        std::string image;
         int level = 0;
         AdType type;
 
         Ad() = default;
 
-        Ad(unsigned int id, std::string_view image, int level, AdType type)
+        Ad(unsigned int id, std::string image, int level, AdType type)
             : id(id), image(image), level(level), type(type) {}
     };
 
@@ -45,34 +44,43 @@ namespace ads {
      */
     CCSize getAdSize(AdType type);
 
-    class Advertisements {
-    private:
-        EventListener<web::WebTask> m_adListener;
+    class Advertisement : public CCMenu {
+    protected:
+        class Impl;
+        std::unique_ptr<Impl> m_impl;
+
+        Advertisement();
+        virtual ~Advertisement();
+
+        // Reloads the type of advertisement
+        void reloadType();
+
+        bool init() override;
+
     public:
-        /**
-         * Get a random ad of the given type
-         * @param type The type of ad
-         * @param callBack The callback that fires with a constructed Ad struct parameter once the ad loads
-         */
-        void getRandomAd(AdType type, std::function<void(Ad)> callBack);
-        /**
-         * Get an ad by its ID
-         * @param id The ID of the ad
-         * @param callBack The callback that fires with a constructed Ad struct parameter once the ad loads
-         */
-        void getAdByID(int id, std::function<void(Ad)> callBack);
+        // Create a new advertisement
+        static Advertisement* create();
 
         /**
-         * Load an ad's image into a LazySprite
-         * @param ad The ad to load the image for
-         * @returns The LazySprite containing the ad image
+         * Set the expected type of advertisement
+         * @param type The type of ad to set
          */
-        LazySprite* loadAdImage(Ad);
+        void setType(AdType type);
 
         /**
-         * Create an Advertisements instance
-         * @returns A shared pointer to the created Advertisements instance
+         * Load a random advertisement
          */
-        static std::shared_ptr<Advertisements> create();
+        void loadRandom();
+        /**
+         * Load a specific advertisement by its ID
+         * @param id The ID of the ad to load
+         * @warning This will override the current set type of ad
+         */
+        void load(int id);
+
+        /**
+         * Get the LazySprite associated with the advertisement
+         */
+        LazySprite* getAdSprite() const;
     };
 };

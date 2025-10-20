@@ -33,62 +33,113 @@ namespace ads {
 
         return contentSize;
     };
-};
 
-void Advertisements::getRandomAd(AdType type, std::function<void(Ad)> callBack) {
-    m_adListener.bind([callBack](web::WebTask::Event* e) {
-        if (web::WebResponse* res = e->getValue()) {
-            if (res->ok()) {
-                GEODE_UNWRAP_INTO(auto json, res->json());
+    class Advertisement::Impl final {
+    public:
+        EventListener<web::WebTask> m_adListener;
 
-                unsigned int id = json["ad_id"].asInt().unwrapOrDefault();
-                std::string_view image = json["image_url"].asString().unwrapOrDefault();
-                int level = json["level_id"].asInt().unwrapOrDefault();
-                int type = json["type"].asInt().unwrapOrDefault();
+        Ad m_ad = Ad();
+        AdType m_type = AdType::Banner;
 
-                Ad advert(id, image, level, static_cast<AdType>(type));
-                callBack(advert);
-            } else {
-                log::error("Failed to fetch ad: HTTP {}", res->code());
-            };
-        } else if (web::WebProgress* p = e->getProgress()) {
-            log::debug("ad progress: {}", (float)p->downloadProgress().value_or(0.f));
-        } else if (e->isCancelled()) {
-            log::error("Ad web request failed");
+        LazySprite* m_adSprite = nullptr;
+    };
+
+    Advertisement::Advertisement() {
+        m_impl = std::make_unique<Impl>();
+    };
+
+    Advertisement::~Advertisement() {};
+
+    bool Advertisement::init() {
+        if (CCMenu::init()) {
+            m_impl->m_adListener.bind([=](web::WebTask::Event* e) {
+                if (web::WebResponse* res = e->getValue()) {
+                    if (res->ok()) {
+                        GEODE_UNWRAP_INTO(auto json, res->json());
+
+                        auto id = json["ad_id"].asInt().unwrapOrDefault();
+                        auto image = json["image_url"].asString().unwrapOrDefault();
+                        auto level = json["level_id"].asInt().unwrapOrDefault();
+                        auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
+
+                        m_impl->m_ad = Ad(id, image, level, type);
+                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
+                    } else {
+                        log::error("Failed to fetch ad: HTTP {}", res->code());
+                    };
+                } else if (web::WebProgress* p = e->getProgress()) {
+                    log::debug("ad progress: {}", (float)p->downloadProgress().value_or(0.f));
+                } else if (e->isCancelled()) {
+                    log::error("Ad web request failed");
+                } else {
+                    log::error("Unknown ad web request error");
+                };
+                                      });
+
+            setAnchorPoint({ 0.5, 0.5 });
+
+            reloadType();
+
+            m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
+            m_impl->m_adSprite->setID("ad");
+            m_impl->m_adSprite->setAnchorPoint({ 0.5, 0.5 });
+            m_impl->m_adSprite->setPosition(getScaledContentSize() / 2.f);
+
+            addChild(m_impl->m_adSprite);
+
+            return true;
         } else {
-            log::error("Unknown ad web request error");
+            return false;
         };
-                      });
+    };
 
-    log::debug("Requesting ad of type {}", static_cast<int>(type));
-
-    auto request = web::WebRequest();
-    request.userAgent("PlayerAdvertisements/1.0");
-    request.timeout(std::chrono::seconds(15));
-    request.param("type", static_cast<int>(type));
-    m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
-};
-
-void Advertisements::getAdByID(int id, std::function<void(Ad)> callBack) {
-    return; // finish later
-};
-
-LazySprite* Advertisements::loadAdImage(Ad ad) {
-    auto adSprite = LazySprite::create(getAdSize(ad.type), true);
-
-    adSprite->setLoadCallback([adSprite](Result<> res) {
-        if (res.isOk()) {
-            log::info("Ad loaded successfully");
-        } else {
-            log::error("Failed to load ad: {}", res.unwrapErr());
-            adSprite->removeMeAndCleanup();
+    void Advertisement::reloadType() {
+        if (m_impl->m_adSprite) {
+            m_impl->m_adSprite->removeMeAndCleanup();
+            m_impl->m_adSprite = nullptr;
         };
-                              });
 
-    adSprite->loadFromUrl(std::string(ad.image).c_str(), CCImage::kFmtUnKnown, true);
-    return adSprite;
+        setScaledContentSize(getAdSize(m_impl->m_type));
+    };
+
+    void Advertisement::setType(AdType type) {
+        m_impl->m_type = type;
+        reloadType();
+    };
+
+    void Advertisement::loadRandom() {
+        log::debug("Preparing request for random advertisement...");
+        auto request = web::WebRequest();
+        request.userAgent("PlayerAdvertisements/1.0");
+        request.timeout(std::chrono::seconds(15));
+        request.param("type", static_cast<int>(m_impl->m_type));
+        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
+        log::info("Sent request for random advertisement");
+    };
+
+    void Advertisement::load(int id) {
+        log::debug("Preparing request for advertisement of ID {}...", id);
+        auto request = web::WebRequest();
+        request.userAgent("PlayerAdvertisements/1.0");
+        request.timeout(std::chrono::seconds(15));
+        request.param("id", id);
+        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad/get"));
+        log::info("Sent request for advertisement of ID {}", id);
+    };
+
+    LazySprite* Advertisement::getAdSprite() const {
+        return m_impl->m_adSprite;
+    };
+
+    Advertisement* Advertisement::create() {
+        auto ret = new Advertisement();
+
+        if (ret && ret->init()) {
+            ret->autorelease();
+            return ret;
+        };
+
+        CC_SAFE_DELETE(ret);
+        return nullptr;
+    };
 };
-
-std::shared_ptr<Advertisements> Advertisements::create() {
-    return std::make_shared<Advertisements>();
-}

@@ -33,23 +33,12 @@ class $modify(MyRetryLayer, RetryLevelLayer) {
             // add funny banner
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-            auto adManager = Advertisements::create();
-
             // create ad banner and temporary sprite used as a menu item
             auto adBanner = LazySprite::create(getAdSize(Square), true);
             auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
             tempBanner->setVisible(false);
 
             auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(RetryLevelLayer::onReplay));
-            adManager->getRandomAd(Square, [&](Ad ad) {
-                if (auto sprite = adManager->loadAdImage(ad)) {
-                    sprite->setPosition({ 0, 0 });
-                    adBanner->addChild(sprite);
-                    log::debug("Loaded ad from url: {}", ad.image);
-                } else {
-                    log::error("Failed to create LazySprite for ad id {}", ad.id);
-                };
-                                   });
 
             // banner to the menu
             m_mainMenu->addChild(adBanner);

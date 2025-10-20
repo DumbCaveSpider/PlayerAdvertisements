@@ -1,10 +1,28 @@
 #include <Geode/Geode.hpp>
+#include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include "AdManager.hpp"
 #include <Advertisements.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
+
+//test
+class $modify(MyMenuLayer, MenuLayer) {
+    bool init() {
+        if (!MenuLayer::init()) return false;
+
+        // insert ad banner (1456x180)
+        auto ad = Advertisement::create();
+        ad->setType(AdType::Banner);
+        ad->setPosition({ CCDirector::sharedDirector()->getWinSize().width / 2.f, 90.f });
+        this->addChild(ad);
+
+        ad->loadRandom();
+
+        return true;
+    }
+};
 
 class $modify(MyPauseLayer, PauseLayer) {
     void customSetup() override {
@@ -69,25 +87,6 @@ class $modify(MyPauseLayer, PauseLayer) {
             adMenu->setPosition({ 0.f, 0.f });
             this->addChild(adMenu);
         }
-
-        auto adManager = Advertisements::create();
-
-        // fetch a random ad and load its image into the banner
-        adManager->getRandomAd(Banner, [&](Ad ad) {
-            log::debug("Fetching ad id {} from url: {}", ad.id, ad.image);
-
-            if (LazySprite* sprite = adManager->loadAdImage(ad)) {
-                sprite->setPosition({ 0, 0 });
-                log::debug("Loaded ad from url: {}", ad.image);
-
-                auto adButton = CCMenuItemSpriteExtra::create(sprite, this, menu_selector(MyPauseLayer::onAdClicked));
-                adButton->setPosition(levelName->getPosition());
-                adMenu->addChild(adButton);
-                sprite->setPosition(adButton->getPosition());
-            } else {
-                log::error("Failed to create LazySprite for ad id {}", ad.id);
-            };
-                               });
 
         // im confused
         // add a button on the side on the menu
