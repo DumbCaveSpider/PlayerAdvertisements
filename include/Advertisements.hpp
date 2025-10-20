@@ -52,8 +52,13 @@ namespace ads {
         Advertisement();
         virtual ~Advertisement();
 
+        // Send the user to the level
+        void activate(CCObject*);
+
         // Reloads the type of advertisement
         void reloadType();
+        // Reloads the advertisement button
+        void reload();
 
         bool init() override;
 

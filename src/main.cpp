@@ -21,7 +21,7 @@ class $modify(MyMenuLayer, MenuLayer) {
         ad->loadRandom();
 
         return true;
-    }
+    };
 };
 
 class $modify(MyPauseLayer, PauseLayer) {

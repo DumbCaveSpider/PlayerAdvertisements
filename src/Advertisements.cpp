@@ -41,6 +41,7 @@ namespace ads {
         Ad m_ad = Ad();
         AdType m_type = AdType::Banner;
 
+        CCMenuItemSpriteExtra* m_adButton = nullptr;
         LazySprite* m_adSprite = nullptr;
     };
 
@@ -83,14 +84,38 @@ namespace ads {
             m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
             m_impl->m_adSprite->setID("ad");
             m_impl->m_adSprite->setAnchorPoint({ 0.5, 0.5 });
-            m_impl->m_adSprite->setPosition(getScaledContentSize() / 2.f);
+            m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
 
-            addChild(m_impl->m_adSprite);
+            reload();
 
             return true;
         } else {
             return false;
         };
+    };
+
+    void Advertisement::activate(CCObject*) {
+        if (m_impl->m_ad.level > 0) {
+            log::info("Activating ad for level ID {}", m_impl->m_ad.level);
+            Notification::create(fmt::format("Loading level ID {}...", m_impl->m_ad.level), NotificationIcon::Loading, 1.25f)->show();
+        } else {
+            log::warn("Ad has no associated level ID");
+        };
+    };
+
+    void Advertisement::reload() {
+        if (m_impl->m_adButton) {
+            m_impl->m_adButton->removeMeAndCleanup();
+            m_impl->m_adButton = nullptr;
+        };
+
+        m_impl->m_adButton = CCMenuItemSpriteExtra::create(
+            m_impl->m_adSprite,
+            this,
+            menu_selector(Advertisement::activate)
+        );
+        m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+        this->addChild(m_impl->m_adButton);
     };
 
     void Advertisement::reloadType() {
