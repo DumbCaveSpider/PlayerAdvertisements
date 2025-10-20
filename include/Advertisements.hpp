@@ -76,6 +76,7 @@ namespace ads {
          * Load a random advertisement
          */
         void loadRandom();
+
         /**
          * Load a specific advertisement by its ID
          * @param id The ID of the ad to load

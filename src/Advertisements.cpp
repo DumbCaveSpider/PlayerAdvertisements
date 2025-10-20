@@ -81,13 +81,6 @@ namespace ads {
 
             reloadType();
 
-            m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
-            m_impl->m_adSprite->setID("ad");
-            m_impl->m_adSprite->setAnchorPoint({ 0.5, 0.5 });
-            m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-
-            reload();
-
             return true;
         } else {
             return false;
@@ -119,12 +112,23 @@ namespace ads {
     };
 
     void Advertisement::reloadType() {
+        if (m_impl->m_adButton) {
+            m_impl->m_adButton->removeMeAndCleanup();
+            m_impl->m_adButton = nullptr;
+        }
         if (m_impl->m_adSprite) {
             m_impl->m_adSprite->removeMeAndCleanup();
             m_impl->m_adSprite = nullptr;
-        };
+        }
 
         setScaledContentSize(getAdSize(m_impl->m_type));
+
+        m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
+        m_impl->m_adSprite->setID("ad");
+        m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
+        m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+
+        reload();
     };
 
     void Advertisement::setType(AdType type) {
