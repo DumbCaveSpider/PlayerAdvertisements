@@ -125,8 +125,18 @@ namespace ads {
 
         m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
         m_impl->m_adSprite->setID("ad");
-        m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
-        m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+
+        m_impl->m_adSprite->setLoadCallback([=](Result<> res) {
+            if (res.isOk()) {
+                log::info("Ad image loaded successfully");
+                m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
+                m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+            } else if (res.isErr()) {
+                log::error("Failed to load ad image: {}", res.unwrapErr());
+            } else {
+                log::error("Unknown error loading ad image");
+            };
+                                            });
 
         reload();
     };
