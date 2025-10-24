@@ -24,17 +24,6 @@ class $modify(MyCreatorLayer, CreatorLayer)
             adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
             adBanner->loadRandom();
         }
-
-        // banner ad at the bottom
-        auto adBannerBottom = Advertisement::create();
-        if (adBannerBottom)
-        {
-            adBannerBottom->setID("advertisement-menu-bottom");
-            this->addChild(adBannerBottom);
-            adBannerBottom->setType(AdType::Banner);
-            adBannerBottom->setPosition({winSize.width / 5.5f, 5.f});
-            adBannerBottom->loadRandom();
-        }
         return true;
     }
 };

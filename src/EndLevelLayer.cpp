@@ -19,7 +19,7 @@ class $modify(MyEndLevelLayer, EndLevelLayer) {
             adBanner->setID("advertisement-menu");
             m_mainLayer->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
+            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 52.f});
             adBanner->loadRandom();
         }
 
@@ -28,7 +28,7 @@ class $modify(MyEndLevelLayer, EndLevelLayer) {
         if (adSkyscraper)
         {
             adSkyscraper->setID("advertisement-menu-skyscraper");
-            this->addChild(adSkyscraper);
+            m_mainLayer->addChild(adSkyscraper);
             adSkyscraper->setType(AdType::Skyscraper);
             adSkyscraper->setPosition({winSize.width - 70.f, -2.f});
             adSkyscraper->loadRandom();
@@ -38,7 +38,7 @@ class $modify(MyEndLevelLayer, EndLevelLayer) {
         if (adSkyscraperLeft)
         {
             adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
-            this->addChild(adSkyscraperLeft);
+            m_mainLayer->addChild(adSkyscraperLeft);
             adSkyscraperLeft->setType(AdType::Skyscraper);
             adSkyscraperLeft->setPosition({30.f, -2.f});
             adSkyscraperLeft->loadRandom();

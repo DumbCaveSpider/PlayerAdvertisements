@@ -83,8 +83,14 @@ namespace ads
     void Advertisement::activate(CCObject *)
     {
         auto &ad = m_impl->m_ad;
+        if (ad.id == 0)
+        {
+            log::warn("Ad not loaded yet or invalid ad ID");
+            Notification::create("Invalid Ad", NotificationIcon::Error)->show();
+            return;
+        }
         log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
-        if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type))
+        if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount))
         {
             popup->show();
         }
@@ -181,11 +187,29 @@ namespace ads
                         auto id = json["ad_id"].asInt().unwrapOrDefault();
                         auto image = json["image_url"].asString().unwrapOrDefault();
                         auto level = numFromString<int>(json["level_id"].asString().unwrapOrDefault()).unwrapOrDefault();
-                        auto user = numFromString<int>(json["user_id"].asString().unwrapOrDefault()).unwrapOrDefault();
+                        auto user = json["user_id"].asString().unwrapOrDefault();
                         auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
+                        auto view = json["view_count"].asInt().unwrapOrDefault();
+                        auto click = json["click_count"].asInt().unwrapOrDefault();
 
-                            m_impl->m_ad = Ad(id, image, level, type, user);
+                            m_impl->m_ad = Ad(id, image, level, type, user, view, click);
                             log::info("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
+                            log::info("Ad view count: {}, click count: {}", view, click);
+                            
+                            log::debug("Sending view tracking request for ad_id={}, user_id={}", id, user);
+                            auto viewRequest = web::WebRequest();
+                            viewRequest.userAgent("PlayerAdvertisements/1.0");
+                            viewRequest.timeout(std::chrono::seconds(15));
+                            viewRequest.header("Content-Type", "application/json");
+                            
+                            matjson::Value viewBody = matjson::Value::object();
+                            viewBody["ad_id"] = id;
+                            viewBody["user_id"] = user;
+                            
+                            viewRequest.bodyJSON(viewBody);
+                            viewRequest.post("https://ads.arcticwoof.xyz/api/view");
+                            log::info("Sent view tracking request for ad_id={}, user_id={}", id, user);
+                            
                             if (m_impl->m_adSprite) {
                                 log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
                                 m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
@@ -264,6 +288,7 @@ namespace ads
         request.param("type", static_cast<int>(m_impl->m_type));
         m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
         log::info("Sent request for random advertisement");
+
     };
 
     void Advertisement::load(int id)
