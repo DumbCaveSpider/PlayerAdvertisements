@@ -53,30 +53,6 @@ namespace ads {
 
     bool Advertisement::init() {
         if (CCMenu::init()) {
-            m_impl->m_adListener.bind([=](web::WebTask::Event* e) {
-                if (web::WebResponse* res = e->getValue()) {
-                    if (res->ok()) {
-                        GEODE_UNWRAP_INTO(auto json, res->json());
-
-                        auto id = json["ad_id"].asInt().unwrapOrDefault();
-                        auto image = json["image_url"].asString().unwrapOrDefault();
-                        auto level = json["level_id"].asInt().unwrapOrDefault();
-                        auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
-
-                        m_impl->m_ad = Ad(id, image, level, type);
-                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
-                    } else {
-                        log::error("Failed to fetch ad: HTTP {}", res->code());
-                    };
-                } else if (web::WebProgress* p = e->getProgress()) {
-                    log::debug("ad progress: {}", (float)p->downloadProgress().value_or(0.f));
-                } else if (e->isCancelled()) {
-                    log::error("Ad web request failed");
-                } else {
-                    log::error("Unknown ad web request error");
-                };
-                                      });
-
             setAnchorPoint({ 0.5, 0.5 });
 
             reloadType();
@@ -115,16 +91,45 @@ namespace ads {
         if (m_impl->m_adButton) {
             m_impl->m_adButton->removeMeAndCleanup();
             m_impl->m_adButton = nullptr;
-        }
+        };
+
         if (m_impl->m_adSprite) {
             m_impl->m_adSprite->removeMeAndCleanup();
             m_impl->m_adSprite = nullptr;
-        }
+        };
 
         setScaledContentSize(getAdSize(m_impl->m_type));
 
         m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
         m_impl->m_adSprite->setID("ad");
+
+        m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
+            if (auto res = e->getValue()) {
+                if (res->ok()) {
+                    GEODE_UNWRAP_INTO(auto json, res->json());
+
+                    auto id = json["ad_id"].asInt().unwrapOrDefault();
+                    auto image = json["image_url"].asString().unwrapOrDefault();
+                    auto level = json["level_id"].asInt().unwrapOrDefault();
+                    auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
+
+                    m_impl->m_ad = Ad(id, image, level, type);
+                    if (m_impl->m_adSprite) {
+                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
+                    } else {
+                        log::warn("Ad sprite missing when trying to load image");
+                    };
+                } else {
+                    log::error("Failed to fetch ad: HTTP {}", res->code());
+                };
+            } else if (auto p = e->getProgress()) {
+                log::debug("ad progress: {}", p->downloadProgress().value_or(0.f));
+            } else if (e->isCancelled()) {
+                log::error("Ad web request failed");
+            } else {
+                log::error("Unknown ad web request error");
+            };
+                                  });
 
         m_impl->m_adSprite->setLoadCallback([=](Result<> res) {
             if (res.isOk()) {
@@ -133,6 +138,7 @@ namespace ads {
                 m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
+                m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
             } else {
                 log::error("Unknown error loading ad image");
             };
