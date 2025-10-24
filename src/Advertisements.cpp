@@ -13,7 +13,7 @@ namespace ads {
     CCSize getAdSize(AdType type) {
         auto banner = CCSize({ 364.f, 45.f });
         auto square = CCSize({ 184.f, 184.f });
-        auto skyscraper = CCSize({ 45.f, 364.f });
+        auto skyscraper = CCSize({ 41.f, 314.f });
 
         CCSize contentSize = banner;
 

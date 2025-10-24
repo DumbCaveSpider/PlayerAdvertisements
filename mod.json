@@ -9,11 +9,12 @@
 	"id": "arcticwoof.player_advertisements",
 	"name": "Player Advertisements",
 	"version": "v1.0.0",
-	"developer": "ArcticWoof",
+	"developers": ["ArcticWoof", "Cheeseworks"],
 	"description": "Shows a clickable ad banner by players.",
 	"resources": {
 		"sprites": [
 			"resources/*"
 		]
-	}
+	},
+	"tags": ["modtober25", "universal", "content"]
 }

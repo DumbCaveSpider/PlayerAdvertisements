@@ -1,0 +1,47 @@
+#include <Geode/Geode.hpp>
+#include <Geode/modify/EndLevelLayer.hpp>
+#include <Advertisements.hpp>
+
+using namespace geode::prelude;
+using namespace ads;
+
+class $modify(MyEndLevelLayer, EndLevelLayer) {
+    void customSetup() override
+    {
+        EndLevelLayer::customSetup();
+
+        auto winSize = CCDirector::sharedDirector()->getWinSize();
+
+        // banner ad at the top
+        auto adBanner = Advertisement::create();
+        if (adBanner)
+        {
+            adBanner->setID("advertisement-menu");
+            m_mainLayer->addChild(adBanner);
+            adBanner->setType(AdType::Banner);
+            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
+            adBanner->loadRandom();
+        }
+
+        // skyscraper ad on the right side
+        auto adSkyscraper = Advertisement::create();
+        if (adSkyscraper)
+        {
+            adSkyscraper->setID("advertisement-menu-skyscraper");
+            this->addChild(adSkyscraper);
+            adSkyscraper->setType(AdType::Skyscraper);
+            adSkyscraper->setPosition({winSize.width - 70.f, -2.f});
+            adSkyscraper->loadRandom();
+        }
+        // skyscraper ad on the left side
+        auto adSkyscraperLeft = Advertisement::create();
+        if (adSkyscraperLeft)
+        {
+            adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
+            this->addChild(adSkyscraperLeft);
+            adSkyscraperLeft->setType(AdType::Skyscraper);
+            adSkyscraperLeft->setPosition({30.f, -2.f});
+            adSkyscraperLeft->loadRandom();
+        }
+    }
+};
