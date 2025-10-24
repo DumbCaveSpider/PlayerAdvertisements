@@ -13,6 +13,7 @@ protected:
     AdType m_type = AdType::Banner;
     
     bool setup() override;
+    void onPlayButton(CCObject* sender);
 
 public:
     static AdPreview *create(int adId, int levelId, int userId, AdType type);
