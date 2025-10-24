@@ -60,27 +60,65 @@ bool AdPreview::setup()
     return true;
 };
 
-void AdPreview::onPlayButton(CCObject* sender)
+void AdPreview::onPlayButton(CCObject *sender)
 {
-    // close popup
-    this->onClose(sender);
 
-    log::info("opening level id {} from ad id {}", m_levelId, m_adId);
-    log::debug("Sending click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
-    auto clickRequest = web::WebRequest();
-    clickRequest.userAgent("PlayerAdvertisements/1.0");
-    clickRequest.timeout(std::chrono::seconds(15));
-    clickRequest.header("Content-Type", "application/json");
-    
-    matjson::Value jsonBody = matjson::Value::object();
-    jsonBody["ad_id"] = m_adId;
-    jsonBody["user_id"] = m_userId;
-    
-    clickRequest.bodyJSON(jsonBody);
-    (void)clickRequest.post("https://ads.arcticwoof.xyz/api/click");
-    log::info("Sent click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
-    
-    auto searchStr = std::to_string(m_levelId);
-    auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
-    CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+    if (PlayLayer::get())
+    {
+        geode::createQuickPopup(
+            "Warning",
+            "You are already inside of a level, attempt to play another level before closing the current level will <cr>crash your game</c>. <cy>Do you still want to proceed?</c>",
+            "Cancel", "Proceed",
+            [this, sender](auto, bool btn)
+            {
+                if (btn)
+                {
+                    // close popup
+                    this->onClose(sender);
+
+                    log::info("opening level id {} from ad id {}", m_levelId, m_adId);
+                    log::debug("Sending click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
+                    auto clickRequest = web::WebRequest();
+                    clickRequest.userAgent("PlayerAdvertisements/1.0");
+                    clickRequest.timeout(std::chrono::seconds(15));
+                    clickRequest.header("Content-Type", "application/json");
+
+                    matjson::Value jsonBody = matjson::Value::object();
+                    jsonBody["ad_id"] = m_adId;
+                    jsonBody["user_id"] = m_userId;
+
+                    clickRequest.bodyJSON(jsonBody);
+                    (void)clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+                    log::info("Sent click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
+
+                    auto searchStr = std::to_string(m_levelId);
+                    auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
+                    CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+                }
+            });
+    }
+    else
+    {
+        // close popup
+        this->onClose(sender);
+
+        log::info("opening level id {} from ad id {}", m_levelId, m_adId);
+        log::debug("Sending click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
+        auto clickRequest = web::WebRequest();
+        clickRequest.userAgent("PlayerAdvertisements/1.0");
+        clickRequest.timeout(std::chrono::seconds(15));
+        clickRequest.header("Content-Type", "application/json");
+
+        matjson::Value jsonBody = matjson::Value::object();
+        jsonBody["ad_id"] = m_adId;
+        jsonBody["user_id"] = m_userId;
+
+        clickRequest.bodyJSON(jsonBody);
+        (void)clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+        log::info("Sent click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
+
+        auto searchStr = std::to_string(m_levelId);
+        auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
+        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+    }
 };
