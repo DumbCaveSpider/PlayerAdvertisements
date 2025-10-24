@@ -7,41 +7,50 @@
 using namespace geode::prelude;
 using namespace ads;
 
-//test
-class $modify(MyMenuLayer, MenuLayer) {
-    bool init() {
-        if (!MenuLayer::init()) return false;
+class $modify(MyMenuLayer, MenuLayer)
+{
+    bool init()
+    {
+        if (!MenuLayer::init())
+            return false;
 
-        // insert ad banner (1456x180)
-        auto ad = Advertisement::create();
-        ad->setType(AdType::Banner);
-        ad->setPosition({ CCDirector::sharedDirector()->getWinSize().width / 2.f, 90.f });
-        this->addChild(ad);
+        auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-        ad->loadRandom();
+        auto adBanner = Advertisement::create();
+        if (adBanner)
+        {
+            adBanner->setID("advertisement-menu");
+            this->addChild(adBanner, 100);
+            adBanner->setType(AdType::Banner);
+            adBanner->setPosition({0, 0});
+            adBanner->setScale(0.3f);
+            adBanner->loadRandom();
 
-        return true;
+            return true;
+        };
     };
 };
 
-class $modify(MyPauseLayer, PauseLayer) {
-    void customSetup() override {
+class $modify(MyPauseLayer, PauseLayer)
+{
+    void customSetup() override
+    {
         PauseLayer::customSetup();
 
         // get level name label
-        auto levelName = static_cast<CCLabelBMFont*>(getChildByID("level-name"));
+        auto levelName = static_cast<CCLabelBMFont *>(getChildByID("level-name"));
         levelName->setVisible(false);
 
         // get the practice mode positions
 
-        auto practiceTitle = static_cast<CCLabelBMFont*>(getChildByID("practice-mode-label"));
-        auto practiceProgress = static_cast<CCLabelBMFont*>(getChildByID("practice-progress-label"));
-        auto practiceBar = static_cast<CCSprite*>(getChildByID("practice-progress-bar"));
+        auto practiceTitle = static_cast<CCLabelBMFont *>(getChildByID("practice-mode-label"));
+        auto practiceProgress = static_cast<CCLabelBMFont *>(getChildByID("practice-progress-label"));
+        auto practiceBar = static_cast<CCSprite *>(getChildByID("practice-progress-bar"));
 
         // move the normal mode title and program bar down
-        auto normalTitle = static_cast<CCLabelBMFont*>(getChildByID("normal-mode-label"));
-        auto normalProgress = static_cast<CCLabelBMFont*>(getChildByID("normal-progress-label"));
-        auto normalBar = static_cast<CCSprite*>(getChildByID("normal-progress-bar"));
+        auto normalTitle = static_cast<CCLabelBMFont *>(getChildByID("normal-mode-label"));
+        auto normalProgress = static_cast<CCLabelBMFont *>(getChildByID("normal-progress-label"));
+        auto normalBar = static_cast<CCSprite *>(getChildByID("normal-progress-bar"));
 
         // position the y values
         if (practiceTitle && normalTitle)
@@ -60,7 +69,8 @@ class $modify(MyPauseLayer, PauseLayer) {
             practiceBar->setVisible(false);
 
         // player is practice mode, show practice mode elements
-        if (GJBaseGameLayer::get()->m_isPracticeMode) {
+        if (GJBaseGameLayer::get()->m_isPracticeMode)
+        {
             // set all practice mode elements to visible
             if (practiceTitle)
                 practiceTitle->setVisible(true);
@@ -77,21 +87,12 @@ class $modify(MyPauseLayer, PauseLayer) {
                 normalBar->setVisible(false);
         }
         // insert ad banner (722x84)
-        CCMenu* adMenu = nullptr;
-        if (auto existing = this->getChildByID("ad-menu")) {
-            adMenu = typeinfo_cast<CCMenu*>(existing);
-        }
-        if (!adMenu) {
-            adMenu = CCMenu::create();
-            adMenu->setID("ad-menu");
-            adMenu->setPosition({ 0.f, 0.f });
-            this->addChild(adMenu);
-        }
 
         // im confused
         // add a button on the side on the menu
         auto rightButtonMenu = getChildByID("right-button-menu");
-        if (rightButtonMenu) {
+        if (rightButtonMenu)
+        {
             auto adButton = CircleButtonSprite::createWithSpriteFrameName(
                 "GJ_freeStuffBtn_001.png",
                 0.875f,
@@ -103,14 +104,16 @@ class $modify(MyPauseLayer, PauseLayer) {
                 this,
                 menu_selector(MyPauseLayer::onAdClicked));
 
-            if (auto menu = typeinfo_cast<CCMenu*>(rightButtonMenu)) {
+            if (auto menu = typeinfo_cast<CCMenu *>(rightButtonMenu))
+            {
                 menu->addChild(popupButton);
                 menu->updateLayout();
             }
         }
     }
 
-    void onAdClicked(CCObject * sender) {
+    void onAdClicked(CCObject *sender)
+    {
         if (auto popup = AdManager::create())
             popup->show();
     }
