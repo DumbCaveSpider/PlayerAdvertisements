@@ -10,9 +10,9 @@ using namespace ads;
 
 namespace ads {
     CCSize getAdSize(AdType type) {
-        auto banner = CCSize({ 1456.f, 180.f });
-        auto square = CCSize({ 1456.f, 1456.f });
-        auto skyscraper = CCSize({ 180.f, 1456.f });
+        auto banner = CCSize({ 364.f, 45.f });
+        auto square = CCSize({ 364.f, 364.f });
+        auto skyscraper = CCSize({ 45.f, 364.f });
 
         CCSize contentSize = banner;
 
@@ -59,7 +59,6 @@ namespace ads {
     bool Advertisement::init() {
         if (CCMenu::init()) {
             setAnchorPoint({ 0.5, 0.5 });
-
             setScaledContentSize(getAdSize(m_impl->m_type));
 
             return true;

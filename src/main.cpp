@@ -23,11 +23,9 @@ class $modify(MyMenuLayer, MenuLayer)
             this->addChild(adBanner, 100);
             adBanner->setType(AdType::Banner);
             adBanner->setPosition({0, 0});
-            adBanner->setScale(0.3f);
             adBanner->loadRandom();
-
-            return true;
-        };
+        }
+        return true;
     };
 };
 
