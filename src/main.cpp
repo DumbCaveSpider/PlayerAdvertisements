@@ -16,15 +16,6 @@ class $modify(MyMenuLayer, MenuLayer)
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-        auto adBanner = Advertisement::create();
-        if (adBanner)
-        {
-            adBanner->setID("advertisement-menu");
-            this->addChild(adBanner, 100);
-            adBanner->setType(AdType::Banner);
-            adBanner->setPosition({0, 0});
-            adBanner->loadRandom();
-        }
         return true;
     };
 };
@@ -85,6 +76,15 @@ class $modify(MyPauseLayer, PauseLayer)
                 normalBar->setVisible(false);
         }
         // insert ad banner (722x84)
+        auto adBanner = Advertisement::create();
+        if (adBanner)
+        {
+            adBanner->setID("advertisement-menu");
+            this->addChild(adBanner, 100);
+            adBanner->setType(AdType::Banner);
+            adBanner->setPosition({levelName->getPositionX() / 2 - 40, levelName->getPositionY() - 20});
+            adBanner->loadRandom();
+        }
 
         // im confused
         // add a button on the side on the menu

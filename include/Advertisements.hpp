@@ -29,12 +29,13 @@ namespace ads {
         int id;
         std::string image;
         int level = 0;
+        int account = 0;
         AdType type;
 
         Ad() = default;
 
-        Ad(unsigned int id, std::string image, int level, AdType type)
-            : id(id), image(image), level(level), type(type) {}
+        Ad(unsigned int id, std::string image, int level, AdType type, int account = 0)
+            : id(id), image(image), level(level), account(account), type(type) {}
     };
 
     /**

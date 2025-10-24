@@ -6,12 +6,13 @@
 #include <algorithm>
 
 using namespace geode::prelude;
+using namespace geode::utils;
 using namespace ads;
 
 namespace ads {
     CCSize getAdSize(AdType type) {
         auto banner = CCSize({ 364.f, 45.f });
-        auto square = CCSize({ 364.f, 364.f });
+        auto square = CCSize({ 184.f, 184.f });
         auto skyscraper = CCSize({ 45.f, 364.f });
 
         CCSize contentSize = banner;
@@ -152,16 +153,18 @@ namespace ads {
 
                         auto id = json["ad_id"].asInt().unwrapOrDefault();
                         auto image = json["image_url"].asString().unwrapOrDefault();
-                        auto level = json["level_id"].asInt().unwrapOrDefault();
+                        auto level = numFromString<int>(json["level_id"].asString().unwrapOrDefault()).unwrapOrDefault();
+                        auto user = numFromString<int>(json["user_id"].asString().unwrapOrDefault()).unwrapOrDefault();
                         auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
 
-                        m_impl->m_ad = Ad(id, image, level, type);
-                        if (m_impl->m_adSprite) {
-                            log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
-                            m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
-                        } else {
-                            log::warn("Ad sprite missing when trying to load image");
-                        };
+                            m_impl->m_ad = Ad(id, image, level, type, user);
+                            log::info("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
+                            if (m_impl->m_adSprite) {
+                                log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
+                                m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
+                            } else {
+                                log::warn("Ad sprite missing when trying to load image");
+                            }
                     } else {
                         log::error("Failed to fetch ad: HTTP {}", res->code());
                     };
@@ -173,7 +176,6 @@ namespace ads {
                     log::error("Unknown ad web request error");
                 };
             });
-
         m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
             if (!m_impl) {
                 log::error("m_impl is null in load callback");

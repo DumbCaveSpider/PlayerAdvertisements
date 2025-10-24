@@ -5,26 +5,33 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyRetryLayer, RetryLevelLayer) {
-    void customSetup() override {
+class $modify(MyRetryLayer, RetryLevelLayer)
+{
+    void customSetup() override
+    {
         log::debug("RetryLevelLayer customSetup - layer is being set up");
         RetryLevelLayer::customSetup();
         // remove all CCLabelBMFont and i swear all of the labels doesnt have a freaking tag
         // this is so stupid why would you not tag them
         // robtop i hate you
-        if (this->m_mainLayer) {
-            cocos2d::CCArray* children = this->m_mainLayer->getChildren();
-            if (children) {
+        if (this->m_mainLayer)
+        {
+            cocos2d::CCArray *children = this->m_mainLayer->getChildren();
+            if (children)
+            {
                 int count = static_cast<int>(children->count());
-                for (int i = count - 1; i >= 0; --i) {
-                    cocos2d::CCObject* obj = children->objectAtIndex(static_cast<unsigned int>(i));
+                for (int i = count - 1; i >= 0; --i)
+                {
+                    cocos2d::CCObject *obj = children->objectAtIndex(static_cast<unsigned int>(i));
                     if (!obj)
                         continue;
-                    if (auto label = typeinfo_cast<CCLabelBMFont*>(obj)) {
+                    if (auto label = typeinfo_cast<CCLabelBMFont *>(obj))
+                    {
                         this->m_mainLayer->removeChild(label, true);
                     }
                     // gonna remove that progress bar too
-                    if (auto sprite = typeinfo_cast<CCSprite*>(obj)) {
+                    if (auto sprite = typeinfo_cast<CCSprite *>(obj))
+                    {
                         this->m_mainLayer->removeChild(sprite, true);
                     }
                 }
@@ -33,19 +40,16 @@ class $modify(MyRetryLayer, RetryLevelLayer) {
             // add funny banner
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-            // create ad banner and temporary sprite used as a menu item
-            auto adBanner = LazySprite::create(getAdSize(Square), true);
-            auto tempBanner = CCSprite::create("bannerTemp.png"_spr);
-            tempBanner->setVisible(false);
-
-            auto adButton = CCMenuItemSpriteExtra::create(tempBanner, this, menu_selector(RetryLevelLayer::onReplay));
-
-            // banner to the menu
-            m_mainMenu->addChild(adBanner);
-            m_mainMenu->addChild(adButton);
-
-            // child the real ad and center it on the button
-            adBanner->setPosition(adButton->getPosition());
+            // insert ad banner (722x84)
+            auto adBanner = Advertisement::create();
+            if (adBanner)
+            {
+                adBanner->setID("advertisement-menu");
+                m_mainLayer->addChild(adBanner);
+                adBanner->setType(AdType::Square);
+                adBanner->setPosition({winSize.width / 3.f + 3.f, winSize.height / 4.5f - 3.f});
+                adBanner->loadRandom();
+            }
         }
     }
 };
