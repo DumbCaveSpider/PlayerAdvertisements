@@ -16,5 +16,11 @@
 			"resources/*"
 		]
 	},
-	"tags": ["modtober25", "universal", "content"]
+	"tags": ["modtober25", "universal", "content"],
+	"dependencies": {
+		"prevter.imageplus": {
+			"importance": "required",
+			"version": ">=1.0.0"
+		}
+	}
 }

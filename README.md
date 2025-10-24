@@ -6,7 +6,7 @@
 
 This mod adds advertisements everywhere in the game! Every part of the game you go to, you will see an advertisement banner. These banners are clickable, and will take you to the advertisement's level when clicked!
 
-### <cl>Do you want to submit your own advertisement? You can submit your own advertisement at [GD Advertisement Manager](https://ads.arcticwoof.xyz)</c>
+### <cl>Do you want to submit your own advertisement? You can at [GD Advertisement Manager](https://ads.arcticwoof.xyz)</c>
 
 ## Credits
 - [Cheeseworks](user:6408873) for helping with the backend side of the mod and the website

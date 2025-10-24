@@ -15,6 +15,17 @@ class $modify(MyMenuLayer, MenuLayer)
             return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
+        
+        // banner ad at the center
+        auto adBanner = Advertisement::create();
+        if (adBanner)
+        {
+            adBanner->setID("advertisement-menu");
+            this->addChild(adBanner);
+            adBanner->setType(AdType::Banner);
+            adBanner->setPosition({winSize.width / 5.5f, winSize.height / 4.5f});
+            adBanner->loadRandom();
+        }
 
         return true;
     };

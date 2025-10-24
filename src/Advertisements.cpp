@@ -1,4 +1,5 @@
 #include <Advertisements.hpp>
+#include <AdPreview.hpp>
 
 #include <fmt/core.h>
 
@@ -9,15 +10,18 @@ using namespace geode::prelude;
 using namespace geode::utils;
 using namespace ads;
 
-namespace ads {
-    CCSize getAdSize(AdType type) {
-        auto banner = CCSize({ 364.f, 45.f });
-        auto square = CCSize({ 184.f, 184.f });
-        auto skyscraper = CCSize({ 41.f, 314.f });
+namespace ads
+{
+    CCSize getAdSize(AdType type)
+    {
+        auto banner = CCSize({364.f, 45.f});
+        auto square = CCSize({184.f, 184.f});
+        auto skyscraper = CCSize({41.f, 314.f});
 
         CCSize contentSize = banner;
 
-        switch (type) {
+        switch (type)
+        {
         case Banner:
             contentSize = banner;
             break;
@@ -36,83 +40,104 @@ namespace ads {
         return contentSize;
     };
 
-    class Advertisement::Impl final {
+    class Advertisement::Impl final
+    {
     public:
         EventListener<web::WebTask> m_adListener;
 
         Ad m_ad = Ad();
         AdType m_type = AdType::Banner;
 
-        CCMenuItemSpriteExtra* m_adButton = nullptr;
-        LazySprite* m_adSprite = nullptr;
+        CCMenuItemSpriteExtra *m_adButton = nullptr;
+        LazySprite *m_adSprite = nullptr;
     };
 
-    Advertisement::Advertisement() {
+    Advertisement::Advertisement()
+    {
         m_impl = std::make_unique<Impl>();
     };
 
-    Advertisement::~Advertisement() {
-        if (m_impl && m_impl->m_adSprite) {
+    Advertisement::~Advertisement()
+    {
+        if (m_impl && m_impl->m_adSprite)
+        {
             m_impl->m_adSprite->release();
         }
     };
 
-    bool Advertisement::init() {
-        if (CCMenu::init()) {
-            setAnchorPoint({ 0.5, 0.5 });
+    bool Advertisement::init()
+    {
+        if (CCMenu::init())
+        {
+            setAnchorPoint({0.5, 0.5});
             setScaledContentSize(getAdSize(m_impl->m_type));
 
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         };
     };
 
-    void Advertisement::activate(CCObject*) {
-        if (m_impl->m_ad.level > 0) {
-            log::info("Activating ad for level ID {}", m_impl->m_ad.level);
-            Notification::create(fmt::format("Loading level ID {}...", m_impl->m_ad.level), NotificationIcon::Loading, 1.25f)->show();
-        } else {
-            log::warn("Ad has no associated level ID");
-        };
-    };
+    void Advertisement::activate(CCObject *)
+    {
+        auto &ad = m_impl->m_ad;
+        log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
+        if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type))
+        {
+            popup->show();
+        }
+        else
+        {
+            log::error("Failed to create AdPreview popup");
+        }
+    }
 
-    void Advertisement::reload() {
-        if (m_impl->m_adButton) {
+    void Advertisement::reload()
+    {
+        if (m_impl->m_adButton)
+        {
             m_impl->m_adButton->removeMeAndCleanup();
             m_impl->m_adButton = nullptr;
         };
 
-        if (!m_impl->m_adSprite) {
+        if (!m_impl->m_adSprite)
+        {
             log::warn("Cannot reload advertisement: ad sprite is null");
             return;
         }
-        
+
         log::info("Reloading advertisement - creating button with sprite");
 
         m_impl->m_adButton = CCMenuItemSpriteExtra::create(
             m_impl->m_adSprite,
             this,
-            menu_selector(Advertisement::activate)
-        );
+            menu_selector(Advertisement::activate));
 
-        m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-        
-        if (m_impl->m_adButton) {
+        m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
+
+        if (m_impl->m_adButton)
+        {
             this->addChild(m_impl->m_adButton);
             log::info("Advertisement button created and added to menu");
-        } else {
+        }
+        else
+        {
             log::error("Failed to create CCMenuItemSpriteExtra");
         }
     };
 
-    void Advertisement::reloadType() {
-        if (m_impl->m_adButton) {
+    void Advertisement::reloadType()
+    {
+        if (m_impl->m_adButton)
+        {
             m_impl->m_adButton->removeMeAndCleanup();
             m_impl->m_adButton = nullptr;
         };
 
-        if (m_impl->m_adSprite) {
+        if (m_impl->m_adSprite)
+        {
             m_impl->m_adSprite->removeMeAndCleanup();
             m_impl->m_adSprite->release(); // Release our manual retain
             m_impl->m_adSprite = nullptr;
@@ -121,22 +146,24 @@ namespace ads {
         setScaledContentSize(getAdSize(m_impl->m_type));
 
         m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
-        if (!m_impl->m_adSprite) {
+        if (!m_impl->m_adSprite)
+        {
             log::error("Failed to create LazySprite");
             return;
         }
-        
+
         log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
-        
+
         m_impl->m_adSprite->setID("ad");
         m_impl->m_adSprite->retain(); // Manually retain to keep it alive
-        m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
-        m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+        m_impl->m_adSprite->setAnchorPoint({0.5f, 0.5f});
+        m_impl->m_adSprite->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
         m_impl->m_adSprite->setVisible(true); // Ensure it's visible
-        
+
         log::info("LazySprite configured - setting up callbacks");
 
-        m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
+        m_impl->m_adListener.bind([this](web::WebTask::Event *e)
+                                  {
             if (!m_impl) {
                 log::error("m_impl is null in ad listener callback");
                 return;
@@ -174,9 +201,9 @@ namespace ads {
                     log::error("Ad web request failed");
                 } else {
                     log::error("Unknown ad web request error");
-                };
-            });
-        m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
+                }; });
+        m_impl->m_adSprite->setLoadCallback([this](Result<> res)
+                                            {
             if (!m_impl) {
                 log::error("m_impl is null in load callback");
                 return;
@@ -217,18 +244,19 @@ namespace ads {
                 }
             } else {
                 log::error("Unknown error loading ad image");
-            }
-        });
+            } });
 
         reload();
     };
 
-    void Advertisement::setType(AdType type) {
+    void Advertisement::setType(AdType type)
+    {
         m_impl->m_type = type;
         reloadType();
     };
 
-    void Advertisement::loadRandom() {
+    void Advertisement::loadRandom()
+    {
         log::debug("Preparing request for random advertisement...");
         auto request = web::WebRequest();
         request.userAgent("PlayerAdvertisements/1.0");
@@ -238,7 +266,8 @@ namespace ads {
         log::info("Sent request for random advertisement");
     };
 
-    void Advertisement::load(int id) {
+    void Advertisement::load(int id)
+    {
         log::debug("Preparing request for advertisement of ID {}...", id);
         auto request = web::WebRequest();
         request.userAgent("PlayerAdvertisements/1.0");
@@ -248,14 +277,17 @@ namespace ads {
         log::info("Sent request for advertisement of ID {}", id);
     };
 
-    LazySprite* Advertisement::getAdSprite() const {
+    LazySprite *Advertisement::getAdSprite() const
+    {
         return m_impl->m_adSprite;
     };
 
-    Advertisement* Advertisement::create() {
+    Advertisement *Advertisement::create()
+    {
         auto ret = new Advertisement();
 
-        if (ret && ret->init()) {
+        if (ret && ret->init())
+        {
             ret->autorelease();
             return ret;
         };
