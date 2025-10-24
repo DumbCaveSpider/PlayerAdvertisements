@@ -77,7 +77,7 @@ void AdPreview::onPlayButton(CCObject* sender)
     jsonBody["user_id"] = m_userId;
     
     clickRequest.bodyJSON(jsonBody);
-    clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+    (void)clickRequest.post("https://ads.arcticwoof.xyz/api/click");
     log::info("Sent click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
     
     auto searchStr = std::to_string(m_levelId);

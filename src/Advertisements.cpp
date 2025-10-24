@@ -14,9 +14,9 @@ namespace ads
 {
     CCSize getAdSize(AdType type)
     {
-        auto banner = CCSize({364.f, 45.f});
-        auto square = CCSize({184.f, 184.f});
-        auto skyscraper = CCSize({41.f, 314.f});
+        auto banner = CCSize(364.f, 45.f);
+        auto square = CCSize(184.f, 184.f);
+        auto skyscraper = CCSize(41.f, 314.f);
 
         CCSize contentSize = banner;
 
@@ -207,7 +207,7 @@ namespace ads
                             viewBody["user_id"] = user;
                             
                             viewRequest.bodyJSON(viewBody);
-                            viewRequest.post("https://ads.arcticwoof.xyz/api/view");
+                            (void)viewRequest.post("https://ads.arcticwoof.xyz/api/view");
                             log::info("Sent view tracking request for ad_id={}, user_id={}", id, user);
                             
                             if (m_impl->m_adSprite) {
