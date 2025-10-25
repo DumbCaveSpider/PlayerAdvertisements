@@ -6,10 +6,8 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(AdsMenuLayer, MenuLayer)
-{
-    bool init()
-    {
+class $modify(AdsMenuLayer, MenuLayer) {
+    bool init() {
         if (!MenuLayer::init())
             return false;
 
@@ -17,18 +15,16 @@ class $modify(AdsMenuLayer, MenuLayer)
 
         // banner ad at the center
         auto adBanner = Advertisement::create();
-        if (adBanner)
-        {
+        if (adBanner) {
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 2.f, winSize.height / 2.f - 70.f});
+            adBanner->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
             adBanner->loadRandom();
         }
 
         // ad button in the bottom menu
-        if (auto bottomMenu = this->getChildByID("bottom-menu"))
-        {
+        if (auto bottomMenu = this->getChildByID("bottom-menu")) {
             auto sprite = CCSprite::create("adIcon.png"_spr);
             auto adButton = CircleButtonSprite::create(
                 sprite,
@@ -40,8 +36,7 @@ class $modify(AdsMenuLayer, MenuLayer)
                 this,
                 menu_selector(AdsMenuLayer::onAdClicked));
 
-            if (auto menu = typeinfo_cast<CCMenu *>(bottomMenu))
-            {
+            if (auto menu = typeinfo_cast<CCMenu*>(bottomMenu)) {
                 menu->addChild(popupButton);
                 menu->updateLayout();
             }
@@ -49,9 +44,8 @@ class $modify(AdsMenuLayer, MenuLayer)
 
         return true;
     };
-    
-    void onAdClicked(CCObject *sender)
-    {
+
+    void onAdClicked(CCObject * sender) {
         if (auto popup = AdManager::create())
             popup->show();
     }

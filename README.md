@@ -1,6 +1,5 @@
 # Player Advertisements
-
-### <co>Entry for Modtober 2025 : What The heck!?</c>
+### <co>Entry for Modtober 2025: What The heck!?</c>
 
 <cp>You love Advertisements, right?</c> Who doesn't! Maybe you want to <cb>self-promote your own levels</c> with over the top, eye catching, MrBeast clickbaiting advertisements! Or maybe you just want to see some funny ads while you play! <cy>Either way, this mod is for everyone!</c>
 
