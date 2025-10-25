@@ -173,11 +173,11 @@ void AdManager::populateAdsScrollLayer()
         clipNode->setStencil(stencil);
         clipNode->setAlphaThreshold(0.1f);
 
-        auto bg = CCScale9Sprite::create("square02_001.png");
+        // @geode-ignore(unknown-resource)
+        auto bg = CCScale9Sprite::create("geode.loader/black-square.png");
         bg->setContentSize({stencil->getContentSize()});
-        bg->setOpacity(100);
         bg->setAnchorPoint({0.0f, 0.0f});
-        clipNode->addChild(bg, 1);
+        adContainer->addChild(bg, 1);
 
         auto imageUrl = adValue["image_url"].asString();
         auto lazySprite = LazySprite::create({200.f, 85.f});
@@ -207,14 +207,14 @@ void AdManager::populateAdsScrollLayer()
         adLabel->setPosition({adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 10.f});
         adLabel->setAnchorPoint({0.5f, 0.5f});
         adLabel->setScale(0.4f);
-        adContainer->addChild(adLabel);
+        adContainer->addChild(adLabel, 2);
 
         std::string levelIdStr = levelId.isOk() ? numToString(levelId.unwrap()) : "N/A";
         auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).c_str(), "goldFont.fnt");
         levelLabel->setPosition({adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 25.f});
         levelLabel->setAnchorPoint({0.5f, 0.5f});
         levelLabel->setScale(0.4f);
-        adContainer->addChild(levelLabel);
+        adContainer->addChild(levelLabel, 2);
 
         // views and clicks
         std::string viewsStr = viewCount.isOk() ? numToString(viewCount.unwrap()) : "0";
@@ -223,7 +223,7 @@ void AdManager::populateAdsScrollLayer()
         viewsLabel->setAnchorPoint({0.5f, 0.5f});
         viewsLabel->setColor({255, 125, 0});
         viewsLabel->setScale(0.4f);
-        adContainer->addChild(viewsLabel);
+        adContainer->addChild(viewsLabel, 2);
 
         std::string clicksStr = clickCount.isOk() ? numToString(clickCount.unwrap()) : "0";
         auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).c_str(), "goldFont.fnt");
@@ -231,7 +231,7 @@ void AdManager::populateAdsScrollLayer()
         clicksLabel->setAnchorPoint({0.5f, 0.5f});
         clicksLabel->setColor({0, 175, 255});
         clicksLabel->setScale(0.4f);
-        adContainer->addChild(clicksLabel);
+        adContainer->addChild(clicksLabel, 2);
 
         // pending label
         auto pendingLabel = CCLabelBMFont::create("Pending", "goldFont.fnt");
@@ -239,7 +239,7 @@ void AdManager::populateAdsScrollLayer()
         pendingLabel->setAnchorPoint({0.5f, 0.5f});
         pendingLabel->setColor({255, 0, 0});
         pendingLabel->setScale(0.4f);
-        adContainer->addChild(pendingLabel);
+        adContainer->addChild(pendingLabel, 2);
 
         if (pending.isOk() && !pending.unwrap())
         {
@@ -252,7 +252,7 @@ void AdManager::populateAdsScrollLayer()
         createdAtLabel->setPosition({adContainer->getContentSize().width / 2, 10.f});
         createdAtLabel->setAnchorPoint({0.5f, 0.5f});
         createdAtLabel->setScale(0.3f);
-        adContainer->addChild(createdAtLabel);
+        adContainer->addChild(createdAtLabel, 2);
 
         m_adsScrollLayer->m_contentLayer->addChild(adContainer);
     }

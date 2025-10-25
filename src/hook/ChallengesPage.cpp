@@ -1,27 +1,28 @@
 #include <Geode/Geode.hpp>
+#include <Geode/modify/ChallengesPage.hpp>
+#include "AdManager.hpp"
 #include <Advertisements.hpp>
-#include <Geode/modify/LeaderboardsLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyLeaderboardsLayer, LeaderboardsLayer)
+class $modify(MyChallengesPage, ChallengesPage)
 {
-    bool init(LeaderboardState layer)
+    bool init()
     {
-        if (!LeaderboardsLayer::init(layer))
+        if (!ChallengesPage::init())
             return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-        // banner at the bottom center
+        // banner ad at the top
         auto adBanner = Advertisement::create();
         if (adBanner)
         {
-            adBanner->setID("advertisement-leaderboards-bottom");
-            this->addChild(adBanner, 1);
+            adBanner->setID("advertisement-menu");
+            this->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 2.f - 180.f, 10.f});
+            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
             adBanner->loadRandom();
         }
         return true;
