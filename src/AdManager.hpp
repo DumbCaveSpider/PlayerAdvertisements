@@ -14,10 +14,12 @@ protected:
     int m_totalClicks = 0;
     CCLabelBMFont* m_viewsLabel = nullptr;
     CCLabelBMFont* m_clicksLabel = nullptr;
+    ScrollLayer* m_adsScrollLayer = nullptr;
 
 public:
     static AdManager* create();
     void onWebButton(CCObject* sender);
     void onFetchComplete(web::WebTask::Event* event);
     void onModSettingsButton(CCObject* sender);
+    void populateAdsScrollLayer();
 };
