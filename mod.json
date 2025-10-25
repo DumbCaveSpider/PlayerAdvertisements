@@ -13,6 +13,11 @@
 		"ArcticWoof",
 		"Cheeseworks"
 	],
+	"links": {
+		"source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
+		"homepage": "https://arcticwoof.com.au/",
+		"community": "https://discord.com/gXcppxTNxC"
+	},
 	"description": "Shows a clickable ad banner by players.",
 	"resources": {
 		"sprites": [

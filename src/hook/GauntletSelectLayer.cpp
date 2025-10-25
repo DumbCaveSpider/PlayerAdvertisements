@@ -1,24 +1,24 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/DailyLevelPage.hpp>
 #include <Advertisements.hpp>
+#include <Geode/modify/GauntletSelectLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(DailyLevelPage) {
-    bool init(GJTimedLevelType levelType) {
-        if (!DailyLevelPage::init(levelType))
+class $modify(GauntletSelectLayer) {
+    bool init(int p0) {
+        if (!GauntletSelectLayer::init(p0))
             return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-        // banner ad at the top
+        // banner at the bottom center
         auto adBanner = Advertisement::create();
         if (adBanner) {
-            adBanner->setID("advertisement-menu");
-            m_mainLayer->addChild(adBanner, -8);
+            adBanner->setID("advertisement-leaderboards-bottom");
+            this->addChild(adBanner, 1);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({ winSize.width / 2.f, 70.f });
+            adBanner->setPosition({ winSize.width / 2.f, 30.f });
             adBanner->loadRandom();
         }
         return true;
