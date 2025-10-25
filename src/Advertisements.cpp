@@ -186,7 +186,7 @@ namespace ads
 
                         auto id = json["ad_id"].asInt().unwrapOrDefault();
                         auto image = json["image_url"].asString().unwrapOrDefault();
-                        auto level = numFromString<int>(json["level_id"].asString().unwrapOrDefault()).unwrapOrDefault();
+                        auto level = json["level_id"].asInt().unwrapOrDefault();
                         auto user = json["user_id"].asString().unwrapOrDefault();
                         auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
                         auto view = json["view_count"].asInt().unwrapOrDefault();
