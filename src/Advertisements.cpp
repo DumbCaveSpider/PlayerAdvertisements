@@ -145,7 +145,7 @@ namespace ads
         if (m_impl->m_adSprite)
         {
             m_impl->m_adSprite->removeMeAndCleanup();
-            m_impl->m_adSprite->release(); // Release our manual retain
+            m_impl->m_adSprite->release();
             m_impl->m_adSprite = nullptr;
         };
 
@@ -161,10 +161,10 @@ namespace ads
         log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
 
         m_impl->m_adSprite->setID("ad");
-        m_impl->m_adSprite->retain(); // Manually retain to keep it alive
+        m_impl->m_adSprite->retain();
         m_impl->m_adSprite->setAnchorPoint({0.5f, 0.5f});
         m_impl->m_adSprite->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
-        m_impl->m_adSprite->setVisible(true); // Ensure it's visible
+        m_impl->m_adSprite->setVisible(true);
 
         log::info("LazySprite configured - setting up callbacks");
 
