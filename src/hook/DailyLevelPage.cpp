@@ -16,7 +16,7 @@ class $modify(DailyLevelPage) {
         auto adBanner = Advertisement::create();
         if (adBanner) {
             adBanner->setID("advertisement-menu");
-            m_mainLayer->addChild(adBanner, -8);
+            m_mainLayer->addChild(adBanner, 8);
             adBanner->setType(AdType::Banner);
             adBanner->setPosition({ winSize.width / 2.f, 70.f });
             adBanner->loadRandom();
