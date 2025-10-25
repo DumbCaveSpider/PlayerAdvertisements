@@ -5,10 +5,8 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(DailyLevelPage)
-{
-    bool init(GJTimedLevelType levelType)
-    {
+class $modify(DailyLevelPage) {
+    bool init(GJTimedLevelType levelType) {
         if (!DailyLevelPage::init(levelType))
             return false;
 
@@ -16,12 +14,11 @@ class $modify(DailyLevelPage)
 
         // banner ad at the top
         auto adBanner = Advertisement::create();
-        if (adBanner)
-        {
+        if (adBanner) {
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
+            adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
             adBanner->loadRandom();
         }
         return true;
