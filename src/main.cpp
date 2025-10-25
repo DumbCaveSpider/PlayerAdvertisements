@@ -100,11 +100,11 @@ class $modify(MyPauseLayer, PauseLayer)
         // im confused
         // add a button on the side on the menu
         auto rightButtonMenu = getChildByID("right-button-menu");
+        auto sprite = CCSprite::create("adIcon.png"_spr);
         if (rightButtonMenu)
         {
-            auto adButton = CircleButtonSprite::createWithSpriteFrameName(
-                "GJ_freeStuffBtn_001.png",
-                0.875f,
+            auto adButton = CircleButtonSprite::create(
+                sprite,
                 CircleBaseColor::Green,
                 CircleBaseSize::Medium);
 

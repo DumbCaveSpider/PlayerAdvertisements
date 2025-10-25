@@ -22,5 +22,13 @@
 			"importance": "required",
 			"version": ">=1.0.0"
 		}
+	},
+	"settings": {
+		"user-id": {
+			"type": "string",
+			"name": "User ID",
+			"default": "",
+			"description": "User ID provided by the GD Advertisement Manager website or your Discord User ID"
+		}
 	}
 }
