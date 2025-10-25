@@ -19,7 +19,7 @@ class $modify(GJDropDownLayer)
         if (adBanner)
         {
             adBanner->setID("advertisement-menu");
-            this->addChild(adBanner, 2);
+            m_mainLayer->addChild(adBanner, 2);
             adBanner->setType(AdType::Banner);
             adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
             adBanner->loadRandom();

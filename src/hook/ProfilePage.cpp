@@ -1,15 +1,15 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/InfoLayer.hpp>
+#include <Geode/modify/ProfilePage.hpp>
 #include <Advertisements.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(InfoLayer)
+class $modify(ProfilePage)
 {
-    bool init(GJGameLevel *p0, GJUserScore *p1, GJLevelList *p2)
+    bool init(int p0, bool p1)
     {
-        if (!InfoLayer::init(p0, p1, p2))
+        if (!ProfilePage::init(p0, p1))
             return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
