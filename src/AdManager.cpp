@@ -41,11 +41,7 @@ bool AdManager::setup()
         } else if (e->isCancelled()) {
             log::error("Request was cancelled");
             Notification::create("Advertisement data fetch was cancelled!", NotificationIcon::Warning)->show();
-        } else {
-            log::error("Request failed or response is invalid");
-            Notification::create("Failed to fetch advertisement data!", NotificationIcon::Error)->show();
-        }
-    });
+        } });
     m_listener.setFilter(req.get(url));
 
     // add a background on the left side
@@ -72,6 +68,17 @@ bool AdManager::setup()
     titleLabel2->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height + 10.f});
     titleLabel2->setScale(0.4f);
     bg2->addChild(titleLabel2);
+
+    // total views and clicks labels on the right background
+    m_viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
+    m_viewsLabel->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height - 20.f});
+    m_viewsLabel->setScale(0.5f);
+    bg2->addChild(m_viewsLabel);
+
+    m_clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
+    m_clicksLabel->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height - 50.f});
+    m_clicksLabel->setScale(0.3f);
+    bg2->addChild(m_clicksLabel);
 
     // button to the website at the bottom center of the main layer popup
     auto webButton = ButtonSprite::create("Upload Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
@@ -144,6 +151,29 @@ void AdManager::onFetchComplete(web::WebTask::Event *event)
                 {
                     log::info("Fetched user data for: {}", username.unwrap());
                 }
+                if (m_userData.contains("total_views"))
+                {
+                    auto totalViews = m_userData["total_views"].asInt();
+                    if (totalViews)
+                    {
+                        m_totalViews = totalViews.unwrap();
+                        log::info("Total Views: {}", m_totalViews);
+                    }
+                }
+                if (m_userData.contains("total_clicks"))
+                {
+                    auto totalClicks = m_userData["total_clicks"].asInt();
+                    if (totalClicks)
+                    {
+                        m_totalClicks = totalClicks.unwrap();
+                        log::info("Total Clicks: {}", m_totalClicks);
+                    }
+                }
+                // Update labels after fetching
+                if (m_viewsLabel)
+                    m_viewsLabel->setString(fmt::format("Total Views: {}", m_totalViews).c_str());
+                if (m_clicksLabel)
+                    m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_totalClicks).c_str());
             }
         }
         else
