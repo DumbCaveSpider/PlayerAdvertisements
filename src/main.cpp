@@ -15,7 +15,7 @@ class $modify(MyMenuLayer, MenuLayer)
             return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
-        
+
         // banner ad at the center
         auto adBanner = Advertisement::create();
         if (adBanner)
@@ -27,8 +27,34 @@ class $modify(MyMenuLayer, MenuLayer)
             adBanner->loadRandom();
         }
 
+        if (auto bottomMenu = this->getChildByID("bottom-menu"))
+        {
+            auto sprite = CCSprite::create("adIcon.png"_spr);
+            auto adButton = CircleButtonSprite::create(
+                sprite,
+                CircleBaseColor::Green,
+                CircleBaseSize::MediumAlt);
+
+            auto popupButton = CCMenuItemSpriteExtra::create(
+                adButton,
+                this,
+                menu_selector(MyMenuLayer::onAdClicked));
+
+            if (auto menu = typeinfo_cast<CCMenu *>(bottomMenu))
+            {
+                menu->addChild(popupButton);
+                menu->updateLayout();
+            }
+        }
+
         return true;
     };
+    
+    void onAdClicked(CCObject *sender)
+    {
+        if (auto popup = AdManager::create())
+            popup->show();
+    }
 };
 
 class $modify(MyPauseLayer, PauseLayer)
