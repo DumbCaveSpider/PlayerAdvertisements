@@ -46,6 +46,7 @@ namespace ads {
 
         CCMenuItemSpriteExtra* m_adButton = nullptr;
         LazySprite* m_adSprite = nullptr;
+        CCSprite* m_adIcon = nullptr;
     };
 
     Advertisement::Advertisement() {
@@ -205,7 +206,19 @@ namespace ads {
 
                 if (res.isOk()) {
                     log::info("Ad image loaded successfully");
-
+                    // add the adIcon at the bottom right of the ad button
+                    if (!m_impl->m_adIcon) {
+                        m_impl->m_adIcon = CCSprite::create("adIcon.png"_spr);
+                        if (m_impl->m_adIcon) {
+                            m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
+                            m_impl->m_adIcon->setPosition({3.f, 3.f});
+                            m_impl->m_adSprite->addChild(m_impl->m_adIcon);
+                            m_impl->m_adIcon->setScale(0.3f);
+                            m_impl->m_adIcon->setOpacity(100);
+                        } else {
+                            log::error("Failed to create ad icon sprite");
+                        }
+                    }
                     if (!m_impl->m_adSprite) {
                         log::warn("Load callback: ad sprite is null");
                         return;
