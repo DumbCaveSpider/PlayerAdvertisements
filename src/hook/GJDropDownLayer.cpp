@@ -1,14 +1,16 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/EndLevelLayer.hpp>
+#include <Geode/modify/GJDropDownLayer.hpp>
 #include <Advertisements.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(EndLevelLayer) {
-    void customSetup() override
+class $modify(GJDropDownLayer)
+{
+    bool init(const char *p0, float p1, bool p2)
     {
-        EndLevelLayer::customSetup();
+        if (!GJDropDownLayer::init(p0, p1, p2))
+            return false;
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
 
@@ -17,7 +19,7 @@ class $modify(EndLevelLayer) {
         if (adBanner)
         {
             adBanner->setID("advertisement-menu");
-            m_mainLayer->addChild(adBanner);
+            this->addChild(adBanner, 2);
             adBanner->setType(AdType::Banner);
             adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
             adBanner->loadRandom();
@@ -43,5 +45,7 @@ class $modify(EndLevelLayer) {
             adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
             adSkyscraperLeft->loadRandom();
         }
+
+        return true;
     }
 };

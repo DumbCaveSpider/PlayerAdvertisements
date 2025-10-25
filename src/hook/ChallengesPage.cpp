@@ -6,7 +6,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyChallengesPage, ChallengesPage)
+class $modify(ChallengesPage)
 {
     bool init()
     {
@@ -22,7 +22,7 @@ class $modify(MyChallengesPage, ChallengesPage)
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
+            adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
             adBanner->loadRandom();
         }
         return true;

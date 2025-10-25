@@ -21,7 +21,7 @@ class $modify(GJPathsLayer)
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner);
             adBanner->setType(AdType::Skyscraper);
-            adBanner->setPosition({30.f, 2.f});
+            adBanner->setPosition({30.f, winSize.height / 2.f});
             adBanner->loadRandom();
         }
 
@@ -32,7 +32,7 @@ class $modify(GJPathsLayer)
             adBannerRight->setID("advertisement-menu-right");
             this->addChild(adBannerRight);
             adBannerRight->setType(AdType::Skyscraper);
-            adBannerRight->setPosition({winSize.width - 70.f, 2.f});
+            adBannerRight->setPosition({winSize.width - 30.f, winSize.height / 2.f});
             adBannerRight->loadRandom();
         }
         return true;

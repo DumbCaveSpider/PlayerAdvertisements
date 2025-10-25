@@ -6,7 +6,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyMenuLayer, MenuLayer)
+class $modify(AdsMenuLayer, MenuLayer)
 {
     bool init()
     {
@@ -22,10 +22,11 @@ class $modify(MyMenuLayer, MenuLayer)
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 5.5f, winSize.height / 4.5f});
+            adBanner->setPosition({winSize.width / 2.f, winSize.height / 2.f - 70.f});
             adBanner->loadRandom();
         }
 
+        // ad button in the bottom menu
         if (auto bottomMenu = this->getChildByID("bottom-menu"))
         {
             auto sprite = CCSprite::create("adIcon.png"_spr);
@@ -37,7 +38,7 @@ class $modify(MyMenuLayer, MenuLayer)
             auto popupButton = CCMenuItemSpriteExtra::create(
                 adButton,
                 this,
-                menu_selector(MyMenuLayer::onAdClicked));
+                menu_selector(AdsMenuLayer::onAdClicked));
 
             if (auto menu = typeinfo_cast<CCMenu *>(bottomMenu))
             {

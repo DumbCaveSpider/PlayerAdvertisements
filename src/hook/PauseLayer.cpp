@@ -6,7 +6,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyPauseLayer, PauseLayer)
+class $modify(AdsPauseLayer, PauseLayer)
 {
     void customSetup() override
     {
@@ -63,12 +63,13 @@ class $modify(MyPauseLayer, PauseLayer)
         }
         // insert ad banner (722x84)
         auto adBanner = Advertisement::create();
+        auto winSize = CCDirector::get()->getWinSize();
         if (adBanner)
         {
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner, 100);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({levelName->getPositionX() / 2 - 40, levelName->getPositionY() - 20});
+            adBanner->setPosition({winSize.width / 2.f, winSize.height - 50.f});
             adBanner->loadRandom();
         }
 
@@ -86,7 +87,7 @@ class $modify(MyPauseLayer, PauseLayer)
             auto popupButton = CCMenuItemSpriteExtra::create(
                 adButton,
                 this,
-                menu_selector(MyPauseLayer::onAdClicked));
+                menu_selector(AdsPauseLayer::onAdClicked));
 
             if (auto menu = typeinfo_cast<CCMenu *>(rightButtonMenu))
             {

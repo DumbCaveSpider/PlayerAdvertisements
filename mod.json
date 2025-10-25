@@ -29,6 +29,12 @@
 			"name": "User ID",
 			"default": "",
 			"description": "User ID provided by the GD Advertisement Manager website or your Discord User ID"
+		},
+		"show-in-game": {
+			"type": "bool",
+			"name": "Show Ads while playing",
+			"default": false,
+			"description": "Shows an advertisement while playing in game. <cy>You gotta pay the bills yknow.</c>"
 		}
 	}
 }

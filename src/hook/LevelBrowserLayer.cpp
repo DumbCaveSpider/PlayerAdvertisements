@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyLevelBrowserLayer, LevelBrowserLayer)
+class $modify(LevelBrowserLayer)
 {
     bool init(GJSearchObject* searchObj)
     {
@@ -21,7 +21,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer)
             adBanner->setID("advertisement-menu");
             this->addChild(adBanner, 2);
             adBanner->setType(AdType::Banner);
-            adBanner->setPosition({winSize.width / 5.5f, winSize.height - 50.f});
+            adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
             adBanner->loadRandom();
         }
 

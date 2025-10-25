@@ -47,7 +47,7 @@ bool AdManager::setup()
     // add a background on the left side
     // @geode-ignore(unknown-resource)
     auto bg1 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-    bg1->setPosition({winSize.width / 5, winSize.height / 2 - 30.f});
+    bg1->setPosition({115.f, winSize.height / 2 - 30.f});
     bg1->setContentSize({200.f, 200.f});
     m_mainLayer->addChild(bg1, 5);
 
@@ -59,7 +59,7 @@ bool AdManager::setup()
     // add a background on the right side
     // @geode-ignore(unknown-resource)
     auto bg2 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-    bg2->setPosition({winSize.width / 5 * 3 - 5.f, winSize.height / 2 - 30.f});
+    bg2->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 - 30.f});
     bg2->setContentSize({200.f, 200.f});
     m_mainLayer->addChild(bg2, 5);
 

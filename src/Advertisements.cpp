@@ -70,8 +70,6 @@ namespace ads
         if (CCMenu::init())
         {
             setAnchorPoint({0.5, 0.5});
-            setScaledContentSize(getAdSize(m_impl->m_type));
-
             return true;
         }
         else
@@ -121,7 +119,7 @@ namespace ads
             this,
             menu_selector(Advertisement::activate));
 
-        m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
+        // m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
 
         if (m_impl->m_adButton)
         {
@@ -163,7 +161,7 @@ namespace ads
         m_impl->m_adSprite->setID("ad");
         m_impl->m_adSprite->retain();
         m_impl->m_adSprite->setAnchorPoint({0.5f, 0.5f});
-        m_impl->m_adSprite->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
+        // m_impl->m_adSprite->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
         m_impl->m_adSprite->setVisible(true);
 
         log::info("LazySprite configured - setting up callbacks");
@@ -242,7 +240,7 @@ namespace ads
                 }
 
                 m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
-                m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+                //m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
                 m_impl->m_adSprite->setVisible(true);
 
                 auto natural = m_impl->m_adSprite->getContentSize();
@@ -257,9 +255,9 @@ namespace ads
                     log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
                 }
 
-                if (m_impl->m_adButton) {
-                    m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-                }
+                // if (m_impl->m_adButton) {
+                //     m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+                // }
 
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
@@ -288,7 +286,6 @@ namespace ads
         request.param("type", static_cast<int>(m_impl->m_type));
         m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
         log::info("Sent request for random advertisement");
-
     };
 
     void Advertisement::load(int id)

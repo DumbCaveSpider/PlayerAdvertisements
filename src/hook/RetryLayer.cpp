@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(MyRetryLayer, RetryLevelLayer)
+class $modify(RetryLevelLayer)
 {
     void customSetup() override
     {
@@ -47,29 +47,8 @@ class $modify(MyRetryLayer, RetryLevelLayer)
                 adBanner->setID("advertisement-menu");
                 m_mainLayer->addChild(adBanner);
                 adBanner->setType(AdType::Square);
-                adBanner->setPosition({winSize.width / 3.f + 3.f, winSize.height / 4.5f - 3.f});
+                adBanner->setPosition({winSize.width / 2.f, winSize.height / 2.f});
                 adBanner->loadRandom();
-            }
-
-            // skyscraper ad on the right side
-            auto adSkyscraper = Advertisement::create();
-            if (adSkyscraper)
-            {
-                adSkyscraper->setID("advertisement-menu-skyscraper");
-                m_mainLayer->addChild(adSkyscraper);
-                adSkyscraper->setType(AdType::Skyscraper);
-                adSkyscraper->setPosition({winSize.width - 70.f, -2.f});
-                adSkyscraper->loadRandom();
-            }
-            // skyscraper ad on the left side
-            auto adSkyscraperLeft = Advertisement::create();
-            if (adSkyscraperLeft)
-            {
-                adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
-                m_mainLayer->addChild(adSkyscraperLeft);
-                adSkyscraperLeft->setType(AdType::Skyscraper);
-                adSkyscraperLeft->setPosition({30.f, -2.f});
-                adSkyscraperLeft->loadRandom();
             }
         }
     }
