@@ -16,6 +16,7 @@ protected:
     
     bool setup() override;
     void onPlayButton(CCObject* sender);
+    void onReportButton(CCObject* sender);
 
 public:
     static AdPreview *create(int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);

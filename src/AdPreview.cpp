@@ -57,7 +57,32 @@ bool AdPreview::setup()
     clickCountLabel->setScale(0.5f);
     m_mainLayer->addChild(clickCountLabel);
 
+    // report button
+    auto reportSprite = CCSprite::createWithSpriteFrameName("GJ_reportBtn_001.png");
+    auto reportButton = CCMenuItemSpriteExtra::create(reportSprite, this, menu_selector(AdPreview::onReportButton));
+    reportButton->setPosition({0, 0});
+    menu->addChild(reportButton);
+
     return true;
+};
+
+void AdPreview::onReportButton(CCObject *sender)
+{
+    geode::createQuickPopup(
+        "Report Ad",
+        "To <cr>report</c> this advertisement, join the <cb>Discord server</c> and contact an <cy>admin</c> with the ad ID: <cg>" + numToString(m_adId) + "</c>.\n<cy>Do you wish to join the Discord server?</c>",
+        "Cancel", "Join",
+        [this, sender](auto, bool btn)
+        {
+            if (btn)
+            {
+                // open discord link
+                web::openLinkInBrowser("https://discord.com/invite/gXcppxTNxC");
+                // copy the ad id to clipboard
+                clipboard::write(numToString(m_adId));
+                Notification::create("Ad ID copied to clipboard", NotificationIcon::Success)->show();
+            }
+        });
 };
 
 void AdPreview::onPlayButton(CCObject *sender)
