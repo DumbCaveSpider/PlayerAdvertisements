@@ -19,4 +19,5 @@ public:
     static AdManager* create();
     void onWebButton(CCObject* sender);
     void onFetchComplete(web::WebTask::Event* event);
+    void onModSettingsButton(CCObject* sender);
 };

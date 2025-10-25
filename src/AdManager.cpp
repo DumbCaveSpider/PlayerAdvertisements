@@ -77,17 +77,34 @@ bool AdManager::setup()
 
     m_clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
     m_clicksLabel->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height - 50.f});
-    m_clicksLabel->setScale(0.3f);
+    m_clicksLabel->setScale(0.5f);
     bg2->addChild(m_clicksLabel);
 
     // button to the website at the bottom center of the main layer popup
     auto webButton = ButtonSprite::create("Upload Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
     auto webButtonMenu = CCMenuItemSpriteExtra::create(webButton, this, menu_selector(AdManager::onWebButton));
 
+    // button to open mod settings
+    auto modSettingsBtnSprite = CircleButtonSprite::createWithSpriteFrameName(
+        // @geode-ignore(unknown-resource)
+        "geode.loader/settings.png",
+        1.f,
+        CircleBaseColor::Green,
+        CircleBaseSize::Medium);
+    modSettingsBtnSprite->setScale(0.75f);
+
+    auto modSettingsButton = CCMenuItemSpriteExtra::create(
+        modSettingsBtnSprite,
+        this,
+        menu_selector(AdManager::onModSettingsButton));
+    modSettingsButton->setPosition(m_mainLayer->getContentSize());
+
     auto menu = CCMenu::create();
     menu->setPosition({0.f, 0.f});
     menu->setContentSize(m_mainLayer->getContentSize());
     menu->addChild(webButtonMenu);
+    menu->addChild(modSettingsButton);
+    
     webButtonMenu->setPosition({menu->getContentSize().width / 2, 0.f});
     m_mainLayer->addChild(menu);
 
@@ -110,6 +127,11 @@ void AdManager::onWebButton(CCObject *sender)
 {
     geode::utils::web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
     Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+}
+
+void AdManager::onModSettingsButton(CCObject *sender)
+{
+    openSettingsPopup(getMod());
 }
 
 void AdManager::onFetchComplete(web::WebTask::Event *event)
