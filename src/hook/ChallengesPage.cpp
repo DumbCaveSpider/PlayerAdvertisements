@@ -6,21 +6,28 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(ChallengesPage) {
-    bool init() {
+class $modify(ChallengesPage)
+{
+    bool init()
+    {
         if (!ChallengesPage::init())
             return false;
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        if (Mod::get()->getSettingValue<bool>("ChallengesPage"))
+        {
 
-        // banner ad at the top
-        auto adBanner = Advertisement::create();
-        if (adBanner) {
-            adBanner->setID("advertisement-menu");
-            this->addChild(adBanner);
-            adBanner->setType(AdType::Banner);
-            adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
-            adBanner->loadRandom();
+            auto winSize = CCDirector::sharedDirector()->getWinSize();
+
+            // banner ad at the top
+            auto adBanner = Advertisement::create();
+            if (adBanner)
+            {
+                adBanner->setID("advertisement-menu");
+                m_mainLayer->addChild(adBanner, 20);
+                adBanner->setType(AdType::Banner);
+                adBanner->setPosition({winSize.width / 2.f, 30.f});
+                adBanner->loadRandom();
+            }
         }
         return true;
     }

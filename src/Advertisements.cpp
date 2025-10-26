@@ -213,7 +213,7 @@ namespace ads {
                             m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
                             m_impl->m_adIcon->setPosition({3.f, 3.f});
                             m_impl->m_adSprite->addChild(m_impl->m_adIcon);
-                            m_impl->m_adIcon->setScale(0.3f);
+                            m_impl->m_adIcon->setScale(0.5f);
                             m_impl->m_adIcon->setOpacity(100);
                         } else {
                             log::error("Failed to create ad icon sprite");

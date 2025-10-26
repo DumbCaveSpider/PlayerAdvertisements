@@ -5,32 +5,37 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(InfoLayer) {
-    bool init(GJGameLevel * p0, GJUserScore * p1, GJLevelList * p2) {
+class $modify(InfoLayer)
+{
+    bool init(GJGameLevel *p0, GJUserScore *p1, GJLevelList *p2)
+    {
         if (!InfoLayer::init(p0, p1, p2))
             return false;
+        if (Mod::get()->getSettingValue<bool>("InfoLayer"))
+        {
+            auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
-
-        // skyscraper ad on the right side
-        auto adSkyscraper = Advertisement::create();
-        if (adSkyscraper) {
-            adSkyscraper->setID("advertisement-menu-skyscraper");
-            m_mainLayer->addChild(adSkyscraper);
-            adSkyscraper->setType(AdType::Skyscraper);
-            adSkyscraper->setPosition({winSize.width - 30.f, winSize.height / 2.f});
-            adSkyscraper->loadRandom();
+            // skyscraper ad on the right side
+            auto adSkyscraper = Advertisement::create();
+            if (adSkyscraper)
+            {
+                adSkyscraper->setID("advertisement-menu-skyscraper");
+                m_mainLayer->addChild(adSkyscraper);
+                adSkyscraper->setType(AdType::Skyscraper);
+                adSkyscraper->setPosition({winSize.width - 30.f, winSize.height / 2.f});
+                adSkyscraper->loadRandom();
+            }
+            // skyscraper ad on the left side
+            auto adSkyscraperLeft = Advertisement::create();
+            if (adSkyscraperLeft)
+            {
+                adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
+                m_mainLayer->addChild(adSkyscraperLeft);
+                adSkyscraperLeft->setType(AdType::Skyscraper);
+                adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
+                adSkyscraperLeft->loadRandom();
+            }
         }
-        // skyscraper ad on the left side
-        auto adSkyscraperLeft = Advertisement::create();
-        if (adSkyscraperLeft) {
-            adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
-            m_mainLayer->addChild(adSkyscraperLeft);
-            adSkyscraperLeft->setType(AdType::Skyscraper);
-            adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
-            adSkyscraperLeft->loadRandom();
-        }
-
         return true;
     }
 };

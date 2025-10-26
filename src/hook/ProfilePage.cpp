@@ -11,30 +11,31 @@ class $modify(ProfilePage)
     {
         if (!ProfilePage::init(p0, p1))
             return false;
-
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
-
-        // skyscraper ad on the right side
-        auto adSkyscraper = Advertisement::create();
-        if (adSkyscraper)
+        if (Mod::get()->getSettingValue<bool>("ProfilePage"))
         {
-            adSkyscraper->setID("advertisement-menu-skyscraper");
-            m_mainLayer->addChild(adSkyscraper);
-            adSkyscraper->setType(AdType::Skyscraper);
-            adSkyscraper->setPosition({winSize.width - 30.f, winSize.height / 2.f});
-            adSkyscraper->loadRandom();
-        }
-        // skyscraper ad on the left side
-        auto adSkyscraperLeft = Advertisement::create();
-        if (adSkyscraperLeft)
-        {
-            adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
-            m_mainLayer->addChild(adSkyscraperLeft);
-            adSkyscraperLeft->setType(AdType::Skyscraper);
-            adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
-            adSkyscraperLeft->loadRandom();
-        }
+            auto winSize = CCDirector::sharedDirector()->getWinSize();
 
+            // skyscraper ad on the right side
+            auto adSkyscraper = Advertisement::create();
+            if (adSkyscraper)
+            {
+                adSkyscraper->setID("advertisement-menu-skyscraper");
+                m_mainLayer->addChild(adSkyscraper);
+                adSkyscraper->setType(AdType::Skyscraper);
+                adSkyscraper->setPosition({winSize.width - 30.f, winSize.height / 2.f});
+                adSkyscraper->loadRandom();
+            }
+            // skyscraper ad on the left side
+            auto adSkyscraperLeft = Advertisement::create();
+            if (adSkyscraperLeft)
+            {
+                adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
+                m_mainLayer->addChild(adSkyscraperLeft);
+                adSkyscraperLeft->setType(AdType::Skyscraper);
+                adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
+                adSkyscraperLeft->loadRandom();
+            }
+        }
         return true;
     }
 };

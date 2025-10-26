@@ -8,7 +8,7 @@
 	},
 	"id": "arcticwoof.player_advertisements",
 	"name": "Player Advertisements",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"developers": [
 		"ArcticWoof",
 		"Cheeseworks"
@@ -42,11 +42,90 @@
 			"default": "",
 			"description": "User ID provided by the GD Advertisement Manager website or your Discord User ID"
 		},
-		"show-in-game": {
+		"Advertisements Placements": {
+			"type": "title",
+			"name": "Advertisements Placements",
+			"description": "Select where advertisements should be shown in the game. <cy>You can disable ads in certain layers if you want.</c>"
+		},
+		"MenuLayer": {
 			"type": "bool",
-			"name": "Show Ads while playing",
-			"default": false,
-			"description": "Shows an advertisement while playing in game. <cy>You gotta pay the bills yknow.</c>"
+			"name": "Menu Layer",
+			"default": true
+		},
+		"UILayer": {
+			"type": "bool",
+			"name": "In-Game UI Layer",
+			"default": false
+		},
+		"ChallengesPage": {
+			"type": "bool",
+			"name": "Quests Page",
+			"default": true
+		},
+		"CreatorLayer": {
+			"type": "bool",
+			"name": "Creator Layer",
+			"default": true
+		},
+		"DailyLevelPage": {
+			"type": "bool",
+			"name": "Daily Level Page",
+			"default": true
+		},
+		"EndLevelLayer": {
+			"type": "bool",
+			"name": "End Level Layer",
+			"default": true
+		},
+		"GauntletSelectLayer": {
+			"type": "bool",
+			"name": "Gauntlet Select Layer",
+			"default": true
+		},
+		"GJDropDownLayer": {
+			"type": "bool",
+			"name": "Drop Down Layer",
+			"default": true
+		},
+		"GJPathsLayer": {
+			"type": "bool",
+			"name": "Paths Layer",
+			"default": true
+		},
+		"InfoLayer": {
+			"type": "bool",
+			"name": "Info Layer",
+			"default": true
+		},
+		"LeaderboardsLayer": {
+			"type": "bool",
+			"name": "Leaderboards Layer",
+			"default": true
+		},
+		"LevelBrowserLayer": {
+			"type": "bool",
+			"name": "Level Browser Layer",
+			"default": true
+		},
+		"PauseLayer": {
+			"type": "bool",
+			"name": "Pause Layer",
+			"default": true
+		},
+		"ProfilePage": {
+			"type": "bool",
+			"name": "Profile Page",
+			"default": true
+		},
+		"RetryLayer": {
+			"type": "bool",
+			"name": "Retry Layer",
+			"default": true
+		},
+		"ShareCommentLayer": {
+			"type": "bool",
+			"name": "Comment Layer",
+			"default": true
 		}
 	}
 }
