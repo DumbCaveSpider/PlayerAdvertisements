@@ -15,8 +15,8 @@ bool AdManager::setup()
     {
         this->onClose(nullptr);
         geode::createQuickPopup(
-            "No UserID Set",
-            "You have not set a User ID yet. <cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
+            "No User ID Set",
+            "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
             "No", "Yes",
             [](auto, bool ok)
             {
@@ -46,6 +46,18 @@ bool AdManager::setup()
         } });
     m_listener.setFilter(req.get(url));
 
+    // fetch global stats
+    auto globalStatsReq = web::WebRequest();
+    globalStatsReq.header("User-Agent", "PlayerAdvertisements/1.0");
+    m_globalStatsListener.bind([this](web::WebTask::Event *e)
+                               {
+        if (auto res = e->getValue()) {
+            onGlobalStatsFetchComplete(e);
+        } else if (e->isCancelled()) {
+            log::error("Global stats request was cancelled");
+        } });
+    m_globalStatsListener.setFilter(globalStatsReq.get("https://ads.arcticwoof.xyz/stats/global"));
+
     // add a background on the left side
     // @geode-ignore(unknown-resource)
     auto bg1 = CCScale9Sprite::create("geode.loader/inverseborder.png");
@@ -61,20 +73,32 @@ bool AdManager::setup()
     // add a background on the right side
     // @geode-ignore(unknown-resource)
     auto bg2 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-    bg2->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 - 30.f});
-    bg2->setContentSize({200.f, 200.f});
+    bg2->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 + 30.f});
+    bg2->setContentSize({200.f, 75.f});
     m_mainLayer->addChild(bg2, 5);
 
+    // @geode-ignore(unknown-resource)
+    auto bg3 = CCScale9Sprite::create("geode.loader/inverseborder.png");
+    bg3->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 - 80.f});
+    bg3->setContentSize({200.f, 100.f});
+    m_mainLayer->addChild(bg3, 5);
+
     // title label at the top of each of the backgrounds
-    auto titleLabel = CCLabelBMFont::create("Your Ads", "bigFont.fnt");
-    titleLabel->setPosition({bg1->getContentSize().width / 2, bg1->getContentSize().height + 10.f});
+    auto titleLabel = CCLabelBMFont::create(fmt::format("Your Ads ({})", m_adCount).c_str(), "bigFont.fnt");
+    titleLabel->setPosition({bg1->getContentSize().width / 2, bg1->getContentSize().height + 10});
     titleLabel->setScale(0.4f);
+    m_titleLabel = titleLabel;
     bg1->addChild(titleLabel);
 
-    auto titleLabel2 = CCLabelBMFont::create("Statistics", "bigFont.fnt");
-    titleLabel2->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height + 10.f});
+    auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "bigFont.fnt");
+    titleLabel2->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height + 10});
     titleLabel2->setScale(0.4f);
     bg2->addChild(titleLabel2);
+
+    auto titleLabel3 = CCLabelBMFont::create("Global Stats", "bigFont.fnt");
+    titleLabel3->setPosition({bg3->getContentSize().width / 2, bg3->getContentSize().height + 10});
+    titleLabel3->setScale(0.4f);
+    bg3->addChild(titleLabel3);
 
     // total views and clicks labels on the right background
     m_viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
@@ -87,8 +111,24 @@ bool AdManager::setup()
     m_clicksLabel->setScale(0.5f);
     bg2->addChild(m_clicksLabel);
 
+    // global stats labels on the third background
+    m_globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
+    m_globalViewsLabel->setPosition({bg3->getContentSize().width / 2, bg3->getContentSize().height - 20.f});
+    m_globalViewsLabel->setScale(0.5f);
+    bg3->addChild(m_globalViewsLabel);
+
+    m_globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
+    m_globalClicksLabel->setPosition({bg3->getContentSize().width / 2, bg3->getContentSize().height - 50.f});
+    m_globalClicksLabel->setScale(0.5f);
+    bg3->addChild(m_globalClicksLabel);
+
+    m_globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
+    m_globalAdCountLabel->setPosition({bg3->getContentSize().width / 2, bg3->getContentSize().height - 80.f});
+    m_globalAdCountLabel->setScale(0.5f);
+    bg3->addChild(m_globalAdCountLabel);
+
     // button to the website at the bottom center of the main layer popup
-    auto webButton = ButtonSprite::create("Upload Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
+    auto webButton = ButtonSprite::create("Manage Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
     auto webButtonMenu = CCMenuItemSpriteExtra::create(webButton, this, menu_selector(AdManager::onWebButton));
 
     // button to open mod settings
@@ -141,6 +181,35 @@ void AdManager::onModSettingsButton(CCObject *sender)
     openSettingsPopup(getMod());
 }
 
+void AdManager::onPlayButton(CCObject *sender)
+{
+    auto menuItem = static_cast<CCMenuItemSpriteExtra *>(sender);
+    int levelId = menuItem->getTag();
+
+    auto searchStr = std::to_string(levelId);
+
+    if (PlayLayer::get())
+    {
+        geode::createQuickPopup(
+            "Warning",
+            "You are already inside of a level, attempt to play another level before closing the current level will <cr>crash your game</c>.\n<cy>Do you still want to proceed?</c>",
+            "Cancel", "Proceed",
+            [this, sender, searchStr](auto, bool btn)
+            {
+                if (btn)
+                {
+                    auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
+                    CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+                }
+            });
+    }
+    else
+    {
+        auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
+        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+    }
+}
+
 void AdManager::populateAdsScrollLayer()
 {
     if (!m_adsScrollLayer)
@@ -151,6 +220,8 @@ void AdManager::populateAdsScrollLayer()
         return;
 
     auto ads = adsArray.unwrap();
+
+    m_adCount = 0;
 
     auto layout = SimpleAxisLayout::create(Axis::Column);
     layout->setGap(5.f);
@@ -237,10 +308,10 @@ void AdManager::populateAdsScrollLayer()
 
         // pending label
         auto pendingLabel = CCLabelBMFont::create("Pending", "goldFont.fnt");
-        pendingLabel->setPosition({adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 60.f});
-        pendingLabel->setAnchorPoint({0.5f, 0.5f});
+        pendingLabel->setPosition({5.f, 10.f});
+        pendingLabel->setAnchorPoint({0.f, 0.5f});
         pendingLabel->setColor({255, 0, 0});
-        pendingLabel->setScale(0.4f);
+        pendingLabel->setScale(0.3f);
         adContainer->addChild(pendingLabel, 2);
 
         if (pending.isOk() && !pending.unwrap())
@@ -256,11 +327,30 @@ void AdManager::populateAdsScrollLayer()
         createdAtLabel->setScale(0.3f);
         adContainer->addChild(createdAtLabel, 2);
 
+        // play button at the bottom right
+        auto playButtonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+        playButtonSprite->setScale(0.35f);
+        auto playButton = CCMenuItemSpriteExtra::create(
+            playButtonSprite,
+            this,
+            menu_selector(AdManager::onPlayButton));
+        playButton->setTag(levelId.isOk() ? levelId.unwrap() : 0);
+
+        auto playMenu = CCMenu::create();
+        playMenu->setPosition({adContainer->getContentSize().width / 2, adContainer->getContentSize().height / 2 - 5});
+        playMenu->addChild(playButton);
+        adContainer->addChild(playMenu, 3);
+
         m_adsScrollLayer->m_contentLayer->addChild(adContainer);
+        m_adCount++;
     }
 
     m_adsScrollLayer->m_contentLayer->updateLayout();
     m_adsScrollLayer->scrollToTop();
+
+    // Update the title label with the correct ad count
+    if (m_titleLabel)
+        m_titleLabel->setString(fmt::format("Your Ads ({})", m_adCount).c_str());
 }
 
 void AdManager::onFetchComplete(web::WebTask::Event *event)
@@ -333,8 +423,8 @@ void AdManager::onFetchComplete(web::WebTask::Event *event)
             log::error("Request failed with status code: {}", res->code());
             this->onClose(nullptr);
             geode::createQuickPopup(
-                "Invalid User ID",
-                "The provided User ID is invalid. <cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
+                "Something went wrong",
+                "Either the provided User ID is <cr>incorrect</c> or the Advertisement Manager is <co>not responding</c>.\n<cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
                 "No", "Yes",
                 [](auto, bool ok)
                 {
@@ -345,6 +435,68 @@ void AdManager::onFetchComplete(web::WebTask::Event *event)
                         web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
                     }
                 });
+        }
+    }
+}
+
+void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event *event)
+{
+    if (auto res = event->getValue())
+    {
+        if (res->ok())
+        {
+            auto jsonStr = res->string().unwrapOr("");
+
+            auto json = matjson::parse(jsonStr);
+            if (!json.isOk())
+            {
+                log::error("Failed to parse global stats JSON");
+                return;
+            }
+
+            auto jsonValue = json.unwrap();
+
+            if (jsonValue.contains("total_views"))
+            {
+                auto totalViews = jsonValue["total_views"].asInt();
+                if (totalViews)
+                {
+                    m_globalTotalViews = totalViews.unwrap();
+                    log::info("Global Total Views: {}", m_globalTotalViews);
+                }
+            }
+
+            if (jsonValue.contains("total_clicks"))
+            {
+                auto totalClicks = jsonValue["total_clicks"].asInt();
+                if (totalClicks)
+                {
+                    m_globalTotalClicks = totalClicks.unwrap();
+                    log::info("Global Total Clicks: {}", m_globalTotalClicks);
+                }
+            }
+
+            if (jsonValue.contains("ad_count"))
+            {
+                auto adCount = jsonValue["ad_count"].asInt();
+                if (adCount)
+                {
+                    m_globalAdCount = adCount.unwrap();
+                    log::info("Global Ad Count: {}", m_globalAdCount);
+                }
+            }
+
+            // Update labels with global stats
+            if (m_globalViewsLabel)
+                m_globalViewsLabel->setString(fmt::format("Views: {}", m_globalTotalViews).c_str());
+            if (m_globalClicksLabel)
+                m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_globalTotalClicks).c_str());
+            if (m_globalAdCountLabel)
+                m_globalAdCountLabel->setString(fmt::format("Ads: {}", m_globalAdCount).c_str());
+        }
+        else
+        {
+            log::error("Global stats request failed with status code: {}", res->code());
         }
     }
 }

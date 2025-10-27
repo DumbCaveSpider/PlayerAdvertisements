@@ -15,7 +15,8 @@ AdPreview* AdPreview::create(int adId, int levelId, std::string userId, AdType t
     ret->m_viewCount = viewCount;
     ret->m_clickCount = clickCount;
 
-    if (ret && ret->initAnchored(300.f, 200.f)) {
+    // @geode-ignore(unknown-resource)
+    if (ret && ret->initAnchored(250.f, 200.f, "geode.loader/GE_square03.png")) {
         ret->autorelease();
         return ret;
     }
@@ -42,16 +43,18 @@ bool AdPreview::setup() {
     menu->addChild(playAdLevelButton);
 
     // view and click counts
-    auto viewCountLabel = CCLabelBMFont::create(("Views: " + numToString(m_viewCount)).c_str(), "bigFont.fnt");
+    auto viewCountLabel = CCLabelBMFont::create(("Views: " + numToString(m_viewCount)).c_str(), "goldFont.fnt");
     viewCountLabel->setID("view-count-label");
-    viewCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 50 });
-    viewCountLabel->setScale(0.5f);
+    viewCountLabel->setColor({255, 125, 0});
+    viewCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 55 });
+    viewCountLabel->setScale(0.7f);
     m_mainLayer->addChild(viewCountLabel);
 
-    auto clickCountLabel = CCLabelBMFont::create(("Clicks: " + numToString(m_clickCount)).c_str(), "bigFont.fnt");
+    auto clickCountLabel = CCLabelBMFont::create(("Clicks: " + numToString(m_clickCount)).c_str(), "goldFont.fnt");
     clickCountLabel->setID("click-count-label");
-    clickCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 70 });
-    clickCountLabel->setScale(0.5f);
+    clickCountLabel->setColor({0, 175, 255});
+    clickCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 75 });
+    clickCountLabel->setScale(0.7f);
     m_mainLayer->addChild(clickCountLabel);
 
     // report button

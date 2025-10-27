@@ -8,7 +8,7 @@
 	},
 	"id": "arcticwoof.player_advertisements",
 	"name": "Player Advertisements",
-	"version": "v1.0.1",
+	"version": "v1.0.2",
 	"developers": [
 		"ArcticWoof",
 		"Cheeseworks"
@@ -16,7 +16,7 @@
 	"links": {
 		"source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
 		"homepage": "https://arcticwoof.com.au/",
-		"community": "https://discord.com/gXcppxTNxC"
+		"community": "https://discord.gg/gXcppxTNxC"
 	},
 	"description": "Shows a clickable ad banner by players.",
 	"resources": {
@@ -27,7 +27,8 @@
 	"tags": [
 		"modtober25",
 		"universal",
-		"content"
+		"content",
+		"online"
 	],
 	"dependencies": {
 		"prevter.imageplus": {

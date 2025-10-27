@@ -1,3 +1,10 @@
+# v1.0.2
+
+- Fix misconfiguration on the mod metadata
+- Added Global Ad Statistics to the Ad Manager UI
+- Added a view button on your own ad on the Ad Manager popup
+- Change the Ad Preview Popup design
+
 # v1.0.1
 
 - Adjusting the watermark ad icon
