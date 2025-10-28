@@ -8,7 +8,7 @@
 	},
 	"id": "arcticwoof.player_advertisements",
 	"name": "Player Advertisements",
-	"version": "v1.0.2",
+	"version": "v1.0.3",
 	"developers": [
 		"ArcticWoof",
 		"Cheeseworks"
@@ -56,6 +56,7 @@
 		"UILayer": {
 			"type": "bool",
 			"name": "In-Game UI Layer",
+			"description": "Its disabled by default because its annoying but if you want to simulate yourself with more ads especially while playing, enable this :D",
 			"default": false
 		},
 		"ChallengesPage": {

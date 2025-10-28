@@ -1,3 +1,7 @@
+# v1.0.3
+
+- Minor text fixes and tweaks
+
 # v1.0.2
 
 - Fix misconfiguration on the mod metadata
@@ -13,4 +17,5 @@
 - Additional error handling for invalid User IDs
 
 # v1.0.0
+
 - ads simulate
