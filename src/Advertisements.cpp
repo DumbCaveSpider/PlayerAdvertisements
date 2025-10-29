@@ -206,7 +206,21 @@ namespace ads
                     viewBody["user_id"] = user;
 
                     viewRequest.bodyJSON(viewBody);
-                    (void)viewRequest.post("https://ads.arcticwoof.xyz/api/view"); // those reviewing, all im doing is post the request to the api and dont return anything, this is why lol
+                    viewRequest.param("authtoken", Mod::get()->getSavedValue<std::string>("argon_token"));
+                    viewRequest.param("account_id", GJAccountManager::sharedState()->m_accountID);
+                    auto viewTask = viewRequest.post("https://ads.arcticwoof.xyz/api/view");
+                    
+                    EventListener<web::WebTask> viewListener;
+                    viewListener.bind([this, id, user](web::WebTask::Event* e) {
+                        if (auto res = e->getValue()) {
+                            if (res->ok()) {
+                                log::info("View pass ad_id={}, user_id={}", id, user);
+                            } else {
+                                log::error("View failed for ad_id={}, user_id={}: (code: {})", id, user, res->code());
+                            }
+                        }
+                    });
+                    viewListener.setFilter(viewTask);
                     log::info("Sent view tracking request for ad_id={}, user_id={}", id, user);
 
                     if (m_impl->m_adSprite) {

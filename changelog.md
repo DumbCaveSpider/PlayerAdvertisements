@@ -1,3 +1,7 @@
+# v1.0.5
+
+- Added Argon authentication for views/clicks tracking
+
 # v1.0.4
 
 - Fixed the issue with the watermark icon scaling incorrectly

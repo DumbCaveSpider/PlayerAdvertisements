@@ -2,6 +2,7 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include "AdManager.hpp"
 #include <Advertisements.hpp>
+#include <argon/argon.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
@@ -12,6 +13,28 @@ class $modify(AdsMenuLayer, MenuLayer)
     {
         if (!MenuLayer::init())
             return false;
+
+        // get argon token yum
+        auto res = argon::startAuth([](Result<std::string> res)
+                                    {
+        if (!res) {
+            log::warn("Auth failed: {}", res.unwrapErr());
+            Notification::create("Failed to authenticate with Argon.", NotificationIcon::Error)
+                ->show();
+            return;
+        }
+
+        auto token = std::move(res).unwrap();
+        Mod::get()->setSavedValue<std::string>("argon_token", token);
+        log::debug("Token: {}", token); }, [](argon::AuthProgress progress)
+                                    { log::info("Auth progress: {}", argon::authProgressToString(progress)); });
+
+        if (!res)
+        {
+            log::warn("Failed to start auth attempt: {}", res.unwrapErr());
+            Notification::create("Failed to start argon auth. Your views/clicks won't be tracked.", NotificationIcon::Error)
+                ->show();
+        }
 
         auto winSize = CCDirector::sharedDirector()->getWinSize();
         if (Mod::get()->getSettingValue<bool>("MenuLayer"))
