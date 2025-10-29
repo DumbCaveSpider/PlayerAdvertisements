@@ -146,11 +146,35 @@ bool AdManager::setup()
         menu_selector(AdManager::onModSettingsButton));
     modSettingsButton->setPosition(m_mainLayer->getContentSize());
 
+    auto discordButtonSprite = CCSprite::createWithSpriteFrameName("gj_discordIcon_001.png");
+    discordButtonSprite->setScale(0.7f);
+    auto discordButton = CCMenuItemSpriteExtra::create(
+        discordButtonSprite,
+        this,
+        menu_selector(AdManager::onDiscordButton));
+    discordButton->setPosition({30.f, m_mainLayer->getContentSize().height - 25.f});
+
+    auto kofiButtonSprite = BasedButtonSprite::create(
+        CCSprite::create("kofiLogo.png"_spr),
+        BaseType::Account,
+        0,
+        2);
+    kofiButtonSprite->setScale(0.5f);
+
+    auto kofiButton = CCMenuItemSpriteExtra::create(
+        kofiButtonSprite,
+        this,
+        menu_selector(AdManager::onKofiButton));
+    kofiButton->setPosition({discordButton->getPositionX() + 25.f, discordButton->getPositionY()});
+
     auto menu = CCMenu::create();
     menu->setPosition({0.f, 0.f});
     menu->setContentSize(m_mainLayer->getContentSize());
     menu->addChild(webButtonMenu);
     menu->addChild(modSettingsButton);
+    menu->addChild(discordButton);
+    menu->addChild(kofiButton);
+    
 
     webButtonMenu->setPosition({menu->getContentSize().width / 2, 0.f});
     m_mainLayer->addChild(menu);
@@ -168,6 +192,18 @@ AdManager *AdManager::create()
     }
     CC_SAFE_DELETE(ret);
     return nullptr;
+}
+
+void AdManager::onKofiButton(CCObject *sender)
+{
+    geode::utils::web::openLinkInBrowser("https://ko-fi.com/arcticwoof");
+    Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+}
+
+void AdManager::onDiscordButton(CCObject *sender)
+{
+    geode::utils::web::openLinkInBrowser("https://discord.gg/gXcppxTNxC");
+    Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
 }
 
 void AdManager::onWebButton(CCObject *sender)

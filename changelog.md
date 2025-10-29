@@ -4,6 +4,8 @@
 - Fixed a bug on the active ads text is not displaying correctly
 - Changed the mod logo
 - Replaced the title on the Ad Manager popup to use the gold font
+- Added Discord button at the Ad Manager popup
+- Added Ko-fi button at the Ad Manager popup <cy>(might add supporter perks in the future)</c>
 
 # v1.0.3
 

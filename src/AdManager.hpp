@@ -27,6 +27,8 @@ protected:
 
 public:
     static AdManager* create();
+    void onDiscordButton(CCObject *sender);
+    void onKofiButton(CCObject *sender);
     void onWebButton(CCObject* sender);
     void onFetchComplete(web::WebTask::Event* event);
     void onGlobalStatsFetchComplete(web::WebTask::Event* event);
