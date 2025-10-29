@@ -1,3 +1,7 @@
+# v1.0.4
+
+- Fixed the issue with the watermark icon scaling incorrectly
+
 # v1.0.3
 
 - Minor text fixes and tweaks
