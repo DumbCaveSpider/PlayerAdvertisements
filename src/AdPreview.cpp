@@ -126,7 +126,7 @@ void AdPreview::onPlayButton(CCObject *sender)
                             if (res->ok()) {
                                 log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
                             } else {
-                                log::error("Click failed for ad_id={}, user_id={}: HTTP {}", m_adId, m_userId, res->code());
+                                log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
                             }
                         }
                     });

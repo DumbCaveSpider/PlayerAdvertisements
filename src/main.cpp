@@ -19,7 +19,7 @@ class $modify(AdsMenuLayer, MenuLayer)
                                     {
         if (!res) {
             log::warn("Auth failed: {}", res.unwrapErr());
-            Notification::create("Failed to authenticate with Argon.", NotificationIcon::Error)
+            Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
                 ->show();
             return;
         }
@@ -32,7 +32,7 @@ class $modify(AdsMenuLayer, MenuLayer)
         if (!res)
         {
             log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-            Notification::create("Failed to start argon auth. Your views/clicks won't be tracked.", NotificationIcon::Error)
+            Notification::create("Failed to start argon auth", NotificationIcon::Error)
                 ->show();
         }
 
