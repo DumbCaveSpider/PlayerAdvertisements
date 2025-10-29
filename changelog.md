@@ -1,6 +1,9 @@
 # v1.0.4
 
 - Fixed the issue with the watermark icon scaling incorrectly
+- Fixed a bug on the active ads text is not displaying correctly
+- Changed the mod logo
+- Replaced the title on the Ad Manager popup to use the gold font
 
 # v1.0.3
 

@@ -84,18 +84,18 @@ bool AdManager::setup()
     m_mainLayer->addChild(bg3, 5);
 
     // title label at the top of each of the backgrounds
-    auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_adCount).c_str(), "bigFont.fnt");
+    auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_adCount).c_str(), "goldFont.fnt");
     titleLabel->setPosition({bg1->getContentSize().width / 2, bg1->getContentSize().height + 10});
     titleLabel->setScale(0.4f);
     m_titleLabel = titleLabel;
     bg1->addChild(titleLabel);
 
-    auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "bigFont.fnt");
+    auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "goldFont.fnt");
     titleLabel2->setPosition({bg2->getContentSize().width / 2, bg2->getContentSize().height + 10});
     titleLabel2->setScale(0.4f);
     bg2->addChild(titleLabel2);
 
-    auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "bigFont.fnt");
+    auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "goldFont.fnt");
     titleLabel3->setPosition({bg3->getContentSize().width / 2, bg3->getContentSize().height + 10});
     titleLabel3->setScale(0.4f);
     bg3->addChild(titleLabel3);
@@ -492,7 +492,7 @@ void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event *event)
             if (m_globalClicksLabel)
                 m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_globalTotalClicks).c_str());
             if (m_globalAdCountLabel)
-                m_globalAdCountLabel->setString(fmt::format("Ads: {}", m_globalAdCount).c_str());
+                m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_globalAdCount).c_str());
         }
         else
         {
