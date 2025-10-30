@@ -1,3 +1,8 @@
+# v1.0.6
+
+- Fixed an issue where clicks doesn't register when not playing any level.
+  *how did i miss this mistake omg*
+
 # v1.0.5
 
 - Added Argon authentication for views/clicks tracking

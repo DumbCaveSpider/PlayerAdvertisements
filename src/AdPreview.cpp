@@ -121,15 +121,15 @@ void AdPreview::onPlayButton(CCObject *sender)
                     auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
 
                     EventListener<web::WebTask> clickListener;
-                    clickListener.bind([this](web::WebTask::Event* e) {
+                    clickListener.bind([this](web::WebTask::Event *e)
+                                       {
                         if (auto res = e->getValue()) {
                             if (res->ok()) {
                                 log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
                             } else {
                                 log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
                             }
-                        }
-                    });
+                        } });
 
                     auto searchStr = std::to_string(m_levelId);
                     auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
@@ -154,8 +154,21 @@ void AdPreview::onPlayButton(CCObject *sender)
         jsonBody["user_id"] = m_userId;
 
         clickRequest.bodyJSON(jsonBody);
-        (void)clickRequest.post("https://ads.arcticwoof.xyz/api/click");
-        log::info("Sent click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
+        clickRequest.param("authtoken", Mod::get()->getSavedValue<std::string>("argon_token"));
+        clickRequest.param("account_id", GJAccountManager::sharedState()->m_accountID);
+        auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+
+        EventListener<web::WebTask> clickListener;
+        clickListener.bind([this](web::WebTask::Event *e)
+                           {
+                        if (auto res = e->getValue()) {
+                            if (res->ok()) {
+                                log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
+                            } else {
+                                log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
+                            }
+                        }
+                    });
 
         auto searchStr = std::to_string(m_levelId);
         auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
