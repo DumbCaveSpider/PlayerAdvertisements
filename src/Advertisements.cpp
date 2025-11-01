@@ -51,6 +51,11 @@ namespace ads
         CCMenuItemSpriteExtra *m_adButton = nullptr;
         LazySprite *m_adSprite = nullptr;
         CCSprite *m_adIcon = nullptr;
+
+        bool m_hasLoaded = false;
+        bool m_loadRandom = false;
+        int m_loadId = 0;
+        bool m_isInScene = false;
     };
 
     Advertisement::Advertisement()
@@ -78,6 +83,24 @@ namespace ads
             return false;
         };
     };
+
+    void Advertisement::onEnter()
+    {
+        CCMenu::onEnter();
+        m_impl->m_isInScene = true;
+        if (m_impl->m_hasLoaded)
+        {
+            log::info("reloading new random advertisement");
+            reloadType();
+            loadRandom();
+        }
+    }
+
+    void Advertisement::onExit()
+    {
+        m_impl->m_isInScene = false;
+        CCMenu::onExit();
+    }
 
     void Advertisement::activate(CCObject *)
     {
@@ -109,11 +132,11 @@ namespace ads
 
         if (!m_impl->m_adSprite)
         {
-            log::warn("Cannot reload advertisement: ad sprite is null");
+            log::warn("ad sprite is null");
             return;
         }
 
-        log::info("Reloading advertisement - creating button with sprite");
+        log::info("Reloading advertisement");
 
         m_impl->m_adButton = CCMenuItemSpriteExtra::create(
             m_impl->m_adSprite,
@@ -312,6 +335,8 @@ namespace ads
         request.timeout(std::chrono::seconds(15));
         request.param("type", static_cast<int>(m_impl->m_type));
         m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
+        m_impl->m_hasLoaded = true;
+        m_impl->m_loadRandom = true;
         log::info("Sent request for random advertisement");
     };
 
@@ -323,6 +348,9 @@ namespace ads
         request.timeout(std::chrono::seconds(15));
         request.param("id", id);
         m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad/get"));
+        m_impl->m_hasLoaded = true;
+        m_impl->m_loadRandom = false;
+        m_impl->m_loadId = id;
         log::info("Sent request for advertisement of ID {}", id);
     };
 

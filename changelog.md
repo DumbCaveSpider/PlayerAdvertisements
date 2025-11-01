@@ -1,3 +1,7 @@
+# v1.0.7
+
+- Advertisements are randomized whenever you go back to the previous page.
+
 # v1.0.6
 
 - Fixed an issue where clicks doesn't register when not playing any level.

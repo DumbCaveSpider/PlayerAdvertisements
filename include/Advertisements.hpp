@@ -64,6 +64,8 @@ namespace ads {
         void reload();
 
         bool init() override;
+        void onEnter() override;
+        void onExit() override;
 
     public:
         // Create a new advertisement
