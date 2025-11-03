@@ -1,6 +1,10 @@
 # v1.0.7
 
 - Advertisements are randomized whenever you go back to the previous page.
+- Fixed the clicks/views endpoint showing zero clicks/views. This is because of the internal change in the website.
+- Added scene limitations. You can disable this at the settings.
+- Adjusted the Discord and Ko-fi buttons to be at the bottom left
+- Added a popup confirmation when clicking the Discord and Ko-fi buttons
 
 # v1.0.6
 

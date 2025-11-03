@@ -73,7 +73,7 @@ bool AdManager::setup()
     // add a background on the right side
     // @geode-ignore(unknown-resource)
     auto bg2 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-    bg2->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 + 30.f});
+    bg2->setPosition({m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 + 30.f + 2.f});
     bg2->setContentSize({200.f, 75.f});
     m_mainLayer->addChild(bg2, 5);
 
@@ -152,7 +152,7 @@ bool AdManager::setup()
         discordButtonSprite,
         this,
         menu_selector(AdManager::onDiscordButton));
-    discordButton->setPosition({30.f, m_mainLayer->getContentSize().height - 25.f});
+    discordButton->setPosition({15.f, 15.f});
 
     auto kofiButtonSprite = BasedButtonSprite::create(
         CCSprite::create("kofiLogo.png"_spr),
@@ -174,7 +174,6 @@ bool AdManager::setup()
     menu->addChild(modSettingsButton);
     menu->addChild(discordButton);
     menu->addChild(kofiButton);
-    
 
     webButtonMenu->setPosition({menu->getContentSize().width / 2, 0.f});
     m_mainLayer->addChild(menu);
@@ -196,20 +195,50 @@ AdManager *AdManager::create()
 
 void AdManager::onKofiButton(CCObject *sender)
 {
-    geode::utils::web::openLinkInBrowser("https://ko-fi.com/arcticwoof");
-    Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+    geode::createQuickPopup(
+        "Support on Ko-fi",
+        "You will be redirected to <cp>Ko-fi</c> page.\n<cy>Would you like to open the link?</c>",
+        "Cancel", "Proceed",
+        [](auto, bool ok)
+        {
+            if (ok)
+            {
+                geode::utils::web::openLinkInBrowser("https://ko-fi.com/arcticwoof");
+                Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+            }
+        });
 }
 
 void AdManager::onDiscordButton(CCObject *sender)
 {
-    geode::utils::web::openLinkInBrowser("https://discord.gg/gXcppxTNxC");
-    Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+    geode::createQuickPopup(
+        "Join our Discord?",
+        "You will be redirected to <cp>ArcticWoof's Discord Server</c>.\n<cy>Would you like to open the link?</c>",
+        "Cancel", "Proceed",
+        [](auto, bool ok)
+        {
+            if (ok)
+            {
+                geode::utils::web::openLinkInBrowser("https://discord.gg/gXcppxTNxC");
+                Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+            }
+        });
 }
 
 void AdManager::onWebButton(CCObject *sender)
 {
-    geode::utils::web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
-    Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+    geode::createQuickPopup(
+        "Manage Advertisements?",
+        "You will be redirected to <cp>GD Advertisement Manager</c>.\n<cy>Would you like to open the link?</c>",
+        "Cancel", "Proceed",
+        [](auto, bool ok)
+        {
+            if (ok)
+            {
+                geode::utils::web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
+                Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
+            }
+        });
 }
 
 void AdManager::onModSettingsButton(CCObject *sender)
@@ -305,8 +334,8 @@ void AdManager::populateAdsScrollLayer()
         auto adId = adValue["ad_id"].asInt();
         auto levelId = adValue["level_id"].asInt();
         auto type = adValue["type"].asInt();
-        auto viewCount = adValue["view_count"].asInt();
-        auto clickCount = adValue["click_count"].asInt();
+        auto viewCount = adValue["views"].asInt();
+        auto clickCount = adValue["clicks"].asInt();
         auto createdAt = adValue["created_at"].asString();
         auto pending = adValue["pending"].asBool();
 

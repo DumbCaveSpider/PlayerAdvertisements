@@ -4,7 +4,8 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class AdPreview : public Popup<> {
+class AdPreview : public Popup<>
+{
 protected:
     int m_adId = 0;
     int m_levelId = 0;
@@ -14,9 +15,10 @@ protected:
     int m_clickCount = 0;
 
     bool setup() override;
-    void onPlayButton(CCObject* sender);
-    void onReportButton(CCObject* sender);
+    void onPlayButton(CCObject *sender);
+    void onReportButton(CCObject *sender);
+    void registerClick(int adId, std::string userId);
 
 public:
-    static AdPreview* create(int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);
+    static AdPreview *create(int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);
 };

@@ -43,6 +43,12 @@
 			"default": "",
 			"description": "User ID provided by the GD Advertisement Manager website or your Discord User ID"
 		},
+		"ads_disable_scene_limit_protection": {
+			"type": "bool",
+			"name": "Disable Scene Limit Protection",
+			"default": false,
+			"description": "Disabling will remove the 10 scene limit. <c>This usually occur when you kept opening ads after ads without going back to the previous scene.</c> <cr>Highly recommended to keep this enabled to prevent your game from lagging.</c>"
+		},
 		"Advertisements Placements": {
 			"type": "title",
 			"name": "Advertisements Placements",

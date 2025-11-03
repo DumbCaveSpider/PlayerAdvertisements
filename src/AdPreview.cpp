@@ -86,10 +86,19 @@ void AdPreview::onReportButton(CCObject *sender)
                 Notification::create("User ID copied to clipboard", NotificationIcon::Success)->show();
             }
         });
-};
+}
 
 void AdPreview::onPlayButton(CCObject *sender)
 {
+    // stop player if they have too many scenes loaded
+    if (CCDirector::sharedDirector()->sceneCount() >= 10 && Mod::get()->getSettingValue<bool>("ads_disable_scene_limit_protection") == false)
+    {
+        FLAlertLayer::create(
+            "Stop right there!",
+            "You have <cr>too many scenes loaded</c> because you opening too many ads. This will cause your game to be <c>unstable.</c>\n<cy>Please go back to the previous scenes before attempting to play an ad level.</c>",
+            "OK")->show();
+        return;
+    }
 
     if (PlayLayer::get())
     {
@@ -103,34 +112,7 @@ void AdPreview::onPlayButton(CCObject *sender)
                 {
                     // close popup
                     this->onClose(sender);
-
-                    log::info("opening level id {} from ad id {}", m_levelId, m_adId);
-                    log::debug("Sending click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
-                    auto clickRequest = web::WebRequest();
-                    clickRequest.userAgent("PlayerAdvertisements/1.0");
-                    clickRequest.timeout(std::chrono::seconds(15));
-                    clickRequest.header("Content-Type", "application/json");
-
-                    matjson::Value jsonBody = matjson::Value::object();
-                    jsonBody["ad_id"] = m_adId;
-                    jsonBody["user_id"] = m_userId;
-
-                    clickRequest.bodyJSON(jsonBody);
-                    clickRequest.param("authtoken", Mod::get()->getSavedValue<std::string>("argon_token"));
-                    clickRequest.param("account_id", GJAccountManager::sharedState()->m_accountID);
-                    auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
-
-                    EventListener<web::WebTask> clickListener;
-                    clickListener.bind([this](web::WebTask::Event *e)
-                                       {
-                        if (auto res = e->getValue()) {
-                            if (res->ok()) {
-                                log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
-                            } else {
-                                log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
-                            }
-                        } });
-
+                    this->registerClick(m_adId, m_userId);
                     auto searchStr = std::to_string(m_levelId);
                     auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
                     CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
@@ -141,37 +123,38 @@ void AdPreview::onPlayButton(CCObject *sender)
     {
         // close popup
         this->onClose(sender);
-
-        log::info("opening level id {} from ad id {}", m_levelId, m_adId);
-        log::debug("Sending click tracking request for ad_id={}, user_id={}", m_adId, m_userId);
-        auto clickRequest = web::WebRequest();
-        clickRequest.userAgent("PlayerAdvertisements/1.0");
-        clickRequest.timeout(std::chrono::seconds(15));
-        clickRequest.header("Content-Type", "application/json");
-
-        matjson::Value jsonBody = matjson::Value::object();
-        jsonBody["ad_id"] = m_adId;
-        jsonBody["user_id"] = m_userId;
-
-        clickRequest.bodyJSON(jsonBody);
-        clickRequest.param("authtoken", Mod::get()->getSavedValue<std::string>("argon_token"));
-        clickRequest.param("account_id", GJAccountManager::sharedState()->m_accountID);
-        auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
-
-        EventListener<web::WebTask> clickListener;
-        clickListener.bind([this](web::WebTask::Event *e)
-                           {
-                        if (auto res = e->getValue()) {
-                            if (res->ok()) {
-                                log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
-                            } else {
-                                log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
-                            }
-                        }
-                    });
-
+        this->registerClick(m_adId, m_userId);
         auto searchStr = std::to_string(m_levelId);
         auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
     }
 };
+
+void AdPreview::registerClick(int adId, std::string userId)
+{
+    log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
+    auto clickRequest = web::WebRequest();
+    clickRequest.userAgent("PlayerAdvertisements/1.0");
+    clickRequest.timeout(std::chrono::seconds(15));
+    clickRequest.header("Content-Type", "application/json");
+
+    matjson::Value jsonBody = matjson::Value::object();
+    jsonBody["ad_id"] = adId;
+    jsonBody["user_id"] = userId;
+    jsonBody["authtoken"] = Mod::get()->getSavedValue<std::string>("argon_token");
+    jsonBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
+
+    clickRequest.bodyJSON(jsonBody);
+    auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+
+    EventListener<web::WebTask> clickListener;
+    clickListener.bind([this](web::WebTask::Event *e)
+                       {
+            if (auto res = e->getValue()) {
+                if (res->ok()) {
+                    log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
+                } else {
+                    log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
+                }
+            } });
+}

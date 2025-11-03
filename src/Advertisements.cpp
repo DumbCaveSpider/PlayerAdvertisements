@@ -211,8 +211,8 @@ namespace ads
                     auto level = json["level_id"].asInt().unwrapOrDefault();
                     auto user = json["user_id"].asString().unwrapOrDefault();
                     auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
-                    auto view = json["view_count"].asInt().unwrapOrDefault();
-                    auto click = json["click_count"].asInt().unwrapOrDefault();
+                    auto view = json["views"].asInt().unwrapOrDefault();
+                    auto click = json["clicks"].asInt().unwrapOrDefault();
 
                     m_impl->m_ad = Ad(id, image, level, type, user, view, click);
                     log::info("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
@@ -227,10 +227,10 @@ namespace ads
                     matjson::Value viewBody = matjson::Value::object();
                     viewBody["ad_id"] = id;
                     viewBody["user_id"] = user;
+                    viewBody["authtoken"] = Mod::get()->getSavedValue<std::string>("argon_token");
+                    viewBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
                     viewRequest.bodyJSON(viewBody);
-                    viewRequest.param("authtoken", Mod::get()->getSavedValue<std::string>("argon_token"));
-                    viewRequest.param("account_id", GJAccountManager::sharedState()->m_accountID);
                     auto viewTask = viewRequest.post("https://ads.arcticwoof.xyz/api/view");
                     
                     EventListener<web::WebTask> viewListener;
