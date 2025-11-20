@@ -68,6 +68,13 @@ class $modify(ShareCommentLayer)
                 adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
                 adSkyscraperLeft->loadRandom();
             }
+
+            // if is a friend request, move the square banner down a bit
+            if (type == CommentType::FriendRequest) {
+                adSquareLeft->setPositionY(adSquareLeft->getPositionY() - 25.f);
+                adSquareCenter->setPositionY(adSquareCenter->getPositionY() - 25.f);
+                adSquareRight->setPositionY(adSquareRight->getPositionY() - 25.f);
+            }
         }
         return true;
     }

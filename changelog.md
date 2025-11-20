@@ -1,3 +1,8 @@
+# v1.0.8
+
+- Remove an advertisement space on the Drop Down Layer if the back button exists (to prevent overlapping UI elements)
+- Fixed the square advertisements banner down a bit on Friend Request comments
+
 # v1.0.7
 
 - Advertisements are randomized whenever you go back to the previous page.
