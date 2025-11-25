@@ -5,24 +5,20 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(DailyLevelPage)
-{
-    bool init(GJTimedLevelType levelType)
-    {
+class $modify(DailyLevelPage) {
+    bool init(GJTimedLevelType levelType) {
         if (!DailyLevelPage::init(levelType))
             return false;
-        if (Mod::get()->getSettingValue<bool>("DailyLevelPage"))
-        {
+        if (Mod::get()->getSettingValue<bool>("DailyLevelPage")) {
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             auto adBanner = Advertisement::create();
-            if (adBanner)
-            {
+            if (adBanner) {
                 adBanner->setID("advertisement-menu");
                 m_mainLayer->addChild(adBanner, 8);
                 adBanner->setType(AdType::Banner);
-                adBanner->setPosition({winSize.width / 2.f, 70.f});
+                adBanner->setPosition({ winSize.width / 2.f, 70.f });
                 adBanner->loadRandom();
             }
         }

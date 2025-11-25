@@ -1,5 +1,5 @@
 {
-	"geode": "4.9.0",
+	"geode": "4.10.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,14 +8,14 @@
 	},
 	"id": "arcticwoof.player_advertisements",
 	"name": "Player Advertisements",
-	"version": "v1.0.8",
+	"version": "v1.0.9",
 	"developers": [
 		"ArcticWoof",
 		"Cheeseworks"
 	],
 	"links": {
 		"source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
-		"homepage": "https://arcticwoof.com.au/",
+		"homepage": "https://ads.arcticwoof.xyz",
 		"community": "https://discord.gg/gXcppxTNxC"
 	},
 	"description": "Shows a clickable ad banner by players.",
@@ -59,7 +59,7 @@
 			"name": "Menu Layer",
 			"default": true
 		},
-		"UILayer": {
+		"PlayLayer": {
 			"type": "bool",
 			"name": "In-Game UI Layer",
 			"description": "Its disabled by default because its annoying but if you want to simulate yourself with more ads especially while playing, enable this :D",

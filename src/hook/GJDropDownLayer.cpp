@@ -19,7 +19,7 @@ class $modify(GJDropDownLayer) {
                         adBanner->setID("advertisement-menu");
                         m_mainLayer->addChild(adBanner, 2);
                         adBanner->setType(AdType::Banner);
-                        adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
+                        adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
                         adBanner->loadRandom();
                   }
 
@@ -29,7 +29,7 @@ class $modify(GJDropDownLayer) {
                         adSkyscraper->setID("advertisement-menu-skyscraper");
                         m_mainLayer->addChild(adSkyscraper);
                         adSkyscraper->setType(AdType::Skyscraper);
-                        adSkyscraper->setPosition({winSize.width - 30.f, winSize.height / 2.f});
+                        adSkyscraper->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
                         adSkyscraper->loadRandom();
                   }
                   // skyscraper ad on the left side
@@ -40,7 +40,7 @@ class $modify(GJDropDownLayer) {
                               adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
                               m_mainLayer->addChild(adSkyscraperLeft);
                               adSkyscraperLeft->setType(AdType::Skyscraper);
-                              adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
+                              adSkyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
                               adSkyscraperLeft->loadRandom();
                         }
                   }

@@ -27,14 +27,14 @@ protected:
 
 public:
     static AdManager* create();
-    void onDiscordButton(CCObject *sender);
-    void onKofiButton(CCObject *sender);
+    void onDiscordButton(CCObject* sender);
+    void onKofiButton(CCObject* sender);
     void onWebButton(CCObject* sender);
     void onFetchComplete(web::WebTask::Event* event);
     void onGlobalStatsFetchComplete(web::WebTask::Event* event);
     void onModSettingsButton(CCObject* sender);
     void onPlayButton(CCObject* sender);
     void populateAdsScrollLayer();
-    
+
     int m_currentPlayLevelId = 0;
 };

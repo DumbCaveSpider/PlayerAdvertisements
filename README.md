@@ -1,13 +1,18 @@
 # Player Advertisements
-### <co>Entry for Modtober 2025: What The Heck!?</c>
+### Entry for Modtober 2025: What The Heck!?
 
-<cp>You love Advertisements, right?</c> Who doesn't! Maybe you want to <cb>self-promote your own levels</c> with over the top, eye catching, MrBeast clickbaiting advertisements! Or maybe you just want to see some funny ads while you play! <cy>Either way, this mod is for everyone!</c>
+You love advertisements, right? Who doesn't?! Well, maybe you want to promote some of your own levels with over-the-top, eye catching, MrBeast-type clickbaity advertisements! Or, maybe you just want to see some very funny ads while you play. Either way, this mod is for everyone!
 
-This mod adds advertisements everywhere in the game! Every part of the game you go to, you will see an advertisement banner. These banners are clickable, and will take you to the advertisement's level when clicked!
+This cool mod adds advertisements for levels everywhere in the game! In most areas of the game, you will likely find an advertisement for someone's level! You can also click on these advertisements to get sent to their totally awesome levels as advertised.
 
-### <cl>Do you want to submit your own advertisement? You can at [GD Advertisement Manager](https://ads.arcticwoof.xyz)</c>
+This mod is the perfect tool to find cool levels you otherwise may not have heard of! So, what are you waiting for? **DOWNLOAD NOW!**
+
+#### Want to submit YOUR OWN advertisement? Do so at the [Ads Manager](https://ads.arcticwoof.xyz)!
+*Authorization via Discord account will be required.*
 
 ## Credits
 - [Cheeseworks](user:6408873) for helping with the backend side of the mod and the website
 
-![king](arcticwoof.twitch_interactive/king.png)
+---
+
+### [<img alt="Trailer Likes" height="15" src="https://img.shields.io/youtube/likes/PI_poDUUauw?style=for-the-badge&logo=youtube">](https://www.youtube.com/watch?v=PI_poDUUauw&list=PL0dsSu2pR5cERnq7gojZTKVRvUwWo2Ohu) Watch the [Horrible Mods](https://www.youtube.com/watch?v=Ssl49pNmW_0&list=PL0dsSu2pR5cERnq7gojZTKVRvUwWo2Ohu) series out now on YouTube!
