@@ -20,13 +20,13 @@ namespace ads {
         CCSize contentSize = banner;
 
         switch (type) {
-        case Banner:
+        case AdType::Banner:
             contentSize = banner;
             break;
-        case Square:
+        case AdType::Square:
             contentSize = square;
             break;
-        case Skyscraper:
+        case AdType::Skyscraper:
             contentSize = skyscraper;
             break;
 
@@ -81,13 +81,13 @@ namespace ads {
             log::info("reloading new random advertisement");
             reloadType();
             loadRandom();
-        }
-    }
+        };
+    };
 
     void Advertisement::onExit() {
         m_impl->m_isInScene = false;
         CCMenu::onExit();
-    }
+    };
 
     void Advertisement::activate(CCObject*) {
         auto& ad = m_impl->m_ad;
@@ -95,14 +95,15 @@ namespace ads {
             log::warn("Ad not loaded yet or invalid ad ID");
             Notification::create("Invalid Ad", NotificationIcon::Error)->show();
             return;
-        }
+        };
+
         log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
         if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount)) {
             popup->show();
         } else {
             log::error("Failed to create AdPreview popup");
-        }
-    }
+        };
+    };
 
     void Advertisement::reload() {
         if (m_impl->m_adButton) {
@@ -113,7 +114,7 @@ namespace ads {
         if (!m_impl->m_adSprite) {
             log::warn("ad sprite is null");
             return;
-        }
+        };
 
         log::info("Reloading advertisement");
 
@@ -129,7 +130,7 @@ namespace ads {
             log::info("Advertisement button created and added to menu");
         } else {
             log::error("Failed to create CCMenuItemSpriteExtra");
-        }
+        };
     };
 
     void Advertisement::reloadType() {
@@ -150,7 +151,7 @@ namespace ads {
         if (!m_impl->m_adSprite) {
             log::error("Failed to create LazySprite");
             return;
-        }
+        };
 
         log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
 
@@ -166,7 +167,7 @@ namespace ads {
             if (!m_impl) {
                 log::error("m_impl is null in ad listener callback");
                 return;
-            }
+            };
 
             if (auto res = e->getValue()) {
                 if (res->ok()) {
@@ -174,7 +175,8 @@ namespace ads {
                     if (!jsonRes) {
                         log::error("Failed to parse ad JSON");
                         return;
-                    }
+                    };
+
                     auto json = jsonRes.unwrap();
 
                     auto id = json["ad_id"].asInt().unwrapOrDefault();
@@ -211,8 +213,8 @@ namespace ads {
                                 log::info("View pass ad_id={}, user_id={}", id, user);
                             } else {
                                 log::error("View failed for ad_id={}, user_id={}: (code: {})", id, user, res->code());
-                            }
-                        }
+                            };
+                        };
                                       });
                     viewListener.setFilter(viewTask);
                     log::info("Sent view tracking request for ad_id={}, user_id={}", id, user);
@@ -222,7 +224,7 @@ namespace ads {
                         m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
                     } else {
                         log::warn("Ad sprite missing when trying to load image");
-                    }
+                    };
                 } else {
                     log::error("Failed to fetch ad: HTTP {}", res->code());
                 };
@@ -233,11 +235,12 @@ namespace ads {
             } else {
                 log::error("Unknown ad web request error");
             }; });
+
             m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
                 if (!m_impl) {
                     log::error("m_impl is null in load callback");
                     return;
-                }
+                };
 
                 if (res.isOk()) {
                     log::info("Ad image loaded successfully");
@@ -252,12 +255,13 @@ namespace ads {
                             m_impl->m_adIcon->setOpacity(100);
                         } else {
                             log::error("Failed to create ad icon sprite");
-                        }
-                    }
+                        };
+                    };
+
                     if (!m_impl->m_adSprite) {
                         log::warn("Load callback: ad sprite is null");
                         return;
-                    }
+                    };
 
                     m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
                     //m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
@@ -273,7 +277,7 @@ namespace ads {
                         float scale = std::min(sx, sy);
                         m_impl->m_adSprite->setScale(scale);
                         log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
-                    }
+                    };
 
                     // if (m_impl->m_adButton) {
                     //     m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
@@ -283,7 +287,7 @@ namespace ads {
                     log::error("Failed to load ad image: {}", res.unwrapErr());
                     if (m_impl && m_impl->m_adSprite) {
                         m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
-                    }
+                    };
                 } else {
                     log::error("Unknown error loading ad image");
                 } });

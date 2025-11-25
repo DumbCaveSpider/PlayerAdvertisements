@@ -135,5 +135,10 @@
 			"name": "Comment Layer",
 			"default": true
 		}
+	},
+	"api": {
+		"include": [
+			"include/*.hpp"
+		]
 	}
 }
