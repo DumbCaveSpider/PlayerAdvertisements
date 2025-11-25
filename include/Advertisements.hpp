@@ -19,13 +19,13 @@
 using namespace geode::prelude;
 
 namespace ads {
-    enum AdType {
+    enum class AWCW_ADS_API_DLL AdType {
         Banner = 1,
         Square = 2,
         Skyscraper = 3
     };
 
-    struct Ad {
+    struct AWCW_ADS_API_DLL Ad {
         int id;
         std::string image;
         int level = 0;
@@ -47,7 +47,7 @@ namespace ads {
      */
     CCSize getAdSize(AdType type);
 
-    class Advertisement : public CCMenu {
+    class AWCW_ADS_API_DLL Advertisement : public CCMenu {
     protected:
         class Impl;
         std::unique_ptr<Impl> m_impl;

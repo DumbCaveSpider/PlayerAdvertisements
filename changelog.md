@@ -1,3 +1,7 @@
+# v1.0.9
+- Fixed hooks for in-level ads
+- Link API
+
 # v1.0.8
 
 - Remove an advertisement space on the Drop Down Layer if the back button exists (to prevent overlapping UI elements)
