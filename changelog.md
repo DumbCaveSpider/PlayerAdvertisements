@@ -1,6 +1,8 @@
 # v1.0.9
 - Fixed hooks for in-level ads
 - Link API
+- Added In-game Ad Reporting feature (via Report button on the Ad Preview popup)
+- Fixed an issue where clicks doesn't register correctly on mobile devices
 
 # v1.0.8
 
