@@ -1,8 +1,10 @@
 # v1.0.9
+
 - Fixed hooks for in-level ads
 - Link API
 - Added In-game Ad Reporting feature (via Report button on the Ad Preview popup)
 - Fixed an issue where clicks doesn't register correctly on mobile devices
+- Added additional option when opening too many scenes from ads (prompt to return to main menu)
 
 # v1.0.8
 
@@ -20,7 +22,7 @@
 # v1.0.6
 
 - Fixed an issue where clicks doesn't register when not playing any level.
-  *how did i miss this mistake omg*
+  _how did i miss this mistake omg_
 
 # v1.0.5
 

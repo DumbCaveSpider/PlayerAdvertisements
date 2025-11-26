@@ -78,11 +78,15 @@ void AdPreview::onReportButton(CCObject* sender) {
 void AdPreview::onPlayButton(CCObject* sender) {
       // stop player if they have too many scenes loaded
       if (CCDirector::sharedDirector()->sceneCount() >= 10 && Mod::get()->getSettingValue<bool>("ads_disable_scene_limit_protection") == false) {
-            FLAlertLayer::create(
+            geode::createQuickPopup(
                 "Stop right there!",
-                "You have <cr>too many scenes loaded</c> because you opening too many ads. This will cause your game to be <c>unstable.</c>\n<cy>Please go back to the previous scenes before attempting to play an ad level.</c>",
-                "OK")
-                ->show();
+                "You have <cr>too many scenes loaded</c> because you opening too many ads. This will cause your game to be <cr>unstable.</c>\n<cy>Do you want to return to the Main Menu?</c>",
+                "Cancel", "Yes", [](auto, bool ok) {
+                      if (ok) {
+                            // pop to root scene
+                            CCDirector::sharedDirector()->popToRootScene();
+                      }
+                });
             return;
       }
 
