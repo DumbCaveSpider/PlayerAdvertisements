@@ -1,14 +1,16 @@
 # Player Advertisements
-### Entry for Modtober 2025: What The Heck!?
+Community-made ads for awesome levels!
 
-You love advertisements, right? Who doesn't?! Well, maybe you want to promote some of your own levels with over-the-top, eye catching, MrBeast-type clickbaity advertisements! Or, maybe you just want to see some very funny ads while you play. Either way, this mod is for everyone!
+###### Entry for Modtober 2025: What The Heck!?
+
+You looooove advertisements, right? Who doesn't?! Well, maybe you want to promote some of your own levels with over-the-top, eye catching, MrBeast-type clickbaity advertisements! Or, maybe you just want to see some very funny ads while you play. Either way, this mod is for everyone!
 
 This cool mod adds advertisements for levels everywhere in the game! In most areas of the game, you will likely find an advertisement for someone's level! You can also click on these advertisements to get sent to their totally awesome levels as advertised.
 
 This mod is the perfect tool to find some very awesome levels that you otherwise may not have ever heard of! So, what are you waiting for? **DOWNLOAD NOW!**
 
-#### Want to submit YOUR OWN advertisement? Do so at the [Ads Manager](https://ads.arcticwoof.xyz)!
-*Authorization via Discord account will be required.*
+#### Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!
+*Authorization via [Discord account](https://discord.com/login) will be required.*
 
 ## Credits
 - [Cheeseworks](https://github.com/BlueWitherer) for helping with the backend side of the mod and the website

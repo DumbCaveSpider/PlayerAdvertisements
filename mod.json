@@ -8,7 +8,7 @@
     },
     "id": "arcticwoof.player_advertisements",
     "name": "Player Advertisements",
-    "version": "v1.0.9",
+    "version": "v1.1.0",
     "developers": [
         "ArcticWoof",
         "Cheeseworks"
@@ -18,7 +18,7 @@
         "homepage": "https://ads.arcticwoof.xyz",
         "community": "https://discord.gg/gXcppxTNxC"
     },
-    "description": "Shows a clickable ad banner by players.",
+    "description": "Community-made ads for awesome levels!",
     "resources": {
         "sprites": [
             "resources/*"
