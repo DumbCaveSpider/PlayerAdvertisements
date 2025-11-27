@@ -1,9 +1,9 @@
-# v1.0.9
+# v1.1.0
 
-- Fixed hooks for in-level ads
-- Link API
+- Link Advertisement node to external API
 - Added In-game Ad Reporting feature (via Report button on the Ad Preview popup)
-- Fixed an issue where clicks doesn't register correctly on mobile devices
+- Fixed hooks for in-level ads
+- Fixed an issue where clicks doesn't register correctly on some mobile devices
 - Added additional option when opening too many scenes from ads (prompt to return to main menu)
 
 # v1.0.8

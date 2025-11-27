@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(CreatorLayer) {
+class $modify(AdsCreatorLayer, CreatorLayer) {
     bool init() {
         if (!CreatorLayer::init()) return false;
 

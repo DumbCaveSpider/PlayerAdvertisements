@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(LeaderboardsLayer) {
+class $modify(AdsLeaderboardsLayer, LeaderboardsLayer) {
     bool init(LeaderboardState layer) {
         if (!LeaderboardsLayer::init(layer)) return false;
 

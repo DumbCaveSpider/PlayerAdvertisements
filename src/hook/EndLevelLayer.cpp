@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(EndLevelLayer) {
+class $modify(AdsEndLevelLayer, EndLevelLayer) {
     void customSetup() override {
         EndLevelLayer::customSetup();
 

@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(GauntletSelectLayer) {
+class $modify(AdsGauntletSelectLayer, GauntletSelectLayer) {
     bool init(int p0) {
         if (!GauntletSelectLayer::init(p0)) return false;
 

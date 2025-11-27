@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(LevelBrowserLayer) {
+class $modify(AdsLevelBrowserLayer, LevelBrowserLayer) {
     bool init(GJSearchObject * searchObj) {
         if (!LevelBrowserLayer::init(searchObj)) return false;
 

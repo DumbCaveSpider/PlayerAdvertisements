@@ -6,7 +6,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(ChallengesPage) {
+class $modify(AdsChallengesPage, ChallengesPage) {
     bool init() {
         if (!ChallengesPage::init()) return false;
 

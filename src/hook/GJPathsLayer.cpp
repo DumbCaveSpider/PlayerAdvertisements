@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(GJPathsLayer) {
+class $modify(AdsGJPathsLayer, GJPathsLayer) {
     bool init() {
         if (!GJPathsLayer::init()) return false;
 

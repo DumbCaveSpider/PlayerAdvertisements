@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(GJDropDownLayer) {
+class $modify(AdsGJDropDownLayer, GJDropDownLayer) {
     bool init(const char* p0, float p1, bool p2) {
         if (!GJDropDownLayer::init(p0, p1, p2)) return false;
 

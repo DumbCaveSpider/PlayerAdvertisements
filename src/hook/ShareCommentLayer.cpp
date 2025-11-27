@@ -19,7 +19,7 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
                 adSquareLeft->setPosition({ winSize.width / 2.f - 140.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareLeft);
-                this->rescaleForCommentType(adSquareLeft, type);
+                this->positionForCommentType(adSquareLeft, type);
 
                 adSquareLeft->loadRandom();
             };
@@ -31,7 +31,7 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
                 adSquareCenter->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareCenter);
-                this->rescaleForCommentType(adSquareCenter, type);
+                this->positionForCommentType(adSquareCenter, type);
 
                 adSquareCenter->loadRandom();
             };
@@ -43,7 +43,7 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
                 adSquareRight->setPosition({ winSize.width / 2.f + 140.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareRight);
-                this->rescaleForCommentType(adSquareRight, type);
+                this->positionForCommentType(adSquareRight, type);
 
                 adSquareRight->loadRandom();
             };
@@ -75,7 +75,7 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
     };
 
     // for da squarez
-    void rescaleForCommentType(Advertisement * ad, CommentType type) {
+    void positionForCommentType(Advertisement * ad, CommentType type) {
         if (type == CommentType::FriendRequest) {
             log::debug("comment type is friend request");
             if (ad) ad->setPositionY(ad->getPositionY() - 25.f);

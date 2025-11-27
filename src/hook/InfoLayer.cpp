@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(InfoLayer) {
+class $modify(AdsInfoLayer, InfoLayer) {
     bool init(GJGameLevel * p0, GJUserScore * p1, GJLevelList * p2) {
         if (!InfoLayer::init(p0, p1, p2)) return false;
 

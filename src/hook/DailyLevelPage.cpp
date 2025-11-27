@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class $modify(DailyLevelPage) {
+class $modify(AdsDailyLevelPage, DailyLevelPage) {
     bool init(GJTimedLevelType levelType) {
         if (!DailyLevelPage::init(levelType)) return false;
 
