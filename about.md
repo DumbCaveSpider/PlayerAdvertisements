@@ -5,7 +5,7 @@
 
 <cl>This mod adds advertisements for levels everywhere in the game!</c> In most areas of the game, you will likely find an advertisement for someone's level! You can also click on these advertisements to get sent to their totally awesome levels.
 
-This mod is the perfect tool to find cool levels you otherwise may not have heard of! So, what are you waiting for? ![ico](frame:geode.loader/tag-paid.png?scale=0.625)<cg>**DOWNLOAD NOW!**</c>![ico](frame:geode.loader/tag-paid.png?scale=0.6215)
+This mod is <cp>the perfect tool to find some very awesome levels that you otherwise may not have ever heard of</c>! So, what are you waiting for? ![ico](frame:geode.loader/tag-paid.png?scale=0.25)<cg>**DOWNLOAD NOW!**</c>![ico](frame:geode.loader/tag-paid.png?scale=0.25)
 
 #### <cy>Want to submit YOUR OWN advertisement? Do so at the [Ads Manager](https://ads.arcticwoof.xyz)!</c>
 <cr>*Authorization via Discord account will be required.*</c>

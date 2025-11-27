@@ -8,23 +8,23 @@ using namespace ads;
 
 class $modify(ChallengesPage) {
     bool init() {
-        if (!ChallengesPage::init())
-            return false;
+        if (!ChallengesPage::init()) return false;
 
         if (Mod::get()->getSettingValue<bool>("ChallengesPage")) {
-
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            auto adBanner = Advertisement::create();
-            if (adBanner) {
+            if (auto adBanner = Advertisement::create()) {
                 adBanner->setID("advertisement-menu");
-                m_mainLayer->addChild(adBanner, 20);
                 adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, 30.f });
+
+                m_mainLayer->addChild(adBanner, 20);
+
                 adBanner->loadRandom();
-            }
-        }
+            };
+        };
+
         return true;
-    }
+    };
 };

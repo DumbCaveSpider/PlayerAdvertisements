@@ -7,21 +7,23 @@ using namespace ads;
 
 class $modify(DailyLevelPage) {
     bool init(GJTimedLevelType levelType) {
-        if (!DailyLevelPage::init(levelType))
-            return false;
+        if (!DailyLevelPage::init(levelType)) return false;
+
         if (Mod::get()->getSettingValue<bool>("DailyLevelPage")) {
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            auto adBanner = Advertisement::create();
-            if (adBanner) {
-                adBanner->setID("advertisement-menu");
-                m_mainLayer->addChild(adBanner, 8);
+            if (auto adBanner = Advertisement::create()) {
+                adBanner->setID("banner"_spr);
                 adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, 70.f });
+
+                m_mainLayer->addChild(adBanner, 8);
+
                 adBanner->loadRandom();
-            }
-        }
+            };
+        };
+
         return true;
-    }
+    };
 };

@@ -33,9 +33,8 @@ class $modify(AdsMenuLayer, MenuLayer) {
         auto winSize = CCDirector::sharedDirector()->getWinSize();
         if (Mod::get()->getSettingValue<bool>("MenuLayer")) {
             // banner ad at the center
-            auto adBanner = Advertisement::create();
-            if (adBanner) {
-                adBanner->setID("advertisement-menu");
+            if (auto adBanner = Advertisement::create()) {
+                adBanner->setID("banner"_spr);
                 adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
 
@@ -47,9 +46,8 @@ class $modify(AdsMenuLayer, MenuLayer) {
 
         // ad button in the bottom menu
         if (auto bottomMenu = this->getChildByID("bottom-menu")) {
-            auto sprite = CCSprite::create("adIcon.png"_spr);
             auto adButton = CircleButtonSprite::create(
-                sprite,
+                CCSprite::create("adIcon.png"_spr),
                 CircleBaseColor::Green,
                 CircleBaseSize::MediumAlt);
 

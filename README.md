@@ -5,7 +5,7 @@ You love advertisements, right? Who doesn't?! Well, maybe you want to promote so
 
 This cool mod adds advertisements for levels everywhere in the game! In most areas of the game, you will likely find an advertisement for someone's level! You can also click on these advertisements to get sent to their totally awesome levels as advertised.
 
-This mod is the perfect tool to find cool levels you otherwise may not have heard of! So, what are you waiting for? **DOWNLOAD NOW!**
+This mod is the perfect tool to find some very awesome levels that you otherwise may not have ever heard of! So, what are you waiting for? **DOWNLOAD NOW!**
 
 #### Want to submit YOUR OWN advertisement? Do so at the [Ads Manager](https://ads.arcticwoof.xyz)!
 *Authorization via Discord account will be required.*

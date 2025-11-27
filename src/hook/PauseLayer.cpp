@@ -9,6 +9,7 @@ using namespace ads;
 class $modify(AdsPauseLayer, PauseLayer) {
     void customSetup() override {
         PauseLayer::customSetup();
+
         if (Mod::get()->getSettingValue<bool>("PauseLayer")) {
             // get level name label
             auto levelName = static_cast<CCLabelBMFont*>(getChildByID("level-name"));
@@ -34,50 +35,42 @@ class $modify(AdsPauseLayer, PauseLayer) {
                 normalBar->setPositionY(practiceBar->getPositionY());
 
             // make all practice mode invisible by default
-            if (practiceTitle)
-                practiceTitle->setVisible(false);
-            if (practiceProgress)
-                practiceProgress->setVisible(false);
-            if (practiceBar)
-                practiceBar->setVisible(false);
+            if (practiceTitle) practiceTitle->setVisible(false);
+            if (practiceProgress) practiceProgress->setVisible(false);
+            if (practiceBar) practiceBar->setVisible(false);
 
             // player is practice mode, show practice mode elements
             if (GJBaseGameLayer::get()->m_isPracticeMode) {
                 // set all practice mode elements to visible
-                if (practiceTitle)
-                    practiceTitle->setVisible(true);
-                if (practiceProgress)
-                    practiceProgress->setVisible(true);
-                if (practiceBar)
-                    practiceBar->setVisible(true);
+                if (practiceTitle) practiceTitle->setVisible(true);
+                if (practiceProgress) practiceProgress->setVisible(true);
+                if (practiceBar) practiceBar->setVisible(true);
+
                 // hide normal mode elements
-                if (normalTitle)
-                    normalTitle->setVisible(false);
-                if (normalProgress)
-                    normalProgress->setVisible(false);
-                if (normalBar)
-                    normalBar->setVisible(false);
-            }
+                if (normalTitle) normalTitle->setVisible(false);
+                if (normalProgress) normalProgress->setVisible(false);
+                if (normalBar) normalBar->setVisible(false);
+            };
+
+            auto winSize = CCDirector::get()->getWinSize();
 
             // insert ad banner (722x84)
-            auto adBanner = Advertisement::create();
-            auto winSize = CCDirector::get()->getWinSize();
-            if (adBanner) {
-                adBanner->setID("advertisement-menu");
-                this->addChild(adBanner, 100);
+            if (auto adBanner = Advertisement::create()) {
+                adBanner->setID("banner"_spr);
                 adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 50.f });
+
+                this->addChild(adBanner, 100);
+
                 adBanner->loadRandom();
-            }
-        }
+            };
+        };
 
         // im confused
         // add a button on the side on the menu
-        auto rightButtonMenu = getChildByID("right-button-menu");
-        auto sprite = CCSprite::create("adIcon.png"_spr);
-        if (rightButtonMenu) {
+        if (auto rightButtonMenu = getChildByID("right-button-menu")) {
             auto adButton = CircleButtonSprite::create(
-                sprite,
+                CCSprite::create("adIcon.png"_spr),
                 CircleBaseColor::Green,
                 CircleBaseSize::Medium);
 
@@ -89,12 +82,11 @@ class $modify(AdsPauseLayer, PauseLayer) {
             if (auto menu = typeinfo_cast<CCMenu*>(rightButtonMenu)) {
                 menu->addChild(popupButton);
                 menu->updateLayout();
-            }
-        }
-    }
+            };
+        };
+    };
 
     void onAdClicked(CCObject * sender) {
-        if (auto popup = AdManager::create())
-            popup->show();
-    }
+        if (auto popup = AdManager::create()) popup->show();
+    };
 };

@@ -72,11 +72,20 @@ class $modify(AdsPlayLayer, PlayLayer) {
 
     void fullReset() {
         // reload all ads lulz
+        this->reloadAllAds();
+        PlayLayer::fullReset();
+    };
+
+    void resetLevelFromStart() {
+        // reload all ads lulz
+        this->reloadAllAds();
+        PlayLayer::resetLevelFromStart();
+    };
+
+    void reloadAllAds() {
         if (m_fields->bannerTop) m_fields->bannerTop->loadRandom();
         if (m_fields->bannerBottom) m_fields->bannerBottom->loadRandom();
         if (m_fields->skyscraperRight) m_fields->skyscraperRight->loadRandom();
         if (m_fields->skyscraperLeft) m_fields->skyscraperLeft->loadRandom();
-
-        PlayLayer::fullReset();
     };
 };

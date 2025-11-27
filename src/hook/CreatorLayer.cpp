@@ -7,21 +7,23 @@ using namespace ads;
 
 class $modify(CreatorLayer) {
     bool init() {
-        if (!CreatorLayer::init())
-            return false;
+        if (!CreatorLayer::init()) return false;
+
         if (Mod::get()->getSettingValue<bool>("CreatorLayer")) {
             auto winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            auto adBanner = Advertisement::create();
-            if (adBanner) {
-                adBanner->setID("advertisement-menu");
-                this->addChild(adBanner);
+            if (auto adBanner = Advertisement::create()) {
+                adBanner->setID("banner"_spr);
                 adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
+
+                this->addChild(adBanner);
+
                 adBanner->loadRandom();
-            }
-        }
+            };
+        };
+
         return true;
-    }
+    };
 };
