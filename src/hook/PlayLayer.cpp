@@ -82,6 +82,11 @@ class $modify(AdsPlayLayer, PlayLayer) {
         PlayLayer::resetLevelFromStart();
     };
 
+    void destroyPlayer(PlayerObject * player, GameObject * object) {
+        PlayLayer::destroyPlayer(player, object);
+        if (player->m_isDead) this->reloadAllAds();
+    };
+
     void reloadAllAds() {
         if (m_fields->bannerTop) m_fields->bannerTop->loadRandom();
         if (m_fields->bannerBottom) m_fields->bannerBottom->loadRandom();
