@@ -70,13 +70,13 @@ class $modify(AdsPlayLayer, PlayLayer) {
         PlayLayer::setupHasCompleted();
     };
 
-    void resetLevelFromStart() {
+    void fullReset() {
         // reload all ads lulz
         if (m_fields->bannerTop) m_fields->bannerTop->loadRandom();
         if (m_fields->bannerBottom) m_fields->bannerBottom->loadRandom();
         if (m_fields->skyscraperRight) m_fields->skyscraperRight->loadRandom();
         if (m_fields->skyscraperLeft) m_fields->skyscraperLeft->loadRandom();
 
-        PlayLayer::resetLevelFromStart();
+        PlayLayer::fullReset();
     };
 };

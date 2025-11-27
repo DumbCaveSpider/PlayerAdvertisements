@@ -11,7 +11,7 @@ This mod is the perfect tool to find cool levels you otherwise may not have hear
 *Authorization via Discord account will be required.*
 
 ## Credits
-- [Cheeseworks](user:6408873) for helping with the backend side of the mod and the website
+- [Cheeseworks](https://github.com/BlueWitherer) for helping with the backend side of the mod and the website
 
 ---
 
