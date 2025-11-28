@@ -65,6 +65,9 @@ class $modify(AdsPlayLayer, PlayLayer) {
 
                 m_fields->skyscraperLeft->loadRandom();
             };
+
+            log::info("setting up scheduler for auto ad refresh");
+            this->schedule(schedule_selector(AdsPlayLayer::schedReload), 12.5f);
         };
 
         PlayLayer::setupHasCompleted();
@@ -92,5 +95,12 @@ class $modify(AdsPlayLayer, PlayLayer) {
         if (m_fields->bannerBottom) m_fields->bannerBottom->loadRandom();
         if (m_fields->skyscraperRight) m_fields->skyscraperRight->loadRandom();
         if (m_fields->skyscraperLeft) m_fields->skyscraperLeft->loadRandom();
+
+        log::info("All ads are now reloading");
+    };
+
+    void schedReload(float dt) {
+        log::debug("reloading ads after {}s...", dt);
+        this->reloadAllAds();
     };
 };

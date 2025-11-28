@@ -44,14 +44,15 @@ namespace ads {
         Ad m_ad = Ad();
         AdType m_type = AdType::Banner;
 
-        CCMenuItemSpriteExtra* m_adButton = nullptr;
-        LazySprite* m_adSprite = nullptr;
+        Ref<CCMenuItemSpriteExtra> m_adButton = nullptr;
+        Ref<LazySprite> m_adSprite = nullptr;
         CCSprite* m_adIcon = nullptr;
 
         bool m_hasLoaded = false;
         bool m_loadRandom = false;
         int m_loadId = 0;
         bool m_isInScene = false;
+
         std::string m_token;
     };
 
@@ -62,7 +63,7 @@ namespace ads {
     Advertisement::~Advertisement() {
         if (m_impl && m_impl->m_adSprite) {
             m_impl->m_adSprite->release();
-        }
+        };
     };
 
     bool Advertisement::init() {
@@ -181,6 +182,7 @@ namespace ads {
             Notification::create("Ad View invalid: Failed auth", NotificationIcon::Error)
                 ->show();
         };
+
         m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
             if (!m_impl) {
                 log::error("m_impl is null in ad listener callback");
@@ -319,6 +321,8 @@ namespace ads {
     };
 
     void Advertisement::loadRandom() {
+        reloadType(); // refresh any existing nodes
+
         log::debug("Preparing request for random advertisement...");
         auto request = web::WebRequest();
         request.userAgent("PlayerAdvertisements/1.0");
@@ -331,6 +335,8 @@ namespace ads {
     };
 
     void Advertisement::load(int id) {
+        reloadType(); // refresh any existing nodes
+
         log::debug("Preparing request for advertisement of ID {}...", id);
         auto request = web::WebRequest();
         request.userAgent("PlayerAdvertisements/1.0");
