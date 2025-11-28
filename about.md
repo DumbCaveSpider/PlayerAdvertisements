@@ -15,8 +15,6 @@ This mod is <cp>the perfect tool to find some very awesome levels that you other
 ## Credits
 - [Cheeseworks](user:6408873) for helping with the backend side of the mod and the website
 
-![king](arcticwoof.twitch_interactive/king.png)
-
 ---
 
 **![YT](frame:gj_ytIcon_001.png?scale=0.375) Watch the [Horrible Mods](https://www.youtube.com/watch?v=Ssl49pNmW_0&list=PL0dsSu2pR5cERnq7gojZTKVRvUwWo2Ohu) series out now on YouTube!**

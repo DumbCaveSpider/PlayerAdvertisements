@@ -10,6 +10,7 @@ protected:
     matjson::Value m_userData;
     EventListener<web::WebTask> m_listener;
     EventListener<web::WebTask> m_globalStatsListener;
+    EventListener<web::WebTask> m_announcementListener;
     // stats
     int m_totalViews = 0;
     int m_totalClicks = 0;
@@ -34,6 +35,7 @@ public:
     void onGlobalStatsFetchComplete(web::WebTask::Event* event);
     void onModSettingsButton(CCObject* sender);
     void onPlayButton(CCObject* sender);
+    void onAnnouncement(CCObject* sender);
     void populateAdsScrollLayer();
 
     int m_currentPlayLevelId = 0;

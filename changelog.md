@@ -5,6 +5,8 @@
 - Fixed hooks for in-level ads
 - Fixed an issue where clicks doesn't register correctly on some mobile devices
 - Added additional option when opening too many scenes from ads (prompt to return to main menu)
+- Added Announcement button to the Ad Manager and Ad Preview popup (A scroll icon)
+- Changed the About mod page format. Make it funnier.
 
 # v1.0.8
 
