@@ -82,11 +82,6 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
         Mod::get()->setSavedValue<std::string>("argon_token", token);
         log::debug("Token: {}", token);
 
-        if (desc.size() < 10) {
-            Notification::create("Description too short", NotificationIcon::Warning)->show();
-            return;
-        }
-
         auto reportReq = web::WebRequest();
         reportReq.userAgent("PlayerAdvertisements/1.0");
         reportReq.timeout(std::chrono::seconds(15));
