@@ -241,7 +241,7 @@ namespace ads {
 
                     if (m_impl->m_adSprite) {
                         log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
-                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), cocos2d::CCImage::kFmtUnKnown, true);
+                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.data(), cocos2d::CCImage::kFmtUnKnown, true);
                     } else {
                         log::warn("Ad sprite missing when trying to load image");
                     };

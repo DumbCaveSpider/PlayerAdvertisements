@@ -10,7 +10,7 @@ bool AdManager::setup() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
 
     // get the user id
-    std::string userID = Mod::get()->getSettingValue<std::string>("user-id");
+    std::string const userID = Mod::get()->getSettingValue<std::string>("user-id");
     if (userID == "") {
         this->onClose(nullptr);
         geode::createQuickPopup(
@@ -80,7 +80,7 @@ bool AdManager::setup() {
             m_mainLayer->addChild(bg3, 5);
 
             // title label at the top of each of the backgrounds
-            auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_adCount).c_str(), "goldFont.fnt");
+            auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_adCount).data(), "goldFont.fnt");
             titleLabel->setPosition({ bg1->getContentSize().width / 2, bg1->getContentSize().height + 10 });
             titleLabel->setScale(0.4f);
             m_titleLabel = titleLabel;
@@ -239,7 +239,7 @@ void AdManager::onAnnouncement(CCObject* sender) {
                     ? val["content"].asString().unwrap()
                     : "";
 
-                if (auto popup = geode::MDPopup::create(title.c_str(), content.c_str(), "Close")) {
+                if (auto popup = geode::MDPopup::create(title.data(), content.data(), "Close")) {
                     popup->show();
                 }
             } else {
@@ -367,14 +367,14 @@ void AdManager::populateAdsScrollLayer() {
 
         // labels
         std::string adIdStr = adId.isOk() ? numToString(adId.unwrap()) : "N/A";
-        auto adLabel = CCLabelBMFont::create(("Ad ID: " + adIdStr).c_str(), "goldFont.fnt");
+        auto adLabel = CCLabelBMFont::create(("Ad ID: " + adIdStr).data(), "goldFont.fnt");
         adLabel->setPosition({ adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 10.f });
         adLabel->setAnchorPoint({ 0.5f, 0.5f });
         adLabel->setScale(0.4f);
         adContainer->addChild(adLabel, 2);
 
         std::string levelIdStr = levelId.isOk() ? numToString(levelId.unwrap()) : "N/A";
-        auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).c_str(), "goldFont.fnt");
+        auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).data(), "goldFont.fnt");
         levelLabel->setPosition({ adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 25.f });
         levelLabel->setAnchorPoint({ 0.5f, 0.5f });
         levelLabel->setScale(0.4f);
@@ -382,7 +382,7 @@ void AdManager::populateAdsScrollLayer() {
 
         // views and clicks
         std::string viewsStr = viewCount.isOk() ? numToString(viewCount.unwrap()) : "0";
-        auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).c_str(), "goldFont.fnt");
+        auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).data(), "goldFont.fnt");
         viewsLabel->setPosition({ adContainer->getContentSize().width / 4, adContainer->getContentSize().height - 40.f });
         viewsLabel->setAnchorPoint({ 0.5f, 0.5f });
         viewsLabel->setColor({ 255, 125, 0 });
@@ -390,7 +390,7 @@ void AdManager::populateAdsScrollLayer() {
         adContainer->addChild(viewsLabel, 2);
 
         std::string clicksStr = clickCount.isOk() ? numToString(clickCount.unwrap()) : "0";
-        auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).c_str(), "goldFont.fnt");
+        auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).data(), "goldFont.fnt");
         clicksLabel->setPosition({ adContainer->getContentSize().width / 4 * 3, adContainer->getContentSize().height - 40.f });
         clicksLabel->setAnchorPoint({ 0.5f, 0.5f });
         clicksLabel->setColor({ 0, 175, 255 });
@@ -411,7 +411,7 @@ void AdManager::populateAdsScrollLayer() {
         };
 
         // created at
-        auto createdAtLabel = CCLabelBMFont::create(("Created at: " + createdAt.unwrap()).c_str(), "chatFont.fnt");
+        auto createdAtLabel = CCLabelBMFont::create(("Created at: " + createdAt.unwrap()).data(), "chatFont.fnt");
         createdAtLabel->setPosition({ adContainer->getContentSize().width / 2, 10.f });
         createdAtLabel->setAnchorPoint({ 0.5f, 0.5f });
         createdAtLabel->setScale(0.3f);
@@ -440,7 +440,7 @@ void AdManager::populateAdsScrollLayer() {
     m_adsScrollLayer->scrollToTop();
 
     // Update the title label with the correct ad count
-    if (m_titleLabel) m_titleLabel->setString(fmt::format("Your Advertisements ({})", m_adCount).c_str());
+    if (m_titleLabel) m_titleLabel->setString(fmt::format("Your Advertisements ({})", m_adCount).data());
 };
 
 void AdManager::onFetchComplete(web::WebTask::Event* event) {
@@ -489,9 +489,9 @@ void AdManager::onFetchComplete(web::WebTask::Event* event) {
                 }
                 // Update labels after fetching
                 if (m_viewsLabel)
-                    m_viewsLabel->setString(fmt::format("Total Views: {}", m_totalViews).c_str());
+                    m_viewsLabel->setString(fmt::format("Total Views: {}", m_totalViews).data());
                 if (m_clicksLabel)
-                    m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_totalClicks).c_str());
+                    m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_totalClicks).data());
             }
         } else {
             log::error("Request failed with status code: {}", res->code());
@@ -550,11 +550,11 @@ void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event* event) {
 
             // Update labels with global stats
             if (m_globalViewsLabel)
-                m_globalViewsLabel->setString(fmt::format("Views: {}", m_globalTotalViews).c_str());
+                m_globalViewsLabel->setString(fmt::format("Views: {}", m_globalTotalViews).data());
             if (m_globalClicksLabel)
-                m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_globalTotalClicks).c_str());
+                m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_globalTotalClicks).data());
             if (m_globalAdCountLabel)
-                m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_globalAdCount).c_str());
+                m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_globalAdCount).data());
         } else {
             log::error("Global stats request failed with status code: {}", res->code());
         }

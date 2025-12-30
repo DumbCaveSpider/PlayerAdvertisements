@@ -1,5 +1,6 @@
 # v1.1.1
 - Set up Ko-fi shop for ads
+- Minor fixes
 
 # v1.1.0
 - Link Advertisement node to external API
