@@ -30,7 +30,7 @@ AdPreview* AdPreview::create(int adId, int levelId, std::string_view userId, AdT
 };
 
 bool AdPreview::setup() {
-    setTitle("AD ID: " + numToString(m_adId));
+    setTitle("Ad ID: " + numToString(m_adId));
     auto levelIdLabel = CCLabelBMFont::create(("Level ID: " + numToString(m_levelId)).data(), "bigFont.fnt");
     levelIdLabel->setID("level-id-label");
     levelIdLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 40 });
@@ -169,28 +169,29 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
 
     // get argon token yum
     auto res = argon::startAuth([this, adId, userId](Result<std::string> res) {
-        if (!res) {
+        if (res.isErr()) {
             log::warn("Auth failed: {}", res.unwrapErr());
             Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
                 ->show();
             return;
         };
 
-        auto token = std::move(res).unwrap();
+        auto token = std::move(res).unwrapOrDefault();
         Mod::get()->setSavedValue<std::string>("argon_token", token);
         log::debug("Token: {}", token);
 
+        log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
         auto clickRequest = web::WebRequest();
         clickRequest.userAgent("PlayerAdvertisements/1.0");
         clickRequest.header("Content-Type", "application/json");
         clickRequest.timeout(std::chrono::seconds(15));
 
-        matjson::Value jsonBody = matjson::Value::object();
-        jsonBody["ad_id"] = adId;
-        jsonBody["authtoken"] = token;
-        jsonBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
+        matjson::Value clickBody = matjson::Value::object();
+        clickBody["ad_id"] = adId;
+        clickBody["authtoken"] = token;
+        clickBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
-        clickRequest.bodyJSON(jsonBody);
+        clickRequest.bodyJSON(clickBody);
 
         m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
