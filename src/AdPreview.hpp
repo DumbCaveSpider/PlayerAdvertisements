@@ -13,6 +13,7 @@ protected:
     int m_viewCount = 0;
     int m_clickCount = 0;
     EventListener<web::WebTask> m_announcementListener;
+    EventListener<web::WebTask> m_clickListener;
 
     bool setup() override;
     void onPlayButton(CCObject* sender);

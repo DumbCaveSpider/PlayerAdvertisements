@@ -54,6 +54,8 @@ namespace ads {
         bool m_isInScene = false;
 
         std::string m_token;
+
+        EventListener<web::WebTask> m_viewListener;
     };
 
     Advertisement::Advertisement() {
@@ -218,19 +220,17 @@ namespace ads {
                     log::debug("Sending view tracking request for ad_id={}, user_id={}", id, user);
                     auto viewRequest = web::WebRequest();
                     viewRequest.userAgent("PlayerAdvertisements/1.0");
-                    viewRequest.timeout(std::chrono::seconds(15));
                     viewRequest.header("Content-Type", "application/json");
+                    viewRequest.timeout(std::chrono::seconds(15));
 
                     matjson::Value viewBody = matjson::Value::object();
                     viewBody["ad_id"] = id;
-                    viewBody["user_id"] = user;
                     viewBody["authtoken"] = m_impl->m_token;
                     viewBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
                     viewRequest.bodyJSON(viewBody);
 
-                    EventListener<web::WebTask> viewListener;
-                    viewListener.bind([this, id, user](web::WebTask::Event* e) {
+                    m_impl->m_viewListener.bind([this, id, user](web::WebTask::Event* e) {
                         if (auto res = e->getValue()) {
                             if (res->ok()) {
                                 log::info("View passed ad_id={}, user_id={}", id, user);
@@ -242,10 +242,8 @@ namespace ads {
                         } else if (e->isCancelled()) {
                             log::error("View request failed for ad_id={}, user_id={}", id, user);
                         };
-                                      });
-
-                    auto viewTask = viewRequest.post("https://ads.arcticwoof.xyz/api/view");
-                    viewListener.setFilter(viewTask);
+                                                });
+                    m_impl->m_viewListener.setFilter(viewRequest.post("https://ads.arcticwoof.xyz/api/view"));
                     log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
 
                     if (m_impl->m_adSprite) {

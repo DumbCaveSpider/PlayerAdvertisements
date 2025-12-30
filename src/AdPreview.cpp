@@ -126,7 +126,7 @@ void AdPreview::onAnnouncementButton(CCObject* sender) {
 
 void AdPreview::onPlayButton(CCObject* sender) {
     // stop player if they have too many scenes loaded
-    if (CCDirector::sharedDirector()->sceneCount() >= 10 && Mod::get()->getSettingValue<bool>("ads_disable_scene_limit_protection") == false) {
+    if (CCDirector::sharedDirector()->sceneCount() >= 10 && Mod::get()->getSettingValue<bool>("scene_protection") == false) {
         geode::createQuickPopup(
             "Stop right there!",
             "You have <cr>too many scenes loaded</c> because you're opening too many ads. This may cause your game to become <cr>unstable</c>.\n<cy>Would you like to return to the main menu?</c>",
@@ -182,19 +182,17 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
 
         auto clickRequest = web::WebRequest();
         clickRequest.userAgent("PlayerAdvertisements/1.0");
-        clickRequest.timeout(std::chrono::seconds(15));
         clickRequest.header("Content-Type", "application/json");
+        clickRequest.timeout(std::chrono::seconds(15));
 
         matjson::Value jsonBody = matjson::Value::object();
         jsonBody["ad_id"] = adId;
-        jsonBody["user_id"] = userId;
         jsonBody["authtoken"] = token;
         jsonBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
         clickRequest.bodyJSON(jsonBody);
 
-        EventListener<web::WebTask> clickListener;
-        clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
+        m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
                 if (res->ok()) {
                     log::info("Click passed ad_id={}, user_id={}", adId, userId);
@@ -206,10 +204,8 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
             } else if (e->isCancelled()) {
                 log::error("Click request failed for ad_id={}, user_id={}", adId, userId);
             };
-                           });
-
-        auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
-        clickListener.setFilter(clickTask);
+                             });
+        m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
         log::debug("Sent click tracking request for ad_id={}, user_id={}", adId, userId);
                                 },
                                 [](argon::AuthProgress progress) {
