@@ -1,3 +1,6 @@
+# v1.1.1
+- Set up Ko-fi shop for ads
+
 # v1.1.0
 - Link Advertisement node to external API
 - Added In-game Ad Reporting feature (via Report button on the Ad Preview popup)

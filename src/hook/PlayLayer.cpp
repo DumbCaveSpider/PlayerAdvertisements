@@ -25,7 +25,7 @@ class $modify(AdsPlayLayer, PlayLayer) {
                 m_fields->bannerTop->setType(AdType::Banner);
                 m_fields->bannerTop->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
 
-                this->addChild(m_fields->bannerTop);
+                m_uiLayer->addChild(m_fields->bannerTop);
 
                 m_fields->bannerTop->loadRandom();
             };
@@ -37,7 +37,7 @@ class $modify(AdsPlayLayer, PlayLayer) {
                 m_fields->bannerBottom->setType(AdType::Banner);
                 m_fields->bannerBottom->setPosition({ winSize.width / 2.f, 30.f });
 
-                this->addChild(m_fields->bannerBottom);
+                m_uiLayer->addChild(m_fields->bannerBottom);
 
                 m_fields->bannerBottom->loadRandom();
             };
@@ -49,7 +49,7 @@ class $modify(AdsPlayLayer, PlayLayer) {
                 m_fields->skyscraperRight->setType(AdType::Skyscraper);
                 m_fields->skyscraperRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
 
-                this->addChild(m_fields->skyscraperRight);
+                m_uiLayer->addChild(m_fields->skyscraperRight);
 
                 m_fields->skyscraperRight->loadRandom();
             };
@@ -61,7 +61,7 @@ class $modify(AdsPlayLayer, PlayLayer) {
                 m_fields->skyscraperLeft->setType(AdType::Skyscraper);
                 m_fields->skyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
 
-                this->addChild(m_fields->skyscraperLeft);
+                m_uiLayer->addChild(m_fields->skyscraperLeft);
 
                 m_fields->skyscraperLeft->loadRandom();
             };

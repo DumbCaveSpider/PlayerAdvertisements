@@ -11,10 +11,10 @@ using namespace geode::utils;
 using namespace ads;
 
 namespace ads {
-    CCSize getAdSize(AdType type) {
-        auto banner = CCSize(364.f, 45.f);
-        auto square = CCSize(122.6f, 122.6f);
-        auto skyscraper = CCSize(41.f, 314.f);
+    CCSize const getAdSize(AdType type) {
+        auto const banner = CCSize(364.f, 45.f);
+        auto const square = CCSize(122.6f, 122.6f);
+        auto const skyscraper = CCSize(41.f, 314.f);
 
         CCSize contentSize = banner;
 

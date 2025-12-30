@@ -19,7 +19,7 @@
 using namespace geode::prelude;
 
 namespace ads {
-    enum class AWCW_ADS_API_DLL AdType {
+    enum class AdType : unsigned int {
         Banner = 1,
         Square = 2,
         Skyscraper = 3
@@ -45,7 +45,7 @@ namespace ads {
      * @param type The type of ad
      * @returns The size of the ad
      */
-    CCSize getAdSize(AdType type);
+    CCSize const getAdSize(AdType type);
 
     class AWCW_ADS_API_DLL Advertisement : public CCMenu {
     protected:
