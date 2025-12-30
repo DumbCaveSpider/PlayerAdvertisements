@@ -1,10 +1,10 @@
+#include <algorithm>
 #include <fmt/core.h>
+#include <Geode/Geode.hpp>
+#include <argon/argon.hpp>
 
 #include <AdPreview.hpp>
 #include <Advertisements.hpp>
-#include <Geode/Geode.hpp>
-#include <algorithm>
-#include <argon/argon.hpp>
 
 using namespace geode::prelude;
 using namespace geode::utils;
@@ -91,7 +91,7 @@ namespace ads {
     };
 
     void Advertisement::activate(CCObject*) {
-        auto& ad = m_impl->m_ad;
+        auto const& ad = m_impl->m_ad;
         if (ad.id == 0) {
             log::warn("Ad not loaded yet or invalid ad ID");
             Notification::create("Invalid Ad", NotificationIcon::Error)->show();

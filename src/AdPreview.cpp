@@ -129,7 +129,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
     if (CCDirector::sharedDirector()->sceneCount() >= 10 && Mod::get()->getSettingValue<bool>("ads_disable_scene_limit_protection") == false) {
         geode::createQuickPopup(
             "Stop right there!",
-            "You have <cr>too many scenes loaded</c> because you opening too many ads. This will cause your game to be <cr>unstable.</c>\n<cy>Do you want to return to the Main Menu?</c>",
+            "You have <cr>too many scenes loaded</c> because you're opening too many ads. This may cause your game to become <cr>unstable</c>.\n<cy>Would you like to return to the main menu?</c>",
             "Cancel", "Yes", [](auto, bool ok) {
                 if (ok) {
                     // pop to root scene
@@ -192,21 +192,25 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
         jsonBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
         clickRequest.bodyJSON(jsonBody);
-        auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
 
-        EventListener<web::WebTask> clickListener;
-        clickListener.bind([this](web::WebTask::Event* e) {
+        m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
+        m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
                 if (res->ok()) {
-                    log::info("Click pass ad_id={}, user_id={}", m_adId, m_userId);
+                    log::info("Click pass ad_id={}, user_id={}", adId, userId);
                 } else {
-                    log::error("Click failed for ad_id={}, user_id={}: (code: {})", m_adId, m_userId, res->code());
-                }
-            } }); }, [](argon::AuthProgress progress) { log::info("Auth progress: {}", argon::authProgressToString(progress)); });
-
-            if (!res) {
-                log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-                Notification::create("Failed to start argon auth", NotificationIcon::Error)
-                    ->show();
+                    log::error("Click failed for ad_id={}, user_id={}: (code: {})", adId, userId, res->code());
+                };
             };
-}
+                             });
+                                },
+                                [](argon::AuthProgress progress) {
+                                    log::info("Auth progress: {}", argon::authProgressToString(progress));
+                                });
+
+    if (!res) {
+        log::warn("Failed to start auth attempt: {}", res.unwrapErr());
+        Notification::create("Failed to start argon auth", NotificationIcon::Error)
+            ->show();
+    };
+};
