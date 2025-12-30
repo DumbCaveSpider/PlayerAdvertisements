@@ -22,7 +22,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
 
         //     auto token = std::move(res).unwrap();
         //     Mod::get()->setSavedValue<std::string>("argon_token", token);
-        //     log::debug("Token: {}", token); }, [](argon::AuthProgress progress) { log::info("Auth progress: {}", argon::authProgressToString(progress)); });
+        //     log::debug("Token: {}", token); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
 
         // if (!res) {
         //     log::warn("Failed to start auth attempt: {}", res.unwrapErr());

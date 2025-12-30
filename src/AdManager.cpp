@@ -205,7 +205,7 @@ AdManager* AdManager::create() {
 void AdManager::onKofiButton(CCObject* sender) {
     geode::createQuickPopup(
         "Support on Ko-fi",
-        "Would you like to explore our <cp>Ko-fi</c> shop?\n<cg>You can buy upgrades for your ads through here.</c>",
+        "Would you like to explore our <cp>Ko-fi</c> shop?\n<cg>You can buy upgrades for your ads there.</c>",
         "Cancel", "Proceed",
         [](auto, bool ok) {
             if (ok) {

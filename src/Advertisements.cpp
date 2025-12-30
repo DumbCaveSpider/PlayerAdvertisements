@@ -175,7 +175,11 @@ namespace ads {
 
             auto token = std::move(res).unwrap();
             log::debug("Token: {}", token);
-            m_impl->m_token = token; }, [](argon::AuthProgress progress) { log::info("Auth progress: {}", argon::authProgressToString(progress)); });
+            m_impl->m_token = token;
+                                    },
+                                    [](argon::AuthProgress progress) {
+                                        log::debug("Auth progress: {}", argon::authProgressToString(progress));
+                                    });
 
         if (!res) {
             log::warn("Failed to start auth attempt: {}", res.unwrapErr());
@@ -224,20 +228,25 @@ namespace ads {
                     viewBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
 
                     viewRequest.bodyJSON(viewBody);
-                    auto viewTask = viewRequest.post("https://ads.arcticwoof.xyz/api/view");
 
                     EventListener<web::WebTask> viewListener;
                     viewListener.bind([this, id, user](web::WebTask::Event* e) {
                         if (auto res = e->getValue()) {
                             if (res->ok()) {
-                                log::info("View pass ad_id={}, user_id={}", id, user);
+                                log::info("View passed ad_id={}, user_id={}", id, user);
                             } else {
-                                log::error("View failed for ad_id={}, user_id={}: (code: {})", id, user, res->code());
+                                log::error("View failed with code {} for ad_id={}, user_id={}: {}", res->code(), id, user, res->errorMessage());
                             };
+
+                            log::debug("View request completed for ad_id={}, user_id={}", id, user);
+                        } else if (e->isCancelled()) {
+                            log::error("View request failed for ad_id={}, user_id={}", id, user);
                         };
                                       });
+
+                    auto viewTask = viewRequest.post("https://ads.arcticwoof.xyz/api/view");
                     viewListener.setFilter(viewTask);
-                    log::info("Sent view tracking request for ad_id={}, user_id={}", id, user);
+                    log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
 
                     if (m_impl->m_adSprite) {
                         log::info("Loading ad image from URL: {}", m_impl->m_ad.image);

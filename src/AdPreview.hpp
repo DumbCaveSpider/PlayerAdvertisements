@@ -12,7 +12,6 @@ protected:
     AdType m_type = AdType::Banner;
     int m_viewCount = 0;
     int m_clickCount = 0;
-    EventListener<web::WebTask> m_clickListener;
     EventListener<web::WebTask> m_announcementListener;
 
     bool setup() override;

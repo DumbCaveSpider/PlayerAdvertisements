@@ -193,19 +193,27 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
 
         clickRequest.bodyJSON(jsonBody);
 
-        m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
+        EventListener<web::WebTask> clickListener;
+        clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
                 if (res->ok()) {
-                    log::info("Click pass ad_id={}, user_id={}", adId, userId);
+                    log::info("Click passed ad_id={}, user_id={}", adId, userId);
                 } else {
-                    log::error("Click failed for ad_id={}, user_id={}: (code: {})", adId, userId, res->code());
+                    log::error("Click failed with code {} for ad_id={}, user_id={}: {}", res->code(), adId, userId, res->errorMessage());
                 };
+
+                log::debug("Click request completed for ad_id={}, user_id={}", adId, userId);
+            } else if (e->isCancelled()) {
+                log::error("Click request failed for ad_id={}, user_id={}", adId, userId);
             };
-                             });
-        m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
+                           });
+
+        auto clickTask = clickRequest.post("https://ads.arcticwoof.xyz/api/click");
+        clickListener.setFilter(clickTask);
+        log::debug("Sent click tracking request for ad_id={}, user_id={}", adId, userId);
                                 },
                                 [](argon::AuthProgress progress) {
-                                    log::info("Auth progress: {}", argon::authProgressToString(progress));
+                                    log::debug("Auth progress: {}", argon::authProgressToString(progress));
                                 });
 
     if (!res) {

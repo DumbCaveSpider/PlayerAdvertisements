@@ -106,7 +106,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
                 log::error("Report request was cancelled");
             };
                         });
-        m_listener.setFilter(reportReq.post("https://ads.arcticwoof.xyz/api/report")); }, [](argon::AuthProgress progress) { log::info("Auth progress: {}", argon::authProgressToString(progress)); });
+        m_listener.setFilter(reportReq.post("https://ads.arcticwoof.xyz/api/report")); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
 
     if (!res) {
         log::warn("Failed to start auth attempt: {}", res.unwrapErr());
