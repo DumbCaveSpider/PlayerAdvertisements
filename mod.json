@@ -47,7 +47,7 @@
             "default": "",
             "description": "Discord User ID provided by the Ads Manager website."
         },
-        "scene_protection": {
+        "scene-protection": {
             "type": "bool",
             "name": "Disable Scene Limit Protection",
             "default": false,

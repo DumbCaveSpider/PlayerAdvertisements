@@ -10,7 +10,7 @@ class $modify(AdsCreatorLayer, CreatorLayer) {
         if (!CreatorLayer::init()) return false;
 
         if (Mod::get()->getSettingValue<bool>("CreatorLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             if (auto adBanner = Advertisement::create()) {

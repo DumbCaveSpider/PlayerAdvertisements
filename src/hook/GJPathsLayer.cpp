@@ -10,7 +10,7 @@ class $modify(AdsGJPathsLayer, GJPathsLayer) {
         if (!GJPathsLayer::init()) return false;
 
         if (Mod::get()->getSettingValue<bool>("GJPathsLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // square ad at the left side
             if (auto adBannerLeft = Advertisement::create()) {

@@ -48,10 +48,11 @@ namespace ads {
     CCSize const getAdSize(AdType type);
 
     class AWCW_ADS_API_DLL Advertisement : public CCMenu {
-    protected:
+    private:
         class Impl;
         std::unique_ptr<Impl> m_impl;
 
+    protected:
         Advertisement();
         virtual ~Advertisement();
 

@@ -10,7 +10,7 @@ class $modify(AdsGauntletSelectLayer, GauntletSelectLayer) {
         if (!GauntletSelectLayer::init(p0)) return false;
 
         if (Mod::get()->getSettingValue<bool>("GauntletSelectLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner at the bottom center
             if (auto adBanner = Advertisement::create()) {

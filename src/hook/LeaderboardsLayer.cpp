@@ -10,7 +10,7 @@ class $modify(AdsLeaderboardsLayer, LeaderboardsLayer) {
         if (!LeaderboardsLayer::init(layer)) return false;
 
         if (Mod::get()->getSettingValue<bool>("LeaderboardsLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner at the bottom center
             if (auto adBanner = Advertisement::create()) {

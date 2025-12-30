@@ -30,7 +30,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
         //         ->show();
         // };
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        auto const winSize = CCDirector::sharedDirector()->getWinSize();
         if (Mod::get()->getSettingValue<bool>("MenuLayer")) {
             // banner ad at the center
             if (auto adBanner = Advertisement::create()) {
@@ -49,7 +49,8 @@ class $modify(AdsMenuLayer, MenuLayer) {
             auto adButton = CircleButtonSprite::create(
                 CCSprite::create("adIcon.png"_spr),
                 CircleBaseColor::Green,
-                CircleBaseSize::MediumAlt);
+                CircleBaseSize::MediumAlt
+            );
 
             auto popupButton = CCMenuItemSpriteExtra::create(
                 adButton,

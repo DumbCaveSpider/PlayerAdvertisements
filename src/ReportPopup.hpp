@@ -5,12 +5,13 @@ using namespace geode::prelude;
 using namespace ads;
 
 class ReportPopup : public Popup<> {
+private:
+    class Impl;
+    std::unique_ptr<Impl> m_impl;
+
 protected:
-    int m_adId = 0;
-    int m_levelId = 0;
-    std::string m_userId = "";
-    std::string m_description = "";
-    EventListener<web::WebTask> m_listener;
+    ReportPopup();
+    virtual ~ReportPopup();
 
     bool setup() override;
     void onSubmitButton(CCObject* sender);

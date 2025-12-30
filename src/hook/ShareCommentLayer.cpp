@@ -10,7 +10,7 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
         if (!ShareCommentLayer::init(title, charLimit, type, ID, desc)) return false;
 
         if (Mod::get()->getSettingValue<bool>("ShareCommentLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // square ad left
             if (auto adSquareLeft = Advertisement::create()) {

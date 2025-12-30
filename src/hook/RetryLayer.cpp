@@ -29,7 +29,7 @@ class $modify(AdsRetryLevelLayer, RetryLevelLayer) {
                 };
 
                 // add funny banner
-                auto winSize = CCDirector::sharedDirector()->getWinSize();
+                auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
                 // banner ad at the top
                 auto adBanner = Advertisement::create();

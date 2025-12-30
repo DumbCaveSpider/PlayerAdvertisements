@@ -52,7 +52,7 @@ class $modify(AdsPauseLayer, PauseLayer) {
                 if (normalBar) normalBar->setVisible(false);
             };
 
-            auto winSize = CCDirector::get()->getWinSize();
+            auto const winSize = CCDirector::get()->getWinSize();
 
             // insert ad banner (722x84)
             if (auto adBanner = Advertisement::create()) {

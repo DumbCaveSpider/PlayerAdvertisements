@@ -362,8 +362,7 @@ namespace ads {
 
     Advertisement* Advertisement::create() {
         auto ret = new Advertisement();
-
-        if (ret && ret->init()) {
+        if (ret->init()) {
             ret->autorelease();
             return ret;
         };
@@ -371,4 +370,4 @@ namespace ads {
         CC_SAFE_DELETE(ret);
         return nullptr;
     };
-};  // namespace ads
+};

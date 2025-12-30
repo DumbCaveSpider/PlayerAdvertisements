@@ -10,7 +10,7 @@ class $modify(AdsInfoLayer, InfoLayer) {
         if (!InfoLayer::init(p0, p1, p2)) return false;
 
         if (Mod::get()->getSettingValue<bool>("InfoLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // skyscraper ad on the right side
             if (auto adSkyscraper = Advertisement::create()) {

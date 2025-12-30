@@ -5,17 +5,15 @@ using namespace geode::prelude;
 using namespace ads;
 
 class AdPreview : public Popup<> {
-protected:
-    int m_adId = 0;
-    int m_levelId = 0;
-    std::string m_userId = "";
-    AdType m_type = AdType::Banner;
-    int m_viewCount = 0;
-    int m_clickCount = 0;
-    EventListener<web::WebTask> m_announcementListener;
-    EventListener<web::WebTask> m_clickListener;
+private:
+    class Impl;
+    std::unique_ptr<Impl> m_impl;
 
-    bool setup() override;
+protected:
+AdPreview();
+virtual ~AdPreview();
+
+bool setup() override;
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);
     void onAnnouncementButton(CCObject* sender);

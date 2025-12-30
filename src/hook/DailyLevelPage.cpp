@@ -10,7 +10,7 @@ class $modify(AdsDailyLevelPage, DailyLevelPage) {
         if (!DailyLevelPage::init(levelType)) return false;
 
         if (Mod::get()->getSettingValue<bool>("DailyLevelPage")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             if (auto adBanner = Advertisement::create()) {

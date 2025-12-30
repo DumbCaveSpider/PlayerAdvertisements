@@ -11,7 +11,7 @@ class $modify(AdsChallengesPage, ChallengesPage) {
         if (!ChallengesPage::init()) return false;
 
         if (Mod::get()->getSettingValue<bool>("ChallengesPage")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             if (auto adBanner = Advertisement::create()) {

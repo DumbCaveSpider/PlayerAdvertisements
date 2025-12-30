@@ -16,7 +16,7 @@ class $modify(AdsPlayLayer, PlayLayer) {
     void setupHasCompleted() {
         // dont show ads ingame if the setting is false
         if (Mod::get()->getSettingValue<bool>("PlayLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             if (!m_fields->bannerTop) {

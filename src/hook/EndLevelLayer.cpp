@@ -9,7 +9,7 @@ class $modify(AdsEndLevelLayer, EndLevelLayer) {
     void customSetup() override {
         EndLevelLayer::customSetup();
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
         if (Mod::get()->getSettingValue<bool>("EndLevelLayer")) {
             // banner ad at the top

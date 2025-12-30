@@ -10,7 +10,7 @@ class $modify(AdsProfilePage, ProfilePage) {
         if (!ProfilePage::init(p0, p1)) return false;
 
         if (Mod::get()->getSettingValue<bool>("ProfilePage")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // skyscraper ad on the right side
             if (auto adSkyscraperRight = Advertisement::create()) {

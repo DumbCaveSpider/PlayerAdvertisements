@@ -7,30 +7,27 @@
 using namespace geode::prelude;
 using namespace geode::utils;
 
-ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId, std::string_view description) {
-    auto ret = new ReportPopup();
-    ret->m_adId = adId;
-    ret->m_levelId = levelId;
-    ret->m_userId = userId;
-    ret->m_description = description;
-
-    // @geode-ignore(unknown-resource)
-    if (ret && ret->initAnchored(340.f, 120.f, "geode.loader/GE_square03.png")) {
-        ret->autorelease();
-        return ret;
-    };
-
-    CC_SAFE_DELETE(ret);
-    return nullptr;
+class ReportPopup::Impl final {
+public:
+    int m_adId = 0;
+    int m_levelId = 0;
+    std::string m_userId = "";
+    std::string m_description = "";
+    EventListener<web::WebTask> m_listener;
 };
 
+ReportPopup::ReportPopup() {
+    m_impl = std::make_unique<Impl>();
+};
+
+ReportPopup::~ReportPopup() {};
+
 bool ReportPopup::setup() {
-    setTitle("Report AD ID: " + numToString(m_adId));
+    setTitle("Report AD ID: " + numToString(m_impl->m_adId));
     auto descriptionInput = TextInput::create(300.f, "Report Reason...", "bigFont.fnt");
     descriptionInput->setID("description-input");
     descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 + 10 });
-    if (!m_description.empty())
-        descriptionInput->setString(m_description);
+    if (!m_impl->m_description.empty()) descriptionInput->setString(m_impl->m_description);
     m_mainLayer->addChild(descriptionInput);
 
     auto menu = CCMenu::create();
@@ -62,7 +59,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
     if (descriptionInput)
         desc = descriptionInput->getString();
     else
-        desc = m_description;
+        desc = m_impl->m_description;
 
     if (desc.length() < 10) {
         Notification::create("Report reason is too short", NotificationIcon::Warning)->show();
@@ -88,13 +85,13 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
         reportReq.header("Content-Type", "application/json");
 
         matjson::Value body = matjson::Value::object();
-        body["ad_id"] = m_adId;
+        body["ad_id"] = m_impl->m_adId;
         body["account_id"] = GJAccountManager::sharedState()->m_accountID;
         body["description"] = desc;
         body["authtoken"] = token;
         reportReq.bodyJSON(body);
 
-        m_listener.bind([this](web::WebTask::Event* e) {
+        m_impl->m_listener.bind([this](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
                 if (res->ok()) {
                     Notification::create("Report Sent", NotificationIcon::Success)->show();
@@ -105,12 +102,29 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
             } else if (e->isCancelled()) {
                 log::error("Report request was cancelled");
             };
-                        });
-        m_listener.setFilter(reportReq.post("https://ads.arcticwoof.xyz/api/report")); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
+                                });
+        m_impl->m_listener.setFilter(reportReq.post("https://ads.arcticwoof.xyz/api/report")); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
 
     if (!res) {
         log::warn("Failed to start auth attempt: {}", res.unwrapErr());
         Notification::create("Failed to start argon auth", NotificationIcon::Error)
             ->show();
     };
+};
+
+ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId, std::string_view description) {
+    auto ret = new ReportPopup();
+    ret->m_impl->m_adId = adId;
+    ret->m_impl->m_levelId = levelId;
+    ret->m_impl->m_userId = userId;
+    ret->m_impl->m_description = description;
+
+    // @geode-ignore(unknown-resource)
+    if (ret->initAnchored(340.f, 120.f, "geode.loader/GE_square03.png")) {
+        ret->autorelease();
+        return ret;
+    };
+
+    CC_SAFE_DELETE(ret);
+    return nullptr;
 };

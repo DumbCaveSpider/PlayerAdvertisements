@@ -10,7 +10,7 @@ class $modify(AdsGJDropDownLayer, GJDropDownLayer) {
         if (!GJDropDownLayer::init(p0, p1, p2)) return false;
 
         if (Mod::get()->getSettingValue<bool>("GJDropDownLayer")) {
-            auto winSize = CCDirector::sharedDirector()->getWinSize();
+            auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
             if (auto adBanner = Advertisement::create()) {
