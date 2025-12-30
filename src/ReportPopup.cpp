@@ -7,7 +7,7 @@
 using namespace geode::prelude;
 using namespace geode::utils;
 
-ReportPopup* ReportPopup::create(int adId, int levelId, std::string userId, std::string description) {
+ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId, std::string_view description) {
     auto ret = new ReportPopup();
     ret->m_adId = adId;
     ret->m_levelId = levelId;

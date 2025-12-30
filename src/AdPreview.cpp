@@ -10,7 +10,7 @@ using namespace geode::prelude;
 using namespace geode::utils;
 using namespace ads;
 
-AdPreview* AdPreview::create(int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount) {
+AdPreview* AdPreview::create(int adId, int levelId, std::string_view userId, AdType type, int viewCount, int clickCount) {
     auto ret = new AdPreview();
     ret->m_adId = adId;
     ret->m_levelId = levelId;
@@ -164,7 +164,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
     }
 };
 
-void AdPreview::registerClick(int adId, std::string userId) {
+void AdPreview::registerClick(int adId, std::string_view userId) {
     log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
 
     // get argon token yum

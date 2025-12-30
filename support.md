@@ -1,3 +1,7 @@
+## ![$](frame:shard0205ShardBig_001.png?scale=0.5) <cp>Buy boosts or subscribe to Verified!</c>
+
+---
+
 # ![YT](frame:gj_ytIcon_001.png?scale=0.625) [Watch 'Horrible Mods'](https://www.youtube.com/watch?v=Ssl49pNmW_0&list=PL0dsSu2pR5cERnq7gojZTKVRvUwWo2Ohu)
 
 ## ArcticWoof...

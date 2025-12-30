@@ -18,8 +18,8 @@ protected:
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);
     void onAnnouncementButton(CCObject* sender);
-    void registerClick(int adId, std::string userId);
+    void registerClick(int adId, std::string_view userId);
 
 public:
-    static AdPreview* create(int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);
+    static AdPreview* create(int adId, int levelId, std::string_view userId, AdType type, int viewCount, int clickCount);
 };

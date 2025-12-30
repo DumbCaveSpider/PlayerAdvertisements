@@ -16,5 +16,5 @@ protected:
     void onSubmitButton(CCObject* sender);
 
 public:
-    static ReportPopup* create(int adId, int levelId, std::string userId, std::string description);
+    static ReportPopup* create(int adId, int levelId, std::string_view userId, std::string_view description);
 };

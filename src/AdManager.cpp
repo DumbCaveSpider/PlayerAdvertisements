@@ -205,11 +205,11 @@ AdManager* AdManager::create() {
 void AdManager::onKofiButton(CCObject* sender) {
     geode::createQuickPopup(
         "Support on Ko-fi",
-        "You will be redirected to <cp>Ko-fi</c> page.\n<cy>Would you like to open the link?</c>",
+        "Would you like to explore our <cp>Ko-fi</c> shop? You can buy upgrades for your ads through here.",
         "Cancel", "Proceed",
         [](auto, bool ok) {
             if (ok) {
-                geode::utils::web::openLinkInBrowser("https://ko-fi.com/arcticwoof");
+                geode::utils::web::openLinkInBrowser("https://ko-fi.com/playerads");
                 Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
             };
         });

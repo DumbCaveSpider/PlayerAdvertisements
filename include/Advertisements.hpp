@@ -36,7 +36,7 @@ namespace ads {
 
         Ad() = default;
 
-        Ad(unsigned int id, std::string image, int level, AdType type, std::string user, int viewCount = 0, int clickCount = 0)
+        Ad(unsigned int id, std::string_view image, int level, AdType type, std::string_view user, int viewCount = 0, int clickCount = 0)
             : id(id), image(image), level(level), user(user), type(type), viewCount(viewCount), clickCount(clickCount) {}
     };
 

@@ -31,6 +31,10 @@
         "online"
     ],
     "dependencies": {
+        "geode.node-ids": {
+            "importance": "required",
+            "version": ">=1.21.0"
+        },
         "prevter.imageplus": {
             "importance": "required",
             "version": ">=1.0.0"
@@ -49,7 +53,7 @@
             "default": false,
             "description": "Disabling will remove the 10 scene limit. <c>This usually occur when you kept opening ads after ads without going back to the previous scene.</c> <cr>Highly recommended to keep this enabled to prevent your game from lagging.</c>"
         },
-        "Advertisements Placements": {
+        "Placements": {
             "type": "title",
             "name": "Advertisements Placements",
             "description": "Select where advertisements should be shown in the game. <cy>You can disable ads in certain layers if you want.</c>"
