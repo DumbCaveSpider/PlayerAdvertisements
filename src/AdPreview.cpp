@@ -193,7 +193,6 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
 
         clickRequest.bodyJSON(jsonBody);
 
-        m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
         m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
             if (auto res = e->getValue()) {
                 if (res->ok()) {
@@ -203,6 +202,7 @@ void AdPreview::registerClick(int adId, std::string_view userId) {
                 };
             };
                              });
+        m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
                                 },
                                 [](argon::AuthProgress progress) {
                                     log::info("Auth progress: {}", argon::authProgressToString(progress));
