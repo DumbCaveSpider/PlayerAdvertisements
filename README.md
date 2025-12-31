@@ -1,6 +1,8 @@
 # Player Advertisements
 Community-made ads for awesome levels!
 
+> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W31QRZA4)
+
 ###### Entry for Modtober 2025: What The Heck!?
 
 You looooove advertisements, right? Who doesn't?! Well, maybe you want to promote some of your own levels with over-the-top, eye catching, MrBeast-type clickbaity advertisements! Or, maybe you just want to see some very funny ads while you play. Either way, this mod is for everyone!
@@ -11,7 +13,7 @@ This mod is the perfect tool to find some very awesome levels that you otherwise
 
 #### Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!
 *Authorization via [Discord account](https://discord.com/login) will be required.*
-###### Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads)!
+##### Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads)!
 
 ## Credits
 - [Cheeseworks](https://github.com/BlueWitherer) for helping with the backend side of the mod and the website

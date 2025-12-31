@@ -1,3 +1,6 @@
+# v1.1.2
+- Hid side ads on certain dropdown layers
+
 # v1.1.1
 - Set up Ko-fi shop for ads
 - Several improvements

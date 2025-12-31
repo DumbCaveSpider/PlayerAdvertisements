@@ -10,10 +10,11 @@ private:
     std::unique_ptr<Impl> m_impl;
 
 protected:
-AdPreview();
-virtual ~AdPreview();
+    AdPreview();
+    virtual ~AdPreview();
 
-bool setup() override;
+    bool setup() override;
+
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);
     void onAnnouncementButton(CCObject* sender);

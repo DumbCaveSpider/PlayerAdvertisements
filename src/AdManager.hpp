@@ -14,8 +14,6 @@ protected:
 
     bool setup() override;
 
-public:
-    static AdManager* create();
     void onDiscordButton(CCObject* sender);
     void onKofiButton(CCObject* sender);
     void onWebButton(CCObject* sender);
@@ -26,5 +24,6 @@ public:
     void onAnnouncement(CCObject* sender);
     void populateAdsScrollLayer();
 
-    int m_currentPlayLevelId = 0;
+public:
+    static AdManager* create();
 };
