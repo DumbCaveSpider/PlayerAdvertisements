@@ -135,29 +135,28 @@ void AdPreview::onPlayButton(CCObject* sender) {
                     CCDirector::sharedDirector()->popToRootScene();
                 }
             });
+
         return;
     }
 
     if (PlayLayer::get()) {
         geode::createQuickPopup(
             "Warning",
-            "You are already inside of a level, attempt to play another level before closing the current level will <cr>crash your game</c>.\n<cy>Do you still want to proceed?</c>",
+            "You are already inside of a level, attempt to play another level before closing the current level may <cr>crash your game</c>.\n<cy>Do you still want to proceed?</c>",
             "Cancel", "Proceed",
             [this, sender](auto, bool btn) {
                 if (btn) {
-                    // close popup
-                    this->onClose(sender);
                     this->registerClick(m_impl->m_adId, m_impl->m_userId);
-                    auto searchStr = std::to_string(m_impl->m_levelId);
+
+                    auto const searchStr = numToString(m_impl->m_levelId);
                     auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
                     CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
                 }
             });
     } else {
-        // close popup
-        this->onClose(sender);
         this->registerClick(m_impl->m_adId, m_impl->m_userId);
-        auto searchStr = std::to_string(m_impl->m_levelId);
+
+        auto const searchStr = numToString(m_impl->m_levelId);
         auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
     }
