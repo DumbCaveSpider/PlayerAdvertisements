@@ -11,6 +11,12 @@ using namespace geode::utils;
 using namespace ads;
 
 namespace ads {
+    namespace particles {
+        constexpr const char* banner = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* square = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+    };
+
     CCSize const getAdSize(AdType type) {
         auto const banner = CCSize(364.f, 45.f);
         auto const square = CCSize(122.6f, 122.6f);
@@ -35,6 +41,22 @@ namespace ads {
         };
 
         return contentSize;
+    };
+
+    constexpr const char* getParticlesForAdType(AdType type) {
+        switch (type) {
+        case AdType::Banner:
+            return particles::banner;
+
+        case AdType::Square:
+            return particles::square;
+
+        case AdType::Skyscraper:
+            return particles::skyscraper;
+
+        default:
+            return particles::square;
+        };
     };
 
     class Advertisement::Impl final {
@@ -107,10 +129,7 @@ namespace ads {
     };
 
     void Advertisement::reload() {
-        if (m_impl->m_adButton) {
-            m_impl->m_adButton->removeMeAndCleanup();
-            m_impl->m_adButton = nullptr;
-        };
+        this->removeAllChildrenWithCleanup(true);
 
         if (!m_impl->m_adSprite) {
             log::warn("ad sprite is null");
@@ -249,7 +268,7 @@ namespace ads {
 
                     if (m_impl->m_adSprite) {
                         log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
-                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown, true);
+                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown);
                     } else {
                         log::warn("Ad sprite missing when trying to load image");
                     };
@@ -319,6 +338,13 @@ namespace ads {
                         glowNode->setAnchorPoint({ 0.5, 0.5 });
                         glowNode->setPosition(m_impl->m_adButton->getPosition());
 
+                        auto particles = GameToolbox::particleFromString(getParticlesForAdType(m_impl->m_ad.type), CCParticleSystemQuad::create(), false);
+                        particles->setScale(1.25f);
+                        particles->setAnchorPoint({ 0.5, 0.5 });
+                        particles->setPosition(glowNode->getPosition());
+                        particles->setTotalParticles(125);
+                        particles->setEmissionRate(25.f);
+
                         auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
                         tag->setScale(0.375f);
                         tag->setAnchorPoint({ 1, 0 });
@@ -329,37 +355,42 @@ namespace ads {
                         switch (m_impl->m_ad.glowLevel) {
                         case 1:
                             glowNode->setOpacity(200);
-                            glowNode->setColor({ 225, 225, 150 });
-                            glowNode->setContentSize({ size.width + 0.875f, size.height + 0.875f });
-                            tag->setColor({ 225, 225, 150 });
+                            glowNode->setColor({ 250, 250, 75 });
+                            glowNode->setContentSize({ size.width + 2.5f, size.height + 2.5f });
+                            particles->setStartColorVar({ 250, 250, 75, 255 });
+                            tag->setColor({ 250, 250, 75 });
                             break;
 
                         case 2:
                             glowNode->setOpacity(125);
                             glowNode->setColor({ 50, 250, 250 });
-                            glowNode->setContentSize({ size.width + 1.25f, size.height + 1.25f });
+                            glowNode->setContentSize({ size.width + 5.f, size.height + 5.f });
+                            particles->setStartColorVar({ 50, 250, 250, 255 });
                             tag->setColor({ 50, 250, 250 });
                             break;
 
                         case 3:
                             glowNode->setOpacity(100);
                             glowNode->setColor({ 255, 75, 150 });
-                            glowNode->setContentSize({ size.width + 2.f, size.height + 2.f });
+                            glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
+                            particles->setStartColorVar({ 255, 75, 150, 255 });
                             tag->setColor({ 255, 75, 150 });
                             break;
 
                         default:
                             glowNode->removeMeAndCleanup();
+                            particles->removeMeAndCleanup();
                             tag->removeMeAndCleanup();
                             break;
                         };
 
                         if (glowNode) {
-                            glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.f, glowNode->getScaledContentHeight() * 2.f });
-                            glowNode->setScale(glowNode->getScale() / 2.f);
+                            glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.5f, glowNode->getScaledContentHeight() * 2.5f });
+                            glowNode->setScale(glowNode->getScale() / 2.5f);
 
                             this->addChild(glowNode, 0);
-                            this->addChild(tag, 9);
+                            if (particles) this->addChild(particles, 2);
+                            if (tag) m_impl->m_adButton->addChild(tag, 9);
                         };
                     };
 

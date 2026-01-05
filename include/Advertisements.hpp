@@ -48,6 +48,13 @@ namespace ads {
      */
     CCSize const getAdSize(AdType type);
 
+    /**
+     * Get the particle string based on an ad type
+     * @param type The type of ad
+     * @returns The particle string
+     */
+    constexpr const char* getParticlesForAdType(AdType type);
+
     class AWCW_ADS_API_DLL Advertisement : public CCMenu {
     private:
         class Impl;
