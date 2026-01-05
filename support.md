@@ -1,4 +1,4 @@
-## ![$](frame:shard0205ShardBig_001.png?scale=0.375) <cp>Buy boosts or subscribe to Verified on *[our Ko-fi](https://ko-fi.com/playerads)*!</c>
+## ![$](frame:shard0205ShardBig_001.png?scale=0.375) <cp>Buy boosts or subscribe to Verified on *[our Ko-fi](https://ko-fi.com/playerads)* to expand your reach!</c>
 
 ---
 

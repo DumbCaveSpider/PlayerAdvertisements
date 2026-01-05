@@ -113,7 +113,7 @@ bool AdManager::setup() {
             m_mainLayer->addChild(bg3, 5);
 
             // title label at the top of each of the backgrounds
-            auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->m_adCount).data(), "goldFont.fnt");
+            auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->m_adCount).c_str(), "goldFont.fnt");
             titleLabel->setPosition({ bg1->getContentSize().width / 2, bg1->getContentSize().height + 10 });
             titleLabel->setScale(0.4f);
             m_impl->m_titleLabel = titleLabel;
@@ -260,7 +260,7 @@ void AdManager::onAnnouncement(CCObject* sender) {
                     ? val["content"].asString().unwrap()
                     : "";
 
-                if (auto popup = geode::MDPopup::create(title.data(), content.data(), "Close")) {
+                if (auto popup = geode::MDPopup::create(title.c_str(), content.c_str(), "Close")) {
                     popup->show();
                 }
             } else {
@@ -276,11 +276,11 @@ void AdManager::onAnnouncement(CCObject* sender) {
 void AdManager::onDiscordButton(CCObject* sender) {
     geode::createQuickPopup(
         "Join our Discord?",
-        "You will be redirected to <cp>ArcticWoof's Discord Server</c>.\n<cy>Would you like to open the link?</c>",
+        "You will be redirected to <co>Cheeseworks's Support Server</c>.\n<cy>Would you like to proceed?</c>",
         "Cancel", "Proceed",
         [](auto, bool ok) {
             if (ok) {
-                geode::utils::web::openLinkInBrowser("https://discord.gg/gXcppxTNxC");
+                geode::utils::web::openLinkInBrowser("https://www.dsc.gg/cheeseworks");
                 Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
             };
         });
@@ -289,7 +289,7 @@ void AdManager::onDiscordButton(CCObject* sender) {
 void AdManager::onWebButton(CCObject* sender) {
     geode::createQuickPopup(
         "Manage Advertisements?",
-        "You will be redirected to <cp>GD Advertisement Manager</c>.\n<cy>Would you like to open the link?</c>",
+        "You will be redirected to <cp>GD Advertisement Manager</c>.\n<cy>Would you like to proceed?</c>",
         "Cancel", "Proceed",
         [](auto, bool ok) {
             if (ok) {
@@ -388,14 +388,14 @@ void AdManager::populateAdsScrollLayer() {
 
         // labels
         std::string adIdStr = adId.isOk() ? numToString(adId.unwrap()) : "N/A";
-        auto adLabel = CCLabelBMFont::create(("Ad ID: " + adIdStr).data(), "goldFont.fnt");
+        auto adLabel = CCLabelBMFont::create(("Ad ID: " + adIdStr).c_str(), "goldFont.fnt");
         adLabel->setPosition({ adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 10.f });
         adLabel->setAnchorPoint({ 0.5f, 0.5f });
         adLabel->setScale(0.4f);
         adContainer->addChild(adLabel, 2);
 
         std::string levelIdStr = levelId.isOk() ? numToString(levelId.unwrap()) : "N/A";
-        auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).data(), "goldFont.fnt");
+        auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).c_str(), "goldFont.fnt");
         levelLabel->setPosition({ adContainer->getContentSize().width / 2, adContainer->getContentSize().height - 25.f });
         levelLabel->setAnchorPoint({ 0.5f, 0.5f });
         levelLabel->setScale(0.4f);
@@ -403,7 +403,7 @@ void AdManager::populateAdsScrollLayer() {
 
         // views and clicks
         std::string viewsStr = viewCount.isOk() ? numToString(viewCount.unwrap()) : "0";
-        auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).data(), "goldFont.fnt");
+        auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).c_str(), "goldFont.fnt");
         viewsLabel->setPosition({ adContainer->getContentSize().width / 4, adContainer->getContentSize().height - 40.f });
         viewsLabel->setAnchorPoint({ 0.5f, 0.5f });
         viewsLabel->setColor({ 255, 125, 0 });
@@ -411,7 +411,7 @@ void AdManager::populateAdsScrollLayer() {
         adContainer->addChild(viewsLabel, 2);
 
         std::string clicksStr = clickCount.isOk() ? numToString(clickCount.unwrap()) : "0";
-        auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).data(), "goldFont.fnt");
+        auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).c_str(), "goldFont.fnt");
         clicksLabel->setPosition({ adContainer->getContentSize().width / 4 * 3, adContainer->getContentSize().height - 40.f });
         clicksLabel->setAnchorPoint({ 0.5f, 0.5f });
         clicksLabel->setColor({ 0, 175, 255 });
@@ -432,7 +432,7 @@ void AdManager::populateAdsScrollLayer() {
         };
 
         // created at
-        auto createdAtLabel = CCLabelBMFont::create(("Created at: " + createdAt.unwrap()).data(), "chatFont.fnt");
+        auto createdAtLabel = CCLabelBMFont::create(("Created at: " + createdAt.unwrap()).c_str(), "chatFont.fnt");
         createdAtLabel->setPosition({ adContainer->getContentSize().width / 2, 10.f });
         createdAtLabel->setAnchorPoint({ 0.5f, 0.5f });
         createdAtLabel->setScale(0.3f);
@@ -461,7 +461,7 @@ void AdManager::populateAdsScrollLayer() {
     m_impl->m_adsScrollLayer->scrollToTop();
 
     // Update the title label with the correct ad count
-    if (m_impl->m_titleLabel) m_impl->m_titleLabel->setString(fmt::format("Your Advertisements ({})", m_impl->m_adCount).data());
+    if (m_impl->m_titleLabel) m_impl->m_titleLabel->setString(fmt::format("Your Advertisements ({})", m_impl->m_adCount).c_str());
 };
 
 void AdManager::onFetchComplete(web::WebTask::Event* event) {
@@ -509,8 +509,8 @@ void AdManager::onFetchComplete(web::WebTask::Event* event) {
                     }
                 }
                 // Update labels after fetching
-                if (m_impl->m_viewsLabel) m_impl->m_viewsLabel->setString(fmt::format("Total Views: {}", m_impl->m_totalViews).data());
-                if (m_impl->m_clicksLabel) m_impl->m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_impl->m_totalClicks).data());
+                if (m_impl->m_viewsLabel) m_impl->m_viewsLabel->setString(fmt::format("Total Views: {}", m_impl->m_totalViews).c_str());
+                if (m_impl->m_clicksLabel) m_impl->m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_impl->m_totalClicks).c_str());
             }
         } else {
             log::error("Request failed with status code: {}", res->code());
@@ -569,11 +569,11 @@ void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event* event) {
 
             // Update labels with global stats
             if (m_impl->m_globalViewsLabel)
-                m_impl->m_globalViewsLabel->setString(fmt::format("Views: {}", m_impl->m_globalTotalViews).data());
+                m_impl->m_globalViewsLabel->setString(fmt::format("Views: {}", m_impl->m_globalTotalViews).c_str());
             if (m_impl->m_globalClicksLabel)
-                m_impl->m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_impl->m_globalTotalClicks).data());
+                m_impl->m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_impl->m_globalTotalClicks).c_str());
             if (m_impl->m_globalAdCountLabel)
-                m_impl->m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_impl->m_globalAdCount).data());
+                m_impl->m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_impl->m_globalAdCount).c_str());
         } else {
             log::error("Global stats request failed with status code: {}", res->code());
         }

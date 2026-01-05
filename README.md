@@ -13,7 +13,7 @@ This mod is the perfect tool to find some very awesome levels that you otherwise
 
 #### Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!
 *Authorization via [Discord account](https://discord.com/login) will be required.*
-##### Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads)!
+##### Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads) to expand your reach!
 
 ## Credits
 - [Cheeseworks](https://github.com/BlueWitherer) for helping with the backend side of the mod and the website

@@ -30,7 +30,7 @@ AdPreview::~AdPreview() {};
 
 bool AdPreview::setup() {
     setTitle("Ad ID: " + numToString(m_impl->m_adId));
-    auto levelIdLabel = CCLabelBMFont::create(("Level ID: " + numToString(m_impl->m_levelId)).data(), "bigFont.fnt");
+    auto levelIdLabel = CCLabelBMFont::create(("Level ID: " + numToString(m_impl->m_levelId)).c_str(), "bigFont.fnt");
     levelIdLabel->setID("level-id-label");
     levelIdLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 40 });
     levelIdLabel->setScale(0.5f);
@@ -47,14 +47,14 @@ bool AdPreview::setup() {
     menu->addChild(playAdLevelBtn);
 
     // view and click counts
-    auto viewCountLabel = CCLabelBMFont::create(("Views: " + numToString(m_impl->m_viewCount)).data(), "goldFont.fnt");
+    auto viewCountLabel = CCLabelBMFont::create(("Views: " + numToString(m_impl->m_viewCount)).c_str(), "goldFont.fnt");
     viewCountLabel->setID("view-count-label");
     viewCountLabel->setColor({ 255, 125, 0 });
     viewCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 55 });
     viewCountLabel->setScale(0.7f);
     m_mainLayer->addChild(viewCountLabel);
 
-    auto clickCountLabel = CCLabelBMFont::create(("Clicks: " + numToString(m_impl->m_clickCount)).data(), "goldFont.fnt");
+    auto clickCountLabel = CCLabelBMFont::create(("Clicks: " + numToString(m_impl->m_clickCount)).c_str(), "goldFont.fnt");
     clickCountLabel->setID("click-count-label");
     clickCountLabel->setColor({ 0, 175, 255 });
     clickCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 75 });
@@ -110,7 +110,7 @@ void AdPreview::onAnnouncementButton(CCObject* sender) {
                     ? val["content"].asString().unwrap()
                     : "";
 
-                if (auto popup = geode::MDPopup::create(title.data(), content.data(), "Close")) {
+                if (auto popup = geode::MDPopup::create(title.c_str(), content.c_str(), "Close")) {
                     popup->show();
                 }
             } else {

@@ -15,11 +15,11 @@ class $modify(AdsRetryLevelLayer, RetryLevelLayer) {
             // this is so stupid why would you not tag them
             // robtop i hate you
             if (this->m_mainLayer) {
-                cocos2d::CCArray* children = this->m_mainLayer->getChildren();
+                CCArray* children = this->m_mainLayer->getChildren();
                 if (children) {
                     int count = static_cast<int>(children->count());
                     for (int i = count - 1; i >= 0; --i) {
-                        cocos2d::CCObject* obj = children->objectAtIndex(static_cast<unsigned int>(i));
+                        CCObject* obj = children->objectAtIndex(static_cast<unsigned int>(i));
                         if (!obj) continue;
 
                         if (auto label = typeinfo_cast<CCLabelBMFont*>(obj)) this->m_mainLayer->removeChild(label, true);

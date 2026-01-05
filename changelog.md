@@ -1,3 +1,7 @@
+# v1.1.3
+- Added flare to boosted or verified ads
+- Fixed Ad icon sometimes not appearing on ads
+
 # v1.1.2
 - Hid side ads on certain dropdown layers
 

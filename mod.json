@@ -8,7 +8,7 @@
     },
     "id": "arcticwoof.player_advertisements",
     "name": "Player Advertisements",
-    "version": "v1.1.2",
+    "version": "v1.1.3",
     "developers": [
         "ArcticWoof",
         "Cheeseworks"
@@ -16,7 +16,7 @@
     "links": {
         "source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
         "homepage": "https://ads.arcticwoof.xyz",
-        "community": "https://discord.gg/gXcppxTNxC"
+        "community": "https://www.dsc.gg/cheeseworks"
     },
     "description": "Community-made ads for awesome levels!",
     "resources": {

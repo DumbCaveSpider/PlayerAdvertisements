@@ -25,7 +25,7 @@ namespace ads {
         Skyscraper = 3
     };
 
-    struct AWCW_ADS_API_DLL Ad {
+    struct Ad {
         int id;
         std::string image;
         int level = 0;
@@ -33,11 +33,12 @@ namespace ads {
         AdType type;
         int viewCount = 0;
         int clickCount = 0;
+        int glowLevel = 0;
 
         Ad() = default;
 
-        Ad(unsigned int id, std::string image, int level, AdType type, std::string user, int viewCount = 0, int clickCount = 0)
-            : id(id), image(std::move(image)), level(level), user(std::move(user)), type(type), viewCount(viewCount), clickCount(clickCount) {};
+        Ad(unsigned int id, std::string image, int level, AdType type, std::string user, int viewCount = 0, int clickCount = 0, int glowLevel = 0)
+            : id(id), image(std::move(image)), level(level), user(std::move(user)), type(type), viewCount(viewCount), clickCount(clickCount), glowLevel(glowLevel) {};
     };
 
     /**

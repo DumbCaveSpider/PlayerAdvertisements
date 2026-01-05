@@ -44,7 +44,7 @@ namespace ads {
         Ad m_ad = Ad();
         AdType m_type = AdType::Banner;
 
-        Ref<CCMenuItemSpriteExtra> m_adButton = nullptr;
+        CCMenuItemSpriteExtra* m_adButton = nullptr;
         Ref<LazySprite> m_adSprite = nullptr;
         CCSprite* m_adIcon = nullptr;
 
@@ -63,9 +63,7 @@ namespace ads {
     };
 
     Advertisement::~Advertisement() {
-        if (m_impl && m_impl->m_adSprite) {
-            m_impl->m_adSprite->release();
-        };
+        if (m_impl && m_impl->m_adSprite) m_impl->m_adSprite->release();
     };
 
     bool Advertisement::init() {
@@ -124,12 +122,13 @@ namespace ads {
         m_impl->m_adButton = CCMenuItemSpriteExtra::create(
             m_impl->m_adSprite,
             this,
-            menu_selector(Advertisement::activate));
+            menu_selector(Advertisement::activate)
+        );
 
         // m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
 
         if (m_impl->m_adButton) {
-            this->addChild(m_impl->m_adButton);
+            this->addChild(m_impl->m_adButton, 1);
             log::info("Advertisement button created and added to menu");
         } else {
             log::error("Failed to create CCMenuItemSpriteExtra");
@@ -203,7 +202,7 @@ namespace ads {
                         return;
                     };
 
-                    auto json = jsonRes.unwrap();
+                    auto json = jsonRes.unwrapOrDefault();
 
                     auto id = json["ad_id"].asInt().unwrapOrDefault();
                     auto image = json["image_url"].asString().unwrapOrDefault();
@@ -212,10 +211,12 @@ namespace ads {
                     auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
                     auto view = json["views"].asInt().unwrapOrDefault();
                     auto click = json["clicks"].asInt().unwrapOrDefault();
+                    auto glow = json["glow"].asInt().unwrapOrDefault();
 
-                    m_impl->m_ad = Ad(id, image, level, type, user, view, click);
-                    log::info("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
-                    log::info("Ad view count: {}, click count: {}", view, click);
+                    m_impl->m_ad = Ad(id, image, level, type, user, view, click, glow);
+                    log::debug("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
+                    log::debug("Ad view count: {}, click count: {}", view, click);
+                    log::debug("Ad glow level: {}", glow);
 
                     log::debug("Sending view tracking request for ad_id={}, user_id={}", id, user);
                     auto viewRequest = web::WebRequest();
@@ -248,7 +249,7 @@ namespace ads {
 
                     if (m_impl->m_adSprite) {
                         log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
-                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.data(), cocos2d::CCImage::kFmtUnKnown, true);
+                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown, true);
                     } else {
                         log::warn("Ad sprite missing when trying to load image");
                     };
@@ -277,9 +278,10 @@ namespace ads {
                         if (m_impl->m_adIcon) {
                             m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
                             m_impl->m_adIcon->setPosition({ 3.f, 3.f });
-                            m_impl->m_adButton->addChild(m_impl->m_adIcon);
                             m_impl->m_adIcon->setScale(0.25f);
                             m_impl->m_adIcon->setOpacity(100);
+
+                            m_impl->m_adButton->addChild(m_impl->m_adIcon, 9);
                         } else {
                             log::error("Failed to create ad icon sprite");
                         };
@@ -294,16 +296,52 @@ namespace ads {
                     //m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
                     m_impl->m_adSprite->setVisible(true);
 
-                    auto natural = m_impl->m_adSprite->getContentSize();
+                    auto const natural = m_impl->m_adSprite->getContentSize();
                     if (natural.width <= 0.f || natural.height <= 0.f) {
                         log::warn("Ad sprite has invalid natural size ({}x{})", natural.width, natural.height);
                     } else {
-                        auto target = getScaledContentSize();
+                        auto const target = getScaledContentSize();
+
                         float sx = target.width / natural.width;
                         float sy = target.height / natural.height;
+
                         float scale = std::min(sx, sy);
+
                         m_impl->m_adSprite->setScale(scale);
                         log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
+                    };
+
+                    if (m_impl->m_ad.glowLevel > 0) {
+                        auto glowNode = CCScale9Sprite::create("GJ_square06.png");
+                        glowNode->setAnchorPoint({ 0.5, 0.5 });
+                        glowNode->setPosition(m_impl->m_adButton->getPosition());
+                        glowNode->setContentSize(m_impl->m_adSprite->getScaledContentSize());
+
+                        switch (m_impl->m_ad.glowLevel) {
+                        case 1:
+                            glowNode->setScale(1.0125f);
+                            glowNode->setOpacity(200);
+                            glowNode->setColor({ 200, 200, 125 });
+                            break;
+
+                        case 2:
+                            glowNode->setScale(1.025f);
+                            glowNode->setOpacity(125);
+                            glowNode->setColor({ 50, 250, 250 });
+                            break;
+
+                        case 3:
+                            glowNode->setScale(1.05f);
+                            glowNode->setOpacity(100);
+                            glowNode->setColor({ 255, 75, 150 });
+                            break;
+
+                        default:
+                            glowNode->removeMeAndCleanup();
+                            break;
+                        };
+
+                        if (glowNode) this->addChild(glowNode, 0);
                     };
 
                     // if (m_impl->m_adButton) {
