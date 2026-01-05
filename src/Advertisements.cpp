@@ -356,7 +356,7 @@ namespace ads {
                         case 1:
                             glowNode->setOpacity(200);
                             glowNode->setColor({ 250, 250, 75 });
-                            glowNode->setContentSize({ size.width + 2.5f, size.height + 2.5f });
+                            glowNode->setContentSize({ size.width + 3.75f, size.height + 3.75f });
                             particles->setStartColorVar({ 250, 250, 75, 255 });
                             tag->setColor({ 250, 250, 75 });
                             break;
@@ -364,7 +364,7 @@ namespace ads {
                         case 2:
                             glowNode->setOpacity(125);
                             glowNode->setColor({ 50, 250, 250 });
-                            glowNode->setContentSize({ size.width + 5.f, size.height + 5.f });
+                            glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
                             particles->setStartColorVar({ 50, 250, 250, 255 });
                             tag->setColor({ 50, 250, 250 });
                             break;
