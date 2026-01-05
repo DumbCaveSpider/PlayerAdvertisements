@@ -73,7 +73,8 @@ bool AdPreview::setup() {
     auto announcementBtn = CCMenuItemSpriteExtra::create(
         announcementBtnSprite,
         this,
-        menu_selector(AdPreview::onAnnouncementButton));
+        menu_selector(AdPreview::onAnnouncementButton)
+    );
     announcementBtn->setID("latest-announcement-btn");
     announcementBtn->setPosition({ m_mainLayer->getContentSize().width - 17, 18 });
     menu->addChild(announcementBtn);
@@ -84,7 +85,7 @@ bool AdPreview::setup() {
 void AdPreview::onReportButton(CCObject* sender) {
     auto reportPopup = ReportPopup::create(m_impl->m_adId, m_impl->m_levelId, m_impl->m_userId, "");
     reportPopup->show();
-}
+};
 
 void AdPreview::onAnnouncementButton(CCObject* sender) {
     // fetch from /api/announcement
@@ -101,27 +102,26 @@ void AdPreview::onAnnouncementButton(CCObject* sender) {
                 if (!data.isOk()) {
                     log::error("Failed to parse announcement JSON");
                     return;
-                }
-                auto val = data.unwrap();
-                std::string title = val.contains("title") && val["title"].asString().isOk()
+                };
+
+                auto const val = data.unwrap();
+                std::string const title = val.contains("title") && val["title"].asString().isOk()
                     ? val["title"].asString().unwrap()
                     : "Announcement";
-                std::string content = val.contains("content") && val["content"].asString().isOk()
+                std::string const content = val.contains("content") && val["content"].asString().isOk()
                     ? val["content"].asString().unwrap()
                     : "";
 
-                if (auto popup = geode::MDPopup::create(title.c_str(), content.c_str(), "Close")) {
-                    popup->show();
-                }
+                if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
             } else {
                 log::error("Failed to fetch announcement: (code: {})", res->code());
                 Notification::create("Failed to fetch announcement", NotificationIcon::Error)
                     ->show();
-            }
-        }
+            };
+        };
                                         });
     m_impl->m_announcementListener.setFilter(task);
-}
+};
 
 void AdPreview::onPlayButton(CCObject* sender) {
     // stop player if they have too many scenes loaded
@@ -133,11 +133,11 @@ void AdPreview::onPlayButton(CCObject* sender) {
                 if (ok) {
                     // pop to root scene
                     CCDirector::sharedDirector()->popToRootScene();
-                }
+                };
             });
 
         return;
-    }
+    };
 
     if (PlayLayer::get()) {
         geode::createQuickPopup(
@@ -151,7 +151,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
                     auto const searchStr = numToString(m_impl->m_levelId);
                     auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
                     CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
-                }
+                };
             });
     } else {
         this->registerClick(m_impl->m_adId, m_impl->m_userId);
@@ -159,7 +159,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
         auto const searchStr = numToString(m_impl->m_levelId);
         auto scene = LevelBrowserLayer::scene(GJSearchObject::create(SearchType::Search, searchStr));
         CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
-    }
+    };
 };
 
 void AdPreview::registerClick(int adId, std::string_view userId) {

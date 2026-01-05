@@ -1,12 +1,13 @@
 # v1.1.3
-- Added flare to boosted or verified ads
 - Fixed Ad icon sometimes not appearing on ads
+- Improved report error message for users blacklisted from reporting ads
+- Added flare to boosted or verified ads ([Supporter perks](https://ko-fi.com/playerads))
 
 # v1.1.2
 - Hid side ads on certain dropdown layers
 
 # v1.1.1
-- Set up Ko-fi shop for ads
+- Set up [Ko-fi shop](https://ko-fi.com/playerads) for ads
 - Several improvements
 
 # v1.1.0

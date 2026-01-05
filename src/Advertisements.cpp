@@ -155,18 +155,8 @@ namespace ads {
     };
 
     void Advertisement::reloadType() {
-        if (m_impl->m_adButton) {
-            m_impl->m_adButton->removeMeAndCleanup();
-            m_impl->m_adButton = nullptr;
-        };
-
-        if (m_impl->m_adSprite) {
-            m_impl->m_adSprite->removeMeAndCleanup();
-            m_impl->m_adSprite->release();
-            m_impl->m_adSprite = nullptr;
-        };
-
-        setScaledContentSize(getAdSize(m_impl->m_type));
+        this->removeAllChildrenWithCleanup(true);
+        this->setContentSize(getAdSize(m_impl->m_type));
 
         m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
         if (!m_impl->m_adSprite) {
@@ -176,10 +166,8 @@ namespace ads {
 
         log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
 
-        m_impl->m_adSprite->setID("ad");
         m_impl->m_adSprite->retain();
         m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
-        // m_impl->m_adSprite->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
         m_impl->m_adSprite->setVisible(true);
 
         log::info("LazySprite configured - setting up callbacks");
@@ -292,19 +280,13 @@ namespace ads {
                 if (res.isOk()) {
                     log::info("Ad image loaded successfully");
                     // add the adIcon at the bottom right of the ad button
-                    if (!m_impl->m_adIcon) {
-                        m_impl->m_adIcon = CCSprite::create("adIcon.png"_spr);
-                        if (m_impl->m_adIcon) {
-                            m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
-                            m_impl->m_adIcon->setPosition({ 3.f, 3.f });
-                            m_impl->m_adIcon->setScale(0.25f);
-                            m_impl->m_adIcon->setOpacity(100);
+                    m_impl->m_adIcon = CCSprite::create("adIcon.png"_spr);
+                    m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
+                    m_impl->m_adIcon->setPosition({ 3.f, 3.f });
+                    m_impl->m_adIcon->setScale(0.25f);
+                    m_impl->m_adIcon->setOpacity(100);
 
-                            m_impl->m_adButton->addChild(m_impl->m_adIcon, 9);
-                        } else {
-                            log::error("Failed to create ad icon sprite");
-                        };
-                    };
+                    m_impl->m_adButton->addChild(m_impl->m_adIcon, 9);
 
                     if (!m_impl->m_adSprite) {
                         log::warn("Load callback: ad sprite is null");
@@ -342,8 +324,8 @@ namespace ads {
                         particles->setScale(1.25f);
                         particles->setAnchorPoint({ 0.5, 0.5 });
                         particles->setPosition(glowNode->getPosition());
+                        particles->setEmissionRate(2500.f);
                         particles->setTotalParticles(125);
-                        particles->setEmissionRate(50.f);
 
                         auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
                         tag->setScale(0.375f);
@@ -362,7 +344,7 @@ namespace ads {
                             break;
 
                         case 2:
-                            glowNode->setOpacity(150);
+                            glowNode->setOpacity(225);
                             glowNode->setColor({ 50, 250, 250 });
                             glowNode->setContentSize({ size.width + 7.5f, size.height + 7.5f });
                             particles->setStartColorVar({ 50, 250, 250, 255 });
@@ -370,7 +352,7 @@ namespace ads {
                             break;
 
                         case 3:
-                            glowNode->setOpacity(125);
+                            glowNode->setOpacity(200);
                             glowNode->setColor({ 255, 125, 175 });
                             glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
                             particles->setStartColorVar({ 255, 125, 175, 255 });
@@ -389,7 +371,7 @@ namespace ads {
                             glowNode->setScale(glowNode->getScale() / 2.5f);
 
                             this->addChild(glowNode, 0);
-                            if (particles) this->addChild(particles, 2);
+                            if (m_impl->m_ad.type != AdType::Skyscraper) if (particles) this->addChild(particles, 2);
                             if (tag) m_impl->m_adButton->addChild(tag, 9);
                         };
                     };
@@ -397,7 +379,6 @@ namespace ads {
                     // if (m_impl->m_adButton) {
                     //     m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
                     // }
-
                 } else if (res.isErr()) {
                     log::error("Failed to load ad image: {}", res.unwrapErr());
                     if (m_impl && m_impl->m_adSprite) {

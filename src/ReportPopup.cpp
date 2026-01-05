@@ -97,7 +97,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
                     Notification::create("Report Sent", NotificationIcon::Success)->show();
                     this->onClose(nullptr);
                 } else {
-                    Notification::create("Failed to send report", NotificationIcon::Warning)->show();
+                    Notification::create(res->code() == 403 ? "You've been banned from reporting ads" : "Failed to send report", NotificationIcon::Warning)->show();
                 };
             } else if (e->isCancelled()) {
                 log::error("Report request was cancelled");

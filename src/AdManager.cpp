@@ -84,144 +84,146 @@ bool AdManager::setup() {
                 onGlobalStatsFetchComplete(e);
             } else if (e->isCancelled()) {
                 log::error("Global stats request was cancelled");
-            }; });
-            m_impl->m_globalStatsListener.setFilter(globalStatsReq.get("https://ads.arcticwoof.xyz/stats/global"));
+            };
+                                           });
+        m_impl->m_globalStatsListener.setFilter(globalStatsReq.get("https://ads.arcticwoof.xyz/stats/global"));
 
-            // add a background on the left side
+        // add a background on the left side
+        auto bg1 = CCScale9Sprite::create("geode.loader/inverseborder.png");
+        bg1->setPosition({ 115.f, winSize.height / 2 - 30.f });
+        bg1->setContentSize({ 200.f, 200.f });
+        m_mainLayer->addChild(bg1, 5);
+
+        // create scroll layer for ads
+        m_impl->m_adsScrollLayer = ScrollLayer::create({ 200.f, 199.f }, true, true);
+        m_impl->m_adsScrollLayer->setPosition({ 0, 1 });
+        bg1->addChild(m_impl->m_adsScrollLayer, -1);
+
+        // add a background on the right side
+        auto bg2 = CCScale9Sprite::create("geode.loader/inverseborder.png");
+        bg2->setPosition({ m_mainLayer->getContentSize().width - 115.f, winSize.height / 2.f + 30.f + 2.f });
+        bg2->setContentSize({ 200.f, 75.f });
+        m_mainLayer->addChild(bg2, 5);
+
+        auto bg3 = CCScale9Sprite::create("geode.loader/inverseborder.png");
+        bg3->setPosition({ m_mainLayer->getContentSize().width - 115.f, winSize.height / 2.f - 80.f });
+        bg3->setContentSize({ 200.f, 100.f });
+        m_mainLayer->addChild(bg3, 5);
+
+        // title label at the top of each of the backgrounds
+        auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->m_adCount).c_str(), "goldFont.fnt");
+        titleLabel->setPosition({ bg1->getContentSize().width / 2.f, bg1->getContentSize().height + 10.f });
+        titleLabel->setScale(0.4f);
+        m_impl->m_titleLabel = titleLabel;
+        bg1->addChild(titleLabel);
+
+        auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "goldFont.fnt");
+        titleLabel2->setPosition({ bg2->getContentSize().width / 2.f, bg2->getContentSize().height + 10.f });
+        titleLabel2->setScale(0.4f);
+        bg2->addChild(titleLabel2);
+
+        auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "goldFont.fnt");
+        titleLabel3->setPosition({ bg3->getContentSize().width / 2.f, bg3->getContentSize().height + 10.f });
+        titleLabel3->setScale(0.4f);
+        bg3->addChild(titleLabel3);
+
+        // total views and clicks labels on the right background
+        m_impl->m_viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
+        m_impl->m_viewsLabel->setPosition({ bg2->getContentSize().width / 2.f, bg2->getContentSize().height - 20.f });
+        m_impl->m_viewsLabel->setScale(0.5f);
+        bg2->addChild(m_impl->m_viewsLabel);
+
+        m_impl->m_clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
+        m_impl->m_clicksLabel->setPosition({ bg2->getContentSize().width / 2.f, bg2->getContentSize().height - 50.f });
+        m_impl->m_clicksLabel->setScale(0.5f);
+        bg2->addChild(m_impl->m_clicksLabel);
+
+        // global stats labels on the third background
+        m_impl->m_globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
+        m_impl->m_globalViewsLabel->setPosition({ bg3->getContentSize().width / 2.f, bg3->getContentSize().height - 20.f });
+        m_impl->m_globalViewsLabel->setScale(0.5f);
+        bg3->addChild(m_impl->m_globalViewsLabel);
+
+        m_impl->m_globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
+        m_impl->m_globalClicksLabel->setPosition({ bg3->getContentSize().width / 2.f, bg3->getContentSize().height - 50.f });
+        m_impl->m_globalClicksLabel->setScale(0.5f);
+        bg3->addChild(m_impl->m_globalClicksLabel);
+
+        m_impl->m_globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
+        m_impl->m_globalAdCountLabel->setPosition({ bg3->getContentSize().width / 2.f, bg3->getContentSize().height - 80.f });
+        m_impl->m_globalAdCountLabel->setScale(0.5f);
+        bg3->addChild(m_impl->m_globalAdCountLabel);
+
+        // button to the website at the bottom center of the main layer popup
+        auto webBtn = ButtonSprite::create("Manage Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
+        auto webBtnMenu = CCMenuItemSpriteExtra::create(webBtn, this, menu_selector(AdManager::onWebButton));
+
+        // button to open mod settings
+        auto modSettingsBtnSprite = CircleButtonSprite::createWithSpriteFrameName(
             // @geode-ignore(unknown-resource)
-            auto bg1 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-            bg1->setPosition({ 115.f, winSize.height / 2 - 30.f });
-            bg1->setContentSize({ 200.f, 200.f });
-            m_mainLayer->addChild(bg1, 5);
+            "geode.loader/settings.png",
+            1.f,
+            CircleBaseColor::Green,
+            CircleBaseSize::Medium);
+        modSettingsBtnSprite->setScale(0.75f);
 
-            // create scroll layer for ads
-            m_impl->m_adsScrollLayer = ScrollLayer::create({ 200.f, 199.f }, true, true);
-            m_impl->m_adsScrollLayer->setPosition({ 0, 1 });
-            bg1->addChild(m_impl->m_adsScrollLayer, -1);
+        auto modSettingsBtn = CCMenuItemSpriteExtra::create(
+            modSettingsBtnSprite,
+            this,
+            menu_selector(AdManager::onModSettingsButton));
+        modSettingsBtn->setID("mod-settings-btn");
+        modSettingsBtn->setPosition(m_mainLayer->getContentSize());
 
-            // add a background on the right side
-            // @geode-ignore(unknown-resource)
-            auto bg2 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-            bg2->setPosition({ m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 + 30.f + 2.f });
-            bg2->setContentSize({ 200.f, 75.f });
-            m_mainLayer->addChild(bg2, 5);
+        auto discordBtnSprite = CCSprite::createWithSpriteFrameName("gj_discordIcon_001.png");
+        discordBtnSprite->setScale(0.7f);
+        auto discordBtn = CCMenuItemSpriteExtra::create(
+            discordBtnSprite,
+            this,
+            menu_selector(AdManager::onDiscordButton)
+        );
+        discordBtn->setID("discord-btn");
+        discordBtn->setPosition({ 15.f, 15.f });
 
-            // @geode-ignore(unknown-resource)
-            auto bg3 = CCScale9Sprite::create("geode.loader/inverseborder.png");
-            bg3->setPosition({ m_mainLayer->getContentSize().width - 115.f, winSize.height / 2 - 80.f });
-            bg3->setContentSize({ 200.f, 100.f });
-            m_mainLayer->addChild(bg3, 5);
+        auto kofiBtnSprite = BasedButtonSprite::create(
+            CCSprite::create("kofiLogo.png"_spr),
+            BaseType::Account,
+            0,
+            2
+        );
+        kofiBtnSprite->setScale(0.5f);
 
-            // title label at the top of each of the backgrounds
-            auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->m_adCount).c_str(), "goldFont.fnt");
-            titleLabel->setPosition({ bg1->getContentSize().width / 2, bg1->getContentSize().height + 10 });
-            titleLabel->setScale(0.4f);
-            m_impl->m_titleLabel = titleLabel;
-            bg1->addChild(titleLabel);
+        auto kofiBtn = CCMenuItemSpriteExtra::create(
+            kofiBtnSprite,
+            this,
+            menu_selector(AdManager::onKofiButton)
+        );
+        kofiBtn->setID("kofi-btn");
+        kofiBtn->setPosition({ discordBtn->getPositionX() + 25.f, discordBtn->getPositionY() });
 
-            auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "goldFont.fnt");
-            titleLabel2->setPosition({ bg2->getContentSize().width / 2, bg2->getContentSize().height + 10 });
-            titleLabel2->setScale(0.4f);
-            bg2->addChild(titleLabel2);
+        // @geode-ignore(unknown-resource)
+        auto announcementBtnSprite = CCSprite::createWithSpriteFrameName("geode.loader/news.png");
+        auto announcementBtn = CCMenuItemSpriteExtra::create(
+            announcementBtnSprite,
+            this,
+            menu_selector(AdManager::onAnnouncement)
+        );
+        announcementBtn->setID("latest-announcement-btn");
+        announcementBtn->setPosition({ m_mainLayer->getContentSize().width - 15, 18 });
 
-            auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "goldFont.fnt");
-            titleLabel3->setPosition({ bg3->getContentSize().width / 2, bg3->getContentSize().height + 10 });
-            titleLabel3->setScale(0.4f);
-            bg3->addChild(titleLabel3);
+        auto menu = CCMenu::create();
+        menu->setPosition({ 0.f, 0.f });
+        menu->setContentSize(m_mainLayer->getContentSize());
+        menu->addChild(webBtnMenu);
+        menu->addChild(modSettingsBtn);
+        menu->addChild(discordBtn);
+        menu->addChild(kofiBtn);
+        menu->addChild(announcementBtn);
 
-            // total views and clicks labels on the right background
-            m_impl->m_viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
-            m_impl->m_viewsLabel->setPosition({ bg2->getContentSize().width / 2, bg2->getContentSize().height - 20.f });
-            m_impl->m_viewsLabel->setScale(0.5f);
-            bg2->addChild(m_impl->m_viewsLabel);
+        webBtnMenu->setPosition({ menu->getContentSize().width / 2, 0.f });
+        m_mainLayer->addChild(menu, 6);
 
-            m_impl->m_clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
-            m_impl->m_clicksLabel->setPosition({ bg2->getContentSize().width / 2, bg2->getContentSize().height - 50.f });
-            m_impl->m_clicksLabel->setScale(0.5f);
-            bg2->addChild(m_impl->m_clicksLabel);
-
-            // global stats labels on the third background
-            m_impl->m_globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
-            m_impl->m_globalViewsLabel->setPosition({ bg3->getContentSize().width / 2, bg3->getContentSize().height - 20.f });
-            m_impl->m_globalViewsLabel->setScale(0.5f);
-            bg3->addChild(m_impl->m_globalViewsLabel);
-
-            m_impl->m_globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
-            m_impl->m_globalClicksLabel->setPosition({ bg3->getContentSize().width / 2, bg3->getContentSize().height - 50.f });
-            m_impl->m_globalClicksLabel->setScale(0.5f);
-            bg3->addChild(m_impl->m_globalClicksLabel);
-
-            m_impl->m_globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
-            m_impl->m_globalAdCountLabel->setPosition({ bg3->getContentSize().width / 2, bg3->getContentSize().height - 80.f });
-            m_impl->m_globalAdCountLabel->setScale(0.5f);
-            bg3->addChild(m_impl->m_globalAdCountLabel);
-
-            // button to the website at the bottom center of the main layer popup
-            auto webBtn = ButtonSprite::create("Manage Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
-            auto webBtnMenu = CCMenuItemSpriteExtra::create(webBtn, this, menu_selector(AdManager::onWebButton));
-
-            // button to open mod settings
-            auto modSettingsBtnSprite = CircleButtonSprite::createWithSpriteFrameName(
-                // @geode-ignore(unknown-resource)
-                "geode.loader/settings.png",
-                1.f,
-                CircleBaseColor::Green,
-                CircleBaseSize::Medium);
-            modSettingsBtnSprite->setScale(0.75f);
-
-            auto modSettingsBtn = CCMenuItemSpriteExtra::create(
-                modSettingsBtnSprite,
-                this,
-                menu_selector(AdManager::onModSettingsButton));
-            modSettingsBtn->setID("mod-settings-btn");
-            modSettingsBtn->setPosition(m_mainLayer->getContentSize());
-
-            auto discordBtnSprite = CCSprite::createWithSpriteFrameName("gj_discordIcon_001.png");
-            discordBtnSprite->setScale(0.7f);
-            auto discordBtn = CCMenuItemSpriteExtra::create(
-                discordBtnSprite,
-                this,
-                menu_selector(AdManager::onDiscordButton));
-            discordBtn->setID("discord-btn");
-            discordBtn->setPosition({ 15.f, 15.f });
-
-            auto kofiBtnSprite = BasedButtonSprite::create(
-                CCSprite::create("kofiLogo.png"_spr),
-                BaseType::Account,
-                0,
-                2);
-            kofiBtnSprite->setScale(0.5f);
-
-            auto kofiBtn = CCMenuItemSpriteExtra::create(
-                kofiBtnSprite,
-                this,
-                menu_selector(AdManager::onKofiButton));
-            kofiBtn->setID("kofi-btn");
-            kofiBtn->setPosition({ discordBtn->getPositionX() + 25.f, discordBtn->getPositionY() });
-
-            // @geode-ignore(unknown-resource)
-            auto announcementBtnSprite = CCSprite::createWithSpriteFrameName("geode.loader/news.png");
-            auto announcementBtn = CCMenuItemSpriteExtra::create(
-                announcementBtnSprite,
-                this,
-                menu_selector(AdManager::onAnnouncement));
-            announcementBtn->setID("latest-announcement-btn");
-            announcementBtn->setPosition({ m_mainLayer->getContentSize().width - 15, 18 });
-
-            auto menu = CCMenu::create();
-            menu->setPosition({ 0.f, 0.f });
-            menu->setContentSize(m_mainLayer->getContentSize());
-            menu->addChild(webBtnMenu);
-            menu->addChild(modSettingsBtn);
-            menu->addChild(discordBtn);
-            menu->addChild(kofiBtn);
-            menu->addChild(announcementBtn);
-
-            webBtnMenu->setPosition({ menu->getContentSize().width / 2, 0.f });
-            m_mainLayer->addChild(menu, 6);
-
-            return true;
-}
+        return true;
+};
 
 void AdManager::onKofiButton(CCObject* sender) {
     geode::createQuickPopup(
@@ -327,12 +329,10 @@ void AdManager::onPlayButton(CCObject* sender) {
 };
 
 void AdManager::populateAdsScrollLayer() {
-    if (!m_impl->m_adsScrollLayer)
-        return;
+    if (!m_impl->m_adsScrollLayer) return;
 
     auto adsArray = m_impl->m_adsData.asArray();
-    if (!adsArray.isOk())
-        return;
+    if (!adsArray.isOk()) return;
 
     auto ads = adsArray.unwrap();
 
@@ -473,7 +473,7 @@ void AdManager::onFetchComplete(web::WebTask::Event* event) {
             if (!json.isOk()) {
                 log::error("Failed to parse JSON");
                 return;
-            }
+            };
 
             auto jsonValue = json.unwrap();
 
@@ -485,33 +485,34 @@ void AdManager::onFetchComplete(web::WebTask::Event* event) {
                     populateAdsScrollLayer();
                 } else {
                     log::info("Fetched 0 ads");
-                }
-            }
+                };
+            };
 
             if (jsonValue.contains("user")) {
                 m_impl->m_userData = jsonValue["user"];
                 auto username = m_impl->m_userData["username"].asString();
-                if (username) {
-                    log::info("Fetched user data for: {}", username.unwrap());
-                }
+                if (username) log::info("Fetched user data for: {}", username.unwrap());
+
                 if (m_impl->m_userData.contains("total_views")) {
                     auto totalViews = m_impl->m_userData["total_views"].asInt();
                     if (totalViews) {
                         m_impl->m_totalViews = totalViews.unwrap();
                         log::info("Total Views: {}", m_impl->m_totalViews);
-                    }
-                }
+                    };
+                };
+
                 if (m_impl->m_userData.contains("total_clicks")) {
                     auto totalClicks = m_impl->m_userData["total_clicks"].asInt();
                     if (totalClicks) {
                         m_impl->m_totalClicks = totalClicks.unwrap();
                         log::info("Total Clicks: {}", m_impl->m_totalClicks);
-                    }
-                }
+                    };
+                };
+
                 // Update labels after fetching
                 if (m_impl->m_viewsLabel) m_impl->m_viewsLabel->setString(fmt::format("Total Views: {}", m_impl->m_totalViews).c_str());
                 if (m_impl->m_clicksLabel) m_impl->m_clicksLabel->setString(fmt::format("Total Clicks: {}", m_impl->m_totalClicks).c_str());
-            }
+            };
         } else {
             log::error("Request failed with status code: {}", res->code());
             this->onClose(nullptr);
@@ -524,11 +525,11 @@ void AdManager::onFetchComplete(web::WebTask::Event* event) {
                         openSettingsPopup(getMod());
                         Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
                         web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
-                    }
+                    };
                 });
-        }
-    }
-}
+        };
+    };
+};
 
 void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event* event) {
     if (auto res = event->getValue()) {
@@ -564,21 +565,18 @@ void AdManager::onGlobalStatsFetchComplete(web::WebTask::Event* event) {
                 if (adCount) {
                     m_impl->m_globalAdCount = adCount.unwrap();
                     log::info("Global Ad Count: {}", m_impl->m_globalAdCount);
-                }
-            }
+                };
+            };
 
             // Update labels with global stats
-            if (m_impl->m_globalViewsLabel)
-                m_impl->m_globalViewsLabel->setString(fmt::format("Views: {}", m_impl->m_globalTotalViews).c_str());
-            if (m_impl->m_globalClicksLabel)
-                m_impl->m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_impl->m_globalTotalClicks).c_str());
-            if (m_impl->m_globalAdCountLabel)
-                m_impl->m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_impl->m_globalAdCount).c_str());
+            if (m_impl->m_globalViewsLabel) m_impl->m_globalViewsLabel->setString(fmt::format("Views: {}", m_impl->m_globalTotalViews).c_str());
+            if (m_impl->m_globalClicksLabel) m_impl->m_globalClicksLabel->setString(fmt::format("Clicks: {}", m_impl->m_globalTotalClicks).c_str());
+            if (m_impl->m_globalAdCountLabel) m_impl->m_globalAdCountLabel->setString(fmt::format("Active Ads: {}", m_impl->m_globalAdCount).c_str());
         } else {
             log::error("Global stats request failed with status code: {}", res->code());
-        }
-    }
-}
+        };
+    };
+};
 
 AdManager* AdManager::create() {
     auto ret = new AdManager();
