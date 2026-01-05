@@ -343,7 +343,7 @@ namespace ads {
                         particles->setAnchorPoint({ 0.5, 0.5 });
                         particles->setPosition(glowNode->getPosition());
                         particles->setTotalParticles(125);
-                        particles->setEmissionRate(25.f);
+                        particles->setEmissionRate(50.f);
 
                         auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
                         tag->setScale(0.375f);
@@ -356,25 +356,25 @@ namespace ads {
                         case 1:
                             glowNode->setOpacity(200);
                             glowNode->setColor({ 250, 250, 75 });
-                            glowNode->setContentSize({ size.width + 3.75f, size.height + 3.75f });
+                            glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
                             particles->setStartColorVar({ 250, 250, 75, 255 });
                             tag->setColor({ 250, 250, 75 });
                             break;
 
                         case 2:
-                            glowNode->setOpacity(125);
+                            glowNode->setOpacity(150);
                             glowNode->setColor({ 50, 250, 250 });
-                            glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
+                            glowNode->setContentSize({ size.width + 7.5f, size.height + 7.5f });
                             particles->setStartColorVar({ 50, 250, 250, 255 });
                             tag->setColor({ 50, 250, 250 });
                             break;
 
                         case 3:
-                            glowNode->setOpacity(100);
-                            glowNode->setColor({ 255, 75, 150 });
+                            glowNode->setOpacity(125);
+                            glowNode->setColor({ 255, 125, 175 });
                             glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
-                            particles->setStartColorVar({ 255, 75, 150, 255 });
-                            tag->setColor({ 255, 75, 150 });
+                            particles->setStartColorVar({ 255, 125, 175, 255 });
+                            tag->setColor({ 255, 125, 175 });
                             break;
 
                         default:
