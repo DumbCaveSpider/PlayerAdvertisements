@@ -312,36 +312,55 @@ namespace ads {
                     };
 
                     if (m_impl->m_ad.glowLevel > 0) {
-                        auto glowNode = CCScale9Sprite::create("GJ_square06.png");
+                        auto const size = m_impl->m_adSprite->getScaledContentSize();
+
+                        auto glowNode = CCScale9Sprite::create("glow.png"_spr);
+                        glowNode->setContentSize(size);
                         glowNode->setAnchorPoint({ 0.5, 0.5 });
                         glowNode->setPosition(m_impl->m_adButton->getPosition());
-                        glowNode->setContentSize(m_impl->m_adSprite->getScaledContentSize());
+
+                        auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
+                        tag->setScale(0.375f);
+                        tag->setAnchorPoint({ 1, 0 });
+                        tag->setAlignment(kCCTextAlignmentRight);
+                        tag->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
+                        tag->setOpacity(200);
 
                         switch (m_impl->m_ad.glowLevel) {
                         case 1:
-                            glowNode->setScale(1.0125f);
                             glowNode->setOpacity(200);
-                            glowNode->setColor({ 200, 200, 125 });
+                            glowNode->setColor({ 225, 225, 150 });
+                            glowNode->setContentSize({ size.width + 0.875f, size.height + 0.875f });
+                            tag->setColor({ 225, 225, 150 });
                             break;
 
                         case 2:
-                            glowNode->setScale(1.025f);
                             glowNode->setOpacity(125);
                             glowNode->setColor({ 50, 250, 250 });
+                            glowNode->setContentSize({ size.width + 1.25f, size.height + 1.25f });
+                            tag->setColor({ 50, 250, 250 });
                             break;
 
                         case 3:
-                            glowNode->setScale(1.05f);
                             glowNode->setOpacity(100);
                             glowNode->setColor({ 255, 75, 150 });
+                            glowNode->setContentSize({ size.width + 2.f, size.height + 2.f });
+                            tag->setColor({ 255, 75, 150 });
                             break;
 
                         default:
                             glowNode->removeMeAndCleanup();
+                            tag->removeMeAndCleanup();
                             break;
                         };
 
-                        if (glowNode) this->addChild(glowNode, 0);
+                        if (glowNode) {
+                            glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.f, glowNode->getScaledContentHeight() * 2.f });
+                            glowNode->setScale(glowNode->getScale() / 2.f);
+
+                            this->addChild(glowNode, 0);
+                            this->addChild(tag, 9);
+                        };
                     };
 
                     // if (m_impl->m_adButton) {

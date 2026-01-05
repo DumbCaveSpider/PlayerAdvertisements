@@ -21,7 +21,7 @@
     "description": "Community-made ads for awesome levels!",
     "resources": {
         "sprites": [
-            "resources/*"
+            "resources/*.png"
         ]
     },
     "tags": [
