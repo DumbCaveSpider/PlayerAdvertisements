@@ -153,14 +153,16 @@ void AdPreview::onPlayButton(CCObject* sender) {
                 "Cancel", "Proceed",
                 [this, sender](auto, bool btn) {
                       if (btn) {
-                            this->registerClick(m_impl->m_adId, m_impl->m_userId);
                             auto menuItem = static_cast<CCMenuItemSpriteExtra*>(sender);
+                            menuItem->setEnabled(true);  // re-enable button in case of multiple clicks
+                            this->registerClick(m_impl->m_adId, m_impl->m_userId);
                             this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
                       };
                 });
       } else {
-            this->registerClick(m_impl->m_adId, m_impl->m_userId);
             auto menuItem = static_cast<CCMenuItemSpriteExtra*>(sender);
+            menuItem->setEnabled(true);  // re-enable button in case of multiple clicks
+            this->registerClick(m_impl->m_adId, m_impl->m_userId);
             this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
       };
 };
