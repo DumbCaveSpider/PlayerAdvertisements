@@ -24,7 +24,7 @@ protected:
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);
     void onAnnouncementButton(CCObject* sender);
-    void registerClick(int adId, std::string_view userId);
+    void registerClick(int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem);
     void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
 
     void update(float dt) override;

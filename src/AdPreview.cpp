@@ -154,21 +154,24 @@ void AdPreview::onPlayButton(CCObject* sender) {
                 [this, sender](auto, bool btn) {
                       if (btn) {
                             auto menuItem = static_cast<CCMenuItemSpriteExtra*>(sender);
-                            menuItem->setEnabled(true);  // re-enable button in case of multiple clicks
-                            this->registerClick(m_impl->m_adId, m_impl->m_userId);
+                            this->registerClick(m_impl->m_adId, m_impl->m_userId, menuItem);
                             this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
                       };
                 });
       } else {
             auto menuItem = static_cast<CCMenuItemSpriteExtra*>(sender);
-            menuItem->setEnabled(true);  // re-enable button in case of multiple clicks
-            this->registerClick(m_impl->m_adId, m_impl->m_userId);
+            this->registerClick(m_impl->m_adId, m_impl->m_userId, menuItem);
             this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
       };
 };
 
-void AdPreview::registerClick(int adId, std::string_view userId) {
+void AdPreview::registerClick(int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem) {
       log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
+
+      // disable the clicked menu item immediately
+      if (menuItem) {
+            menuItem->setEnabled(false);
+      }
 
       // get argon token yum
       auto res = argon::startAuth([this, adId, userId](Result<std::string> res) {
