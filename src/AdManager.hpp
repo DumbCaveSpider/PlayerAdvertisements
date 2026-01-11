@@ -23,6 +23,9 @@ protected:
     void onPlayButton(CCObject* sender);
     void onAnnouncement(CCObject* sender);
     void populateAdsScrollLayer();
+    void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
+
+    void update(float dt) override;
 
 public:
     static AdManager* create();
