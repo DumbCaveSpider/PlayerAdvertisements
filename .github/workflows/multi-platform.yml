@@ -45,7 +45,6 @@ jobs:
               uses: geode-sdk/build-geode-mod@main
               with:
                   combine: true
-                  sdk: nightly
                   export-pdb: true
                   target: ${{ matrix.config.target }}
                   build-config: ${{ matrix.config.build-type || 'Release'}}
