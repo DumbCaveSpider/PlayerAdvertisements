@@ -11,168 +11,168 @@ using namespace geode::utils;
 using namespace ads;
 
 namespace ads {
-namespace particles {
-constexpr const char* banner = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-constexpr const char* square = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-};  // namespace particles
+    namespace particles {
+        constexpr const char* banner = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* square = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+    };  // namespace particles
 
-CCSize const getAdSize(AdType type) {
-      auto const banner = CCSize(364.f, 45.f);
-      auto const square = CCSize(122.6f, 122.6f);
-      auto const skyscraper = CCSize(41.f, 314.f);
+    CCSize const getAdSize(AdType type) {
+        auto const banner = CCSize(364.f, 45.f);
+        auto const square = CCSize(122.6f, 122.6f);
+        auto const skyscraper = CCSize(41.f, 314.f);
 
-      CCSize contentSize = banner;
+        CCSize contentSize = banner;
 
-      switch (type) {
-            case AdType::Banner:
-                  contentSize = banner;
-                  break;
-            case AdType::Square:
-                  contentSize = square;
-                  break;
-            case AdType::Skyscraper:
-                  contentSize = skyscraper;
-                  break;
+        switch (type) {
+        case AdType::Banner:
+            contentSize = banner;
+            break;
+        case AdType::Square:
+            contentSize = square;
+            break;
+        case AdType::Skyscraper:
+            contentSize = skyscraper;
+            break;
 
-            default:
-                  contentSize = banner;
-                  break;
-      };
+        default:
+            contentSize = banner;
+            break;
+        };
 
-      return contentSize;
-};
+        return contentSize;
+    };
 
-constexpr const char* getParticlesForAdType(AdType type) {
-      switch (type) {
-            case AdType::Banner:
-                  return particles::banner;
+    constexpr const char* getParticlesForAdType(AdType type) {
+        switch (type) {
+        case AdType::Banner:
+            return particles::banner;
 
-            case AdType::Square:
-                  return particles::square;
+        case AdType::Square:
+            return particles::square;
 
-            case AdType::Skyscraper:
-                  return particles::skyscraper;
+        case AdType::Skyscraper:
+            return particles::skyscraper;
 
-            default:
-                  return particles::square;
-      };
-};
+        default:
+            return particles::square;
+        };
+    };
 
-class Advertisement::Impl final {
-     public:
-      EventListener<web::WebTask> m_adListener;
+    class Advertisement::Impl final {
+    public:
+        EventListener<web::WebTask> m_adListener;
 
-      Ad m_ad = Ad();
-      AdType m_type = AdType::Banner;
+        Ad m_ad = Ad();
+        AdType m_type = AdType::Banner;
 
-      CCMenuItemSpriteExtra* m_adButton = nullptr;
-      Ref<LazySprite> m_adSprite = nullptr;
-      CCSprite* m_adIcon = nullptr;
+        CCMenuItemSpriteExtra* m_adButton = nullptr;
+        Ref<LazySprite> m_adSprite = nullptr;
+        CCSprite* m_adIcon = nullptr;
 
-      bool m_hasLoaded = false;
-      bool m_loadRandom = false;
-      int m_loadId = 0;
-      bool m_isInScene = false;
+        bool m_hasLoaded = false;
+        bool m_loadRandom = false;
+        int m_loadId = 0;
+        bool m_isInScene = false;
 
-      std::string m_token;
+        std::string m_token;
 
-      EventListener<web::WebTask> m_viewListener;
-};
+        EventListener<web::WebTask> m_viewListener;
+    };
 
-Advertisement::Advertisement() {
-      m_impl = std::make_unique<Impl>();
-};
+    Advertisement::Advertisement() {
+        m_impl = std::make_unique<Impl>();
+    };
 
-Advertisement::~Advertisement() {
-      if (m_impl && m_impl->m_adSprite) m_impl->m_adSprite->release();
-};
+    Advertisement::~Advertisement() {
+        if (m_impl && m_impl->m_adSprite) m_impl->m_adSprite->release();
+    };
 
-bool Advertisement::init() {
-      if (CCMenu::init()) {
-            setAnchorPoint({0.5, 0.5});
+    bool Advertisement::init() {
+        if (CCMenu::init()) {
+            setAnchorPoint({ 0.5, 0.5 });
             return true;
-      } else {
+        } else {
             return false;
-      };
-};
+        };
+    };
 
-void Advertisement::onEnter() {
-      CCMenu::onEnter();
-      m_impl->m_isInScene = true;
-      if (m_impl->m_hasLoaded) {
+    void Advertisement::onEnter() {
+        CCMenu::onEnter();
+        m_impl->m_isInScene = true;
+        if (m_impl->m_hasLoaded) {
             log::info("reloading new random advertisement");
             reloadType();
             loadRandom();
-      };
-};
+        };
+    };
 
-void Advertisement::onExit() {
-      m_impl->m_isInScene = false;
-      CCMenu::onExit();
-};
+    void Advertisement::onExit() {
+        m_impl->m_isInScene = false;
+        CCMenu::onExit();
+    };
 
-void Advertisement::activate(CCObject*) {
-      auto const& ad = m_impl->m_ad;
-      if (ad.id == 0) {
+    void Advertisement::activate(CCObject*) {
+        auto const& ad = m_impl->m_ad;
+        if (ad.id == 0) {
             log::warn("Ad not loaded yet or invalid ad ID");
             Notification::create("Invalid Ad", NotificationIcon::Error)->show();
             return;
-      };
+        };
 
-      log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
-      if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount)) {
+        log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
+        if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount)) {
             popup->show();
-      } else {
+        } else {
             log::error("Failed to create AdPreview popup");
-      };
-};
+        };
+    };
 
-void Advertisement::reload() {
-      this->removeAllChildrenWithCleanup(true);
+    void Advertisement::reload() {
+        this->removeAllChildrenWithCleanup(true);
 
-      if (!m_impl->m_adSprite) {
+        if (!m_impl->m_adSprite) {
             log::warn("ad sprite is null");
             return;
-      };
+        };
 
-      log::info("Reloading advertisement");
+        log::info("Reloading advertisement");
 
-      m_impl->m_adButton = CCMenuItemSpriteExtra::create(
-          m_impl->m_adSprite,
-          this,
-          menu_selector(Advertisement::activate));
+        m_impl->m_adButton = CCMenuItemSpriteExtra::create(
+            m_impl->m_adSprite,
+            this,
+            menu_selector(Advertisement::activate));
 
-      // m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
+        // m_impl->m_adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
 
-      if (m_impl->m_adButton) {
+        if (m_impl->m_adButton) {
             this->addChild(m_impl->m_adButton, 1);
             log::info("Advertisement button created and added to menu");
-      } else {
+        } else {
             log::error("Failed to create CCMenuItemSpriteExtra");
-      };
-};
+        };
+    };
 
-void Advertisement::reloadType() {
-      this->removeAllChildrenWithCleanup(true);
-      this->setContentSize(getAdSize(m_impl->m_type));
+    void Advertisement::reloadType() {
+        this->removeAllChildrenWithCleanup(true);
+        this->setContentSize(getAdSize(m_impl->m_type));
 
-      m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
-      if (!m_impl->m_adSprite) {
+        m_impl->m_adSprite = LazySprite::create(getScaledContentSize(), true);
+        if (!m_impl->m_adSprite) {
             log::error("Failed to create LazySprite");
             return;
-      };
+        };
 
-      log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
+        log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
 
-      m_impl->m_adSprite->retain();
-      m_impl->m_adSprite->setAnchorPoint({0.5f, 0.5f});
-      m_impl->m_adSprite->setVisible(true);
+        m_impl->m_adSprite->retain();
+        m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
+        m_impl->m_adSprite->setVisible(true);
 
-      log::info("LazySprite configured - setting up callbacks");
+        log::info("LazySprite configured - setting up callbacks");
 
-      // get argon token yum
-      auto res = argon::startAuth([this](Result<std::string> res) {
+        // get argon token yum
+        auto res = argon::startAuth([this](Result<std::string> res) {
             if (!res) {
                 log::warn("Auth failed: {}", res.unwrapErr());
                 Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
@@ -183,17 +183,17 @@ void Advertisement::reloadType() {
             auto token = std::move(res).unwrap();
             log::debug("Token: {}", token);
             m_impl->m_token = token; },
-                                  [](argon::AuthProgress progress) {
+                                    [](argon::AuthProgress progress) {
                                         log::debug("Auth progress: {}", argon::authProgressToString(progress));
-                                  });
+                                    });
 
-      if (!res) {
+        if (!res) {
             log::warn("Failed to start auth attempt: {}", res.unwrapErr());
             Notification::create("Ad View invalid: Failed auth", NotificationIcon::Error)
                 ->show();
-      };
+        };
 
-      m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
+        m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
             if (!m_impl) {
                 log::error("m_impl is null in ad listener callback");
                 return;
@@ -269,7 +269,7 @@ void Advertisement::reloadType() {
                 log::error("Unknown ad web request error");
             }; });
 
-      m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
+            m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
                 if (!m_impl) {
                     log::error("m_impl is null in load callback");
                     return;
@@ -313,15 +313,15 @@ void Advertisement::reloadType() {
                     if (m_impl->m_ad.glowLevel > 0) {
                         auto const size = m_impl->m_adSprite->getScaledContentSize();
 
-                    auto featuredStar = CCSprite::createWithSpriteFrameName("GJ_starsIcon_gray_001.png");
-                    if (featuredStar) {
-                        featuredStar->setAnchorPoint({ 1.f, 0.f });
-                        featuredStar->setScale(0.35f);
-                        featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
-                        featuredStar->setOpacity(200);
-                        featuredStar->setColor({ 255, 255, 255 });
-                        m_impl->m_adButton->addChild(featuredStar, 9);
-                    };
+                        auto featuredStar = CCSprite::createWithSpriteFrameName("GJ_starsIcon_gray_001.png");
+                        if (featuredStar) {
+                            featuredStar->setAnchorPoint({ 1.f, 0.f });
+                            featuredStar->setScale(0.35f);
+                            featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
+                            featuredStar->setOpacity(200);
+                            featuredStar->setColor({ 255, 255, 255 });
+                            m_impl->m_adButton->addChild(featuredStar, 9);
+                        };
 
                         auto glowNode = CCScale9Sprite::create("glow.png"_spr);
                         glowNode->setContentSize(size);
@@ -403,55 +403,55 @@ void Advertisement::reloadType() {
                     log::error("Unknown error loading ad image");
                 } });
 
-      reload();
-};
+                reload();
+    };
 
-void Advertisement::setType(AdType type) {
-      m_impl->m_type = type;
-      reloadType();
-};
+    void Advertisement::setType(AdType type) {
+        m_impl->m_type = type;
+        reloadType();
+    };
 
-void Advertisement::loadRandom() {
-      reloadType();  // refresh any existing nodes
+    void Advertisement::loadRandom() {
+        reloadType();  // refresh any existing nodes
 
-      log::debug("Preparing request for random advertisement...");
-      auto request = web::WebRequest();
-      request.userAgent("PlayerAdvertisements/1.0");
-      request.timeout(std::chrono::seconds(15));
-      request.param("type", static_cast<int>(m_impl->m_type));
-      m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
-      m_impl->m_hasLoaded = true;
-      m_impl->m_loadRandom = true;
-      log::info("Sent request for random advertisement");
-};
+        log::debug("Preparing request for random advertisement...");
+        auto request = web::WebRequest();
+        request.userAgent("PlayerAdvertisements/1.0");
+        request.timeout(std::chrono::seconds(15));
+        request.param("type", static_cast<int>(m_impl->m_type));
+        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
+        m_impl->m_hasLoaded = true;
+        m_impl->m_loadRandom = true;
+        log::info("Sent request for random advertisement");
+    };
 
-void Advertisement::load(int id) {
-      reloadType();  // refresh any existing nodes
+    void Advertisement::load(int id) {
+        reloadType();  // refresh any existing nodes
 
-      log::debug("Preparing request for advertisement of ID {}...", id);
-      auto request = web::WebRequest();
-      request.userAgent("PlayerAdvertisements/1.0");
-      request.timeout(std::chrono::seconds(15));
-      request.param("id", id);
-      m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad/get"));
-      m_impl->m_hasLoaded = true;
-      m_impl->m_loadRandom = false;
-      m_impl->m_loadId = id;
-      log::info("Sent request for advertisement of ID {}", id);
-};
+        log::debug("Preparing request for advertisement of ID {}...", id);
+        auto request = web::WebRequest();
+        request.userAgent("PlayerAdvertisements/1.0");
+        request.timeout(std::chrono::seconds(15));
+        request.param("id", id);
+        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad/get"));
+        m_impl->m_hasLoaded = true;
+        m_impl->m_loadRandom = false;
+        m_impl->m_loadId = id;
+        log::info("Sent request for advertisement of ID {}", id);
+    };
 
-LazySprite* Advertisement::getAdSprite() const {
-      return m_impl->m_adSprite;
-};
+    LazySprite* Advertisement::getAdSprite() const {
+        return m_impl->m_adSprite;
+    };
 
-Advertisement* Advertisement::create() {
-      auto ret = new Advertisement();
-      if (ret->init()) {
+    Advertisement* Advertisement::create() {
+        auto ret = new Advertisement();
+        if (ret->init()) {
             ret->autorelease();
             return ret;
-      };
+        };
 
-      CC_SAFE_DELETE(ret);
-      return nullptr;
-};
+        CC_SAFE_DELETE(ret);
+        return nullptr;
+    };
 };  // namespace ads

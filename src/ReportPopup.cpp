@@ -54,7 +54,7 @@ bool ReportPopup::setup() {
 };
 
 void ReportPopup::onSubmitButton(CCObject* sender) {
-    auto descriptionInput = static_cast<TextInput*>(m_mainLayer->getChildByID("description-input"));
+    auto descriptionInput = typeinfo_cast<TextInput*>(m_mainLayer->getChildByID("description-input"));
     std::string desc;
     if (descriptionInput)
         desc = descriptionInput->getString();

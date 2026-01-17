@@ -13,12 +13,17 @@
         "ArcticWoof",
         "Cheeseworks"
     ],
-    "links": {
-        "source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
-        "homepage": "https://ads.arcticwoof.xyz",
-        "community": "https://www.dsc.gg/cheeseworks"
-    },
     "description": "Community-made ads for awesome levels!",
+    "dependencies": {
+        "geode.node-ids": {
+            "importance": "required",
+            "version": ">=1.21.0"
+        },
+        "prevter.imageplus": {
+            "importance": "required",
+            "version": ">=1.0.0"
+        }
+    },
     "resources": {
         "sprites": [
             "resources/*.png"
@@ -30,15 +35,10 @@
         "content",
         "online"
     ],
-    "dependencies": {
-        "geode.node-ids": {
-            "importance": "required",
-            "version": ">=1.21.0"
-        },
-        "prevter.imageplus": {
-            "importance": "required",
-            "version": ">=1.0.0"
-        }
+    "links": {
+        "source": "https://github.com/DumbCaveSpider/PlayerAdvertisements",
+        "homepage": "https://ads.arcticwoof.xyz",
+        "community": "https://www.dsc.gg/cheeseworks"
     },
     "settings": {
         "user-id": {

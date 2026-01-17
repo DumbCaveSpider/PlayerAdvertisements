@@ -12,19 +12,19 @@ class $modify(AdsPauseLayer, PauseLayer) {
 
         if (Mod::get()->getSettingValue<bool>("PauseLayer")) {
             // get level name label
-            auto levelName = static_cast<CCLabelBMFont*>(getChildByID("level-name"));
+            auto levelName = typeinfo_cast<CCLabelBMFont*>(getChildByID("level-name"));
             levelName->setVisible(false);
 
             // get the practice mode positions
 
-            auto practiceTitle = static_cast<CCLabelBMFont*>(getChildByID("practice-mode-label"));
-            auto practiceProgress = static_cast<CCLabelBMFont*>(getChildByID("practice-progress-label"));
-            auto practiceBar = static_cast<CCSprite*>(getChildByID("practice-progress-bar"));
+            auto practiceTitle = typeinfo_cast<CCLabelBMFont*>(getChildByID("practice-mode-label"));
+            auto practiceProgress = typeinfo_cast<CCLabelBMFont*>(getChildByID("practice-progress-label"));
+            auto practiceBar = typeinfo_cast<CCSprite*>(getChildByID("practice-progress-bar"));
 
             // move the normal mode title and program bar down
-            auto normalTitle = static_cast<CCLabelBMFont*>(getChildByID("normal-mode-label"));
-            auto normalProgress = static_cast<CCLabelBMFont*>(getChildByID("normal-progress-label"));
-            auto normalBar = static_cast<CCSprite*>(getChildByID("normal-progress-bar"));
+            auto normalTitle = typeinfo_cast<CCLabelBMFont*>(getChildByID("normal-mode-label"));
+            auto normalProgress = typeinfo_cast<CCLabelBMFont*>(getChildByID("normal-progress-label"));
+            auto normalBar = typeinfo_cast<CCSprite*>(getChildByID("normal-progress-bar"));
 
             // position the y values
             if (practiceTitle && normalTitle)
