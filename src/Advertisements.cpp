@@ -3,6 +3,7 @@
 #include <AdPreview.hpp>
 #include <Advertisements.hpp>
 #include <Geode/Geode.hpp>
+#include <Geode/utils/async.hpp>
 #include <algorithm>
 #include <argon/argon.hpp>
 
@@ -61,7 +62,7 @@ namespace ads {
 
     class Advertisement::Impl final {
     public:
-        EventListener<web::WebTask> m_adListener;
+        async::TaskHolder<web::WebResponse> m_adListener;
 
         Ad m_ad = Ad();
         AdType m_type = AdType::Banner;
@@ -77,7 +78,7 @@ namespace ads {
 
         std::string m_token;
 
-        EventListener<web::WebTask> m_viewListener;
+        async::TaskHolder<web::WebResponse> m_viewListener;
     };
 
     Advertisement::Advertisement() {
@@ -171,240 +172,233 @@ namespace ads {
 
         log::info("LazySprite configured - setting up callbacks");
 
-        // get argon token yum
-        auto res = argon::startAuth([this](Result<std::string> res) {
-            if (!res) {
-                log::warn("Auth failed: {}", res.unwrapErr());
-                Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
-                    ->show();
-                return;
-            };
-
-            auto token = std::move(res).unwrap();
-            log::debug("Token: {}", token);
-            m_impl->m_token = token; },
-                                    [](argon::AuthProgress progress) {
-                                        log::debug("Auth progress: {}", argon::authProgressToString(progress));
-                                    });
-
-        if (!res) {
-            log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-            Notification::create("Ad View invalid: Failed auth", NotificationIcon::Error)
-                ->show();
-        };
-
-        m_impl->m_adListener.bind([this](web::WebTask::Event* e) {
-            if (!m_impl) {
-                log::error("m_impl is null in ad listener callback");
-                return;
-            };
-
-            if (auto res = e->getValue()) {
-                if (res->ok()) {
-                    auto jsonRes = res->json();
-                    if (!jsonRes) {
-                        log::error("Failed to parse ad JSON");
-                        return;
-                    };
-
-                    auto json = jsonRes.unwrapOrDefault();
-
-                    auto id = json["ad_id"].asInt().unwrapOrDefault();
-                    auto image = json["image_url"].asString().unwrapOrDefault();
-                    auto level = json["level_id"].asInt().unwrapOrDefault();
-                    auto user = json["user_id"].asString().unwrapOrDefault();
-                    auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
-                    auto view = json["views"].asInt().unwrapOrDefault();
-                    auto click = json["clicks"].asInt().unwrapOrDefault();
-                    auto glow = json["glow"].asInt().unwrapOrDefault();
-
-                    m_impl->m_ad = Ad(id, image, level, type, user, view, click, glow);
-                    log::debug("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
-                    log::debug("Ad view count: {}, click count: {}", view, click);
-                    log::debug("Ad glow level: {}", glow);
-
-                    log::debug("Sending view tracking request for ad_id={}, user_id={}", id, user);
-                    auto viewRequest = web::WebRequest();
-                    viewRequest.userAgent("PlayerAdvertisements/1.0");
-                    viewRequest.header("Content-Type", "application/json");
-                    viewRequest.timeout(std::chrono::seconds(15));
-
-                    matjson::Value viewBody = matjson::Value::object();
-                    viewBody["ad_id"] = id;
-                    viewBody["authtoken"] = m_impl->m_token;
-                    viewBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
-
-                    viewRequest.bodyJSON(viewBody);
-
-                    m_impl->m_viewListener.bind([this, id, user](web::WebTask::Event* e) {
-                        if (auto res = e->getValue()) {
-                            if (res->ok()) {
-                                log::info("View passed ad_id={}, user_id={}", id, user);
-                            } else {
-                                log::error("View failed with code {} for ad_id={}, user_id={}: {}", res->code(), id, user, res->errorMessage());
-                            };
-
-                            log::debug("View request completed for ad_id={}, user_id={}", id, user);
-                        } else if (e->isCancelled()) {
-                            log::error("View request failed for ad_id={}, user_id={}", id, user);
-                        };
-                                                });
-                    m_impl->m_viewListener.setFilter(viewRequest.post("https://ads.arcticwoof.xyz/api/view"));
-                    log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
-
-                    if (m_impl->m_adSprite) {
-                        log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
-                        m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown);
-                    } else {
-                        log::warn("Ad sprite missing when trying to load image");
-                    };
+        async::spawn(
+            argon::startAuth(),
+            [this](geode::Result<std::string> res) {
+                if (res.isOk()) {
+                    auto token = std::move(res).unwrap();
+                    m_impl->m_token = token;
+                    log::debug("Token: {}", token);
                 } else {
-                    log::error("Failed to fetch ad: HTTP {}", res->code());
-                };
-            } else if (auto p = e->getProgress()) {
-                log::debug("ad progress: {}", p->downloadProgress().value_or(0.f));
-            } else if (e->isCancelled()) {
-                log::error("Ad web request failed");
-            } else {
-                log::error("Unknown ad web request error");
-            }; });
+                    log::warn("Auth failed: {}", res.unwrapErr());
+                }
+            }
+        );
 
-            m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
-                if (!m_impl) {
-                    log::error("m_impl is null in load callback");
+        // prepare request for ad data
+        auto req = web::WebRequest();
+        req.userAgent("PlayerAdvertisements/1.0");
+        req.header("Content-Type", "application/json");
+        req.timeout(std::chrono::seconds(15));
+        req.param("type", static_cast<int>(m_impl->m_type));
+
+        req.onProgress([](web::WebProgress const& progress) {
+            log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
+        });
+
+        async::spawn(
+            req.get("https://ads.arcticwoof.xyz/api/ad"),
+            [this](web::WebResponse res) {
+                this->handleAdResponse(res);
+            }
+        );
+
+        m_impl->m_adSprite->setLoadCallback([this](Result<> res) {
+            if (!m_impl) {
+                log::error("m_impl is null in load callback");
+                return;
+            };
+
+            if (res.isOk()) {
+                log::info("Ad image loaded successfully");
+                // add the adIcon at the bottom right of the ad button
+                m_impl->m_adIcon = CCSprite::create("adIcon.png"_spr);
+                m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
+                m_impl->m_adIcon->setPosition({ 3.f, 3.f });
+                m_impl->m_adIcon->setScale(0.25f);
+                m_impl->m_adIcon->setOpacity(100);
+
+                m_impl->m_adButton->addChild(m_impl->m_adIcon, 9);
+
+                if (!m_impl->m_adSprite) {
+                    log::warn("Load callback: ad sprite is null");
                     return;
                 };
 
-                if (res.isOk()) {
-                    log::info("Ad image loaded successfully");
-                    // add the adIcon at the bottom right of the ad button
-                    m_impl->m_adIcon = CCSprite::create("adIcon.png"_spr);
-                    m_impl->m_adIcon->setAnchorPoint({ 0.f, 0.f });
-                    m_impl->m_adIcon->setPosition({ 3.f, 3.f });
-                    m_impl->m_adIcon->setScale(0.25f);
-                    m_impl->m_adIcon->setOpacity(100);
+                m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
+                //m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+                m_impl->m_adSprite->setVisible(true);
 
-                    m_impl->m_adButton->addChild(m_impl->m_adIcon, 9);
-
-                    if (!m_impl->m_adSprite) {
-                        log::warn("Load callback: ad sprite is null");
-                        return;
-                    };
-
-                    m_impl->m_adSprite->setAnchorPoint({ 0.5f, 0.5f });
-                    //m_impl->m_adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-                    m_impl->m_adSprite->setVisible(true);
-
-                    auto const natural = m_impl->m_adSprite->getContentSize();
-                    if (natural.width <= 0.f || natural.height <= 0.f) {
-                        log::warn("Ad sprite has invalid natural size ({}x{})", natural.width, natural.height);
-                    } else {
-                        auto const target = getScaledContentSize();
-
-                        float sx = target.width / natural.width;
-                        float sy = target.height / natural.height;
-
-                        float scale = std::min(sx, sy);
-
-                        m_impl->m_adSprite->setScale(scale);
-                        log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
-                    };
-
-                    if (m_impl->m_ad.glowLevel > 0) {
-                        auto const size = m_impl->m_adSprite->getScaledContentSize();
-
-                        auto featuredStar = CCSprite::createWithSpriteFrameName("GJ_starsIcon_gray_001.png");
-                        if (featuredStar) {
-                            featuredStar->setAnchorPoint({ 1.f, 0.f });
-                            featuredStar->setScale(0.35f);
-                            featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
-                            featuredStar->setOpacity(200);
-                            featuredStar->setColor({ 255, 255, 255 });
-                            m_impl->m_adButton->addChild(featuredStar, 9);
-                        };
-
-                        auto glowNode = CCScale9Sprite::create("glow.png"_spr);
-                        glowNode->setContentSize(size);
-                        glowNode->setAnchorPoint({ 0.5, 0.5 });
-                        glowNode->setPosition(m_impl->m_adButton->getContentSize() / 2);
-
-                        auto particles = GameToolbox::particleFromString(getParticlesForAdType(m_impl->m_ad.type), CCParticleSystemQuad::create(), false);
-                        particles->setScale(1.25f);
-                        particles->setAnchorPoint({ 0.5, 0.5 });
-                        particles->setPosition(glowNode->getPosition());
-                        particles->setEmissionRate(2500.f);
-                        particles->setTotalParticles(125);
-
-                        auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
-                        tag->setScale(0.375f);
-                        tag->setAnchorPoint({ 1, 0 });
-                        tag->setAlignment(kCCTextAlignmentRight);
-                        tag->setPosition({ this->getScaledContentWidth() - 12.f, 3.f });
-                        tag->setOpacity(200);
-
-                        if (m_impl->m_ad.type == AdType::Skyscraper) {
-                            tag->setVisible(false);
-                        };
-
-                        switch (m_impl->m_ad.glowLevel) {
-                        case 1:
-                            glowNode->setOpacity(200);
-                            glowNode->setColor({ 250, 250, 75 });
-                            glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
-                            particles->setStartColorVar({ 250, 250, 75, 255 });
-                            tag->setColor({ 250, 250, 75 });
-                            if (featuredStar) featuredStar->setColor({ 250, 250, 75 });
-                            break;
-
-                        case 2:
-                            glowNode->setOpacity(225);
-                            glowNode->setColor({ 50, 250, 250 });
-                            glowNode->setContentSize({ size.width + 7.5f, size.height + 7.5f });
-                            particles->setStartColorVar({ 50, 250, 250, 255 });
-                            tag->setColor({ 50, 250, 250 });
-                            if (featuredStar) featuredStar->setColor({ 50, 250, 250 });
-                            break;
-
-                        case 3:
-                            glowNode->setOpacity(200);
-                            glowNode->setColor({ 255, 125, 175 });
-                            glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
-                            particles->setStartColorVar({ 255, 125, 175, 255 });
-                            tag->setColor({ 255, 125, 175 });
-                            if (featuredStar) featuredStar->setColor({ 255, 125, 175 });
-                            break;
-
-                        default:
-                            glowNode->removeMeAndCleanup();
-                            particles->removeMeAndCleanup();
-                            tag->removeMeAndCleanup();
-                            break;
-                        };
-
-                        if (glowNode) {
-                            glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.5f, glowNode->getScaledContentHeight() * 2.5f });
-                            glowNode->setScale(glowNode->getScale() / 2.5f);
-
-                            m_impl->m_adButton->addChild(glowNode, -5);
-                            if (m_impl->m_ad.type != AdType::Skyscraper) if (particles) this->addChild(particles, 2);
-                            if (tag) m_impl->m_adButton->addChild(tag, 9);
-                        };
-                    };
-
-                    // if (m_impl->m_adButton) {
-                    //     m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-                    // }
-                } else if (res.isErr()) {
-                    log::error("Failed to load ad image: {}", res.unwrapErr());
-                    if (m_impl && m_impl->m_adSprite) {
-                        m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
-                    };
+                auto const natural = m_impl->m_adSprite->getContentSize();
+                if (natural.width <= 0.f || natural.height <= 0.f) {
+                    log::warn("Ad sprite has invalid natural size ({}x{})", natural.width, natural.height);
                 } else {
-                    log::error("Unknown error loading ad image");
-                } });
+                    auto const target = getScaledContentSize();
+
+                    float sx = target.width / natural.width;
+                    float sy = target.height / natural.height;
+
+                    float scale = std::min(sx, sy);
+
+                    m_impl->m_adSprite->setScale(scale);
+                    log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
+                };
+
+                if (m_impl->m_ad.glowLevel > 0) {
+                    auto const size = m_impl->m_adSprite->getScaledContentSize();
+
+                    auto featuredStar = CCSprite::createWithSpriteFrameName("GJ_starsIcon_gray_001.png");
+                    if (featuredStar) {
+                        featuredStar->setAnchorPoint({ 1.f, 0.f });
+                        featuredStar->setScale(0.35f);
+                        featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
+                        featuredStar->setOpacity(200);
+                        featuredStar->setColor({ 255, 255, 255 });
+                        m_impl->m_adButton->addChild(featuredStar, 9);
+                    };
+
+                    auto glowNode = CCScale9Sprite::create("glow.png"_spr);
+                    glowNode->setContentSize(size);
+                    glowNode->setAnchorPoint({ 0.5, 0.5 });
+                    glowNode->setPosition(m_impl->m_adButton->getContentSize() / 2);
+
+                    auto particles = GameToolbox::particleFromString(getParticlesForAdType(m_impl->m_ad.type), CCParticleSystemQuad::create(), false);
+                    particles->setScale(1.25f);
+                    particles->setAnchorPoint({ 0.5, 0.5 });
+                    particles->setPosition(glowNode->getPosition());
+                    particles->setEmissionRate(2500.f);
+                    particles->setTotalParticles(125);
+
+                    auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
+                    tag->setScale(0.375f);
+                    tag->setAnchorPoint({ 1, 0 });
+                    tag->setAlignment(kCCTextAlignmentRight);
+                    tag->setPosition({ this->getScaledContentWidth() - 12.f, 3.f });
+                    tag->setOpacity(200);
+
+                    if (m_impl->m_ad.type == AdType::Skyscraper) {
+                        tag->setVisible(false);
+                    };
+
+                    switch (m_impl->m_ad.glowLevel) {
+                    case 1:
+                        glowNode->setOpacity(200);
+                        glowNode->setColor({ 250, 250, 75 });
+                        glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
+                        particles->setStartColorVar({ 250, 250, 75, 255 });
+                        tag->setColor({ 250, 250, 75 });
+                        if (featuredStar) featuredStar->setColor({ 250, 250, 75 });
+                        break;
+
+                    case 2:
+                        glowNode->setOpacity(225);
+                        glowNode->setColor({ 50, 250, 250 });
+                        glowNode->setContentSize({ size.width + 7.5f, size.height + 7.5f });
+                        particles->setStartColorVar({ 50, 250, 250, 255 });
+                        tag->setColor({ 50, 250, 250 });
+                        if (featuredStar) featuredStar->setColor({ 50, 250, 250 });
+                        break;
+
+                    case 3:
+                        glowNode->setOpacity(200);
+                        glowNode->setColor({ 255, 125, 175 });
+                        glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
+                        particles->setStartColorVar({ 255, 125, 175, 255 });
+                        tag->setColor({ 255, 125, 175 });
+                        if (featuredStar) featuredStar->setColor({ 255, 125, 175 });
+                        break;
+
+                    default:
+                        glowNode->removeMeAndCleanup();
+                        particles->removeMeAndCleanup();
+                        tag->removeMeAndCleanup();
+                        break;
+                    };
+
+                    if (glowNode) {
+                        glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.5f, glowNode->getScaledContentHeight() * 2.5f });
+                        glowNode->setScale(glowNode->getScale() / 2.5f);
+
+                        m_impl->m_adButton->addChild(glowNode, -5);
+                        if (m_impl->m_ad.type != AdType::Skyscraper) if (particles) this->addChild(particles, 2);
+                        if (tag) m_impl->m_adButton->addChild(tag, 9);
+                    };
+                };
+
+                // if (m_impl->m_adButton) {
+                //     m_impl->m_adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+                // }
+            } else if (res.isErr()) {
+                log::error("Failed to load ad image: {}", res.unwrapErr());
+                if (m_impl && m_impl->m_adSprite) {
+                    m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
+                };
+            } else {
+                log::error("Unknown error loading ad image");
+            } });
 
                 reload();
     };
+
+void Advertisement::handleAdResponse(web::WebResponse const& res) {
+    if (res.ok()) {
+        auto jsonRes = res.json();
+        if (!jsonRes) {
+            log::error("Failed to parse ad JSON");
+            return;
+        }
+
+        auto json = jsonRes.unwrapOrDefault();
+
+        auto id = json["ad_id"].asInt().unwrapOrDefault();
+        auto image = json["image_url"].asString().unwrapOrDefault();
+        auto level = json["level_id"].asInt().unwrapOrDefault();
+        auto user = json["user_id"].asString().unwrapOrDefault();
+        auto type = static_cast<AdType>(json["type"].asInt().unwrapOrDefault());
+        auto view = json["views"].asInt().unwrapOrDefault();
+        auto click = json["clicks"].asInt().unwrapOrDefault();
+        auto glow = json["glow"].asInt().unwrapOrDefault();
+
+        m_impl->m_ad = Ad(id, image, level, type, user, view, click, glow);
+        log::debug("Ad metadata set inside listener: ad_id={} level_id={} user_id={} type={}", id, level, user, static_cast<int>(type));
+        log::debug("Ad view count: {}, click count: {}", view, click);
+        log::debug("Ad glow level: {}", glow);
+
+        log::debug("Sending view tracking request for ad_id={}, user_id={}", id, user);
+        auto viewRequest = web::WebRequest();
+        viewRequest.userAgent("PlayerAdvertisements/1.0");
+        viewRequest.header("Content-Type", "application/json");
+        viewRequest.timeout(std::chrono::seconds(15));
+
+        matjson::Value viewBody = matjson::Value::object();
+        viewBody["ad_id"] = id;
+        viewBody["authtoken"] = m_impl->m_token;
+        viewBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
+
+        viewRequest.bodyJSON(viewBody);
+
+        m_impl->m_viewListener.spawn(viewRequest.post("https://ads.arcticwoof.xyz/api/view"), [this, id, user](web::WebResponse res) {
+            if (res.ok()) {
+                log::info("View passed ad_id={}, user_id={}", id, user);
+            } else {
+                log::error("View failed with code {} for ad_id={}, user_id={}: {}", res.code(), id, user, res.errorMessage());
+            }
+
+            log::debug("View request completed for ad_id={}, user_id={}", id, user);
+        });
+        log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
+
+        if (m_impl->m_adSprite) {
+            log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
+            m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown);
+        } else {
+            log::warn("Ad sprite missing when trying to load image");
+        }
+    } else {
+        log::error("Failed to fetch ad: HTTP {}", res.code());
+    }
+}
+
 
     void Advertisement::setType(AdType type) {
         m_impl->m_type = type;
@@ -419,7 +413,10 @@ namespace ads {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("type", static_cast<int>(m_impl->m_type));
-        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad"));
+        async::spawn(
+            request.get("https://ads.arcticwoof.xyz/api/ad"),
+            [this](web::WebResponse res) { this->handleAdResponse(res); }
+        );
         m_impl->m_hasLoaded = true;
         m_impl->m_loadRandom = true;
         log::info("Sent request for random advertisement");
@@ -433,7 +430,10 @@ namespace ads {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("id", id);
-        m_impl->m_adListener.setFilter(request.get("https://ads.arcticwoof.xyz/api/ad/get"));
+        async::spawn(
+            request.get("https://ads.arcticwoof.xyz/api/ad/get"),
+            [this](web::WebResponse res) { this->handleAdResponse(res); }
+        );
         m_impl->m_hasLoaded = true;
         m_impl->m_loadRandom = false;
         m_impl->m_loadId = id;
@@ -451,7 +451,7 @@ namespace ads {
             return ret;
         };
 
-        CC_SAFE_DELETE(ret);
+        delete ret;
         return nullptr;
     };
 };  // namespace ads

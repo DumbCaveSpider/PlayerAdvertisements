@@ -2,6 +2,7 @@
 
 #include <Advertisements.hpp>
 #include <Geode/Geode.hpp>
+#include <Geode/utils/async.hpp>
 #include <argon/argon.hpp>
 
 #include "ReportPopup.hpp"
@@ -18,8 +19,8 @@ public:
     AdType m_type = AdType::Banner;
     int m_viewCount = 0;
     int m_clickCount = 0;
-    EventListener<web::WebTask> m_announcementListener;
-    EventListener<web::WebTask> m_clickListener;
+    async::TaskHolder<web::WebResponse> m_announcementListener;
+    async::TaskHolder<web::WebResponse> m_clickListener;
 
     std::string m_pendingKey;
     int m_pendingLevelId = -1;
@@ -34,7 +35,9 @@ AdPreview::AdPreview() {
 
 AdPreview::~AdPreview() {};
 
-bool AdPreview::setup() {
+bool AdPreview::init() {
+    if (!Popup::init(250.f, 200.f, "geode.loader/GE_square03.png")) return false;
+    
     setTitle("Ad ID: " + numToString(m_impl->m_adId));
     auto levelIdLabel = CCLabelBMFont::create(("Level ID: " + numToString(m_impl->m_levelId)).c_str(), "bigFont.fnt");
     levelIdLabel->setID("level-id-label");
@@ -101,11 +104,11 @@ void AdPreview::onAnnouncementButton(CCObject* sender) {
     request.timeout(std::chrono::seconds(15));
     request.header("Content-Type", "application/json");
 
-    auto task = request.get("https://ads.arcticwoof.xyz/api/announcement");
-    m_impl->m_announcementListener.bind([this](web::WebTask::Event* e) {
-        if (auto res = e->getValue()) {
-            if (res->ok()) {
-                auto data = res->json();
+    async::spawn(
+        request.get("https://ads.arcticwoof.xyz/api/announcement"),
+        [this](web::WebResponse res) {
+            if (res.ok()) {
+                auto data = res.json();
                 if (!data.isOk()) {
                     log::error("Failed to parse announcement JSON");
                     return;
@@ -121,13 +124,12 @@ void AdPreview::onAnnouncementButton(CCObject* sender) {
 
                 if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
             } else {
-                log::error("Failed to fetch announcement: (code: {})", res->code());
+                log::error("Failed to fetch announcement: (code: {})", res.code());
                 Notification::create("Failed to fetch announcement", NotificationIcon::Error)
                     ->show();
-            };
-        };
-                                        });
-    m_impl->m_announcementListener.setFilter(task);
+            }
+        }
+    );
 };
 
 void AdPreview::onPlayButton(CCObject* sender) {
@@ -174,55 +176,51 @@ void AdPreview::registerClick(int adId, std::string_view userId, CCMenuItemSprit
     }
 
     // get argon token yum
-    auto res = argon::startAuth([this, adId, userId](Result<std::string> res) {
-        if (res.isErr()) {
-            log::warn("Auth failed: {}", res.unwrapErr());
-            Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
-                ->show();
-            return;
-        };
+    argon::AuthOptions opts;
+    opts.progress = [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); };
 
-        auto token = std::move(res).unwrapOrDefault();
-        Mod::get()->setSavedValue<std::string>("argon_token", token);
-        log::debug("Token: {}", token);
-
-        log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
-        auto clickRequest = web::WebRequest();
-        clickRequest.userAgent("PlayerAdvertisements/1.0");
-        clickRequest.header("Content-Type", "application/json");
-        clickRequest.timeout(std::chrono::seconds(15));
-
-        matjson::Value clickBody = matjson::Value::object();
-        clickBody["ad_id"] = adId;
-        clickBody["authtoken"] = token;
-        clickBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
-
-        clickRequest.bodyJSON(clickBody);
-
-        m_impl->m_clickListener.bind([this, adId, userId](web::WebTask::Event* e) {
-            if (auto res = e->getValue()) {
-                if (res->ok()) {
-                    log::info("Click passed ad_id={}, user_id={}", adId, userId);
-                } else {
-                    log::error("Click failed with code {} for ad_id={}, user_id={}: {}", res->code(), adId, userId, res->errorMessage());
-                };
-
-                log::debug("Click request completed for ad_id={}, user_id={}", adId, userId);
-            } else if (e->isCancelled()) {
-                log::error("Click request failed for ad_id={}, user_id={}", adId, userId);
+    async::spawn(
+        argon::startAuth(std::move(opts)),
+        [this, adId, userId](geode::Result<std::string> res) {
+            if (res.isErr()) {
+                log::warn("Auth failed: {}", res.unwrapErr());
+                Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
+                    ->show();
+                return;
             };
-                                     });
-        m_impl->m_clickListener.setFilter(clickRequest.post("https://ads.arcticwoof.xyz/api/click"));
-        log::debug("Sent click tracking request for ad_id={}, user_id={}", adId, userId); },
-                                [](argon::AuthProgress progress) {
-                                    log::debug("Auth progress: {}", argon::authProgressToString(progress));
-                                });
 
-    if (!res) {
-        log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-        Notification::create("Failed to start argon auth", NotificationIcon::Error)
-            ->show();
-    };
+            auto token = std::move(res).unwrapOrDefault();
+            Mod::get()->setSavedValue<std::string>("argon_token", token);
+            log::debug("Token: {}", token);
+
+            log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
+            auto clickRequest = web::WebRequest();
+            clickRequest.userAgent("PlayerAdvertisements/1.0");
+            clickRequest.header("Content-Type", "application/json");
+            clickRequest.timeout(std::chrono::seconds(15));
+
+            matjson::Value clickBody = matjson::Value::object();
+            clickBody["ad_id"] = adId;
+            clickBody["authtoken"] = token;
+            clickBody["account_id"] = GJAccountManager::sharedState()->m_accountID;
+
+            clickRequest.bodyJSON(clickBody);
+
+            async::spawn(
+                clickRequest.post("https://ads.arcticwoof.xyz/api/click"),
+                [this, adId, userId](web::WebResponse res) {
+                    if (res.ok()) {
+                        log::info("Click passed ad_id={}, user_id={}", adId, userId);
+                    } else {
+                        log::error("Click failed with code {} for ad_id={}, user_id={}: {}", res.code(), adId, userId, res.errorMessage());
+                    }
+
+                    log::debug("Click request completed for ad_id={}, user_id={}", adId, userId);
+                }
+            );
+            log::debug("Sent click tracking request for ad_id={}, user_id={}", adId, userId);
+        }
+    );
 };
 
 // open LevelInfo if stored otherwise prepare pending state and request
@@ -314,11 +312,11 @@ AdPreview* AdPreview::create(int adId, int levelId, std::string_view userId, AdT
     ret->m_impl->m_clickCount = clickCount;
 
     // @geode-ignore(unknown-resource)
-    if (ret->initAnchored(250.f, 200.f, "geode.loader/GE_square03.png")) {
+    if (ret->init()) {
         ret->autorelease();
         return ret;
     };
 
-    CC_SAFE_DELETE(ret);
+    delete ret;
     return nullptr;
 };

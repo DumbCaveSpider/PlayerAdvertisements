@@ -4,7 +4,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class AdPreview : public Popup<> {
+class AdPreview : public Popup {
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
@@ -19,7 +19,7 @@ protected:
     AdPreview();
     virtual ~AdPreview();
 
-    bool setup() override;
+    bool init() override;
 
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);

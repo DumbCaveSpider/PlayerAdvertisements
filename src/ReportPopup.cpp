@@ -1,6 +1,7 @@
 #include "ReportPopup.hpp"
 
 #include <Geode/Geode.hpp>
+#include <Geode/utils/async.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 #include <argon/argon.hpp>
 
@@ -13,7 +14,7 @@ public:
     int m_levelId = 0;
     std::string m_userId = "";
     std::string m_description = "";
-    EventListener<web::WebTask> m_listener;
+    async::TaskHolder<web::WebResponse> m_listener;
 };
 
 ReportPopup::ReportPopup() {
@@ -22,7 +23,8 @@ ReportPopup::ReportPopup() {
 
 ReportPopup::~ReportPopup() {};
 
-bool ReportPopup::setup() {
+bool ReportPopup::init() {
+    if (!Popup::init(300.f, 200.f, "geode.loader/GE_square03.png")) return false;
     setTitle("Report AD ID: " + numToString(m_impl->m_adId));
     auto descriptionInput = TextInput::create(300.f, "Report Reason...", "bigFont.fnt");
     descriptionInput->setID("description-input");
@@ -67,49 +69,48 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
     };
 
     // argon token thing
-    auto res = argon::startAuth([this, desc](Result<std::string> res) {
-        if (!res) {
-            log::warn("Auth failed: {}", res.unwrapErr());
-            Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
-                ->show();
-            return;
-        };
+    argon::AuthOptions opts;
+    opts.progress = [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); };
 
-        auto token = std::move(res).unwrap();
-        Mod::get()->setSavedValue<std::string>("argon_token", token);
-        log::debug("Token: {}", token);
-
-        auto reportReq = web::WebRequest();
-        reportReq.userAgent("PlayerAdvertisements/1.0");
-        reportReq.timeout(std::chrono::seconds(15));
-        reportReq.header("Content-Type", "application/json");
-
-        matjson::Value body = matjson::Value::object();
-        body["ad_id"] = m_impl->m_adId;
-        body["account_id"] = GJAccountManager::sharedState()->m_accountID;
-        body["description"] = desc;
-        body["authtoken"] = token;
-        reportReq.bodyJSON(body);
-
-        m_impl->m_listener.bind([this](web::WebTask::Event* e) {
-            if (auto res = e->getValue()) {
-                if (res->ok()) {
-                    Notification::create("Report Sent", NotificationIcon::Success)->show();
-                    this->onClose(nullptr);
-                } else {
-                    Notification::create(res->code() == 403 ? "You've been banned from reporting ads" : "Failed to send report", NotificationIcon::Warning)->show();
-                };
-            } else if (e->isCancelled()) {
-                log::error("Report request was cancelled");
+    async::spawn(
+        argon::startAuth(std::move(opts)),
+        [this, desc](geode::Result<std::string> res) {
+            if (!res) {
+                log::warn("Auth failed: {}", res.unwrapErr());
+                Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
+                    ->show();
+                return;
             };
-                                });
-        m_impl->m_listener.setFilter(reportReq.post("https://ads.arcticwoof.xyz/api/report")); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
 
-    if (!res) {
-        log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-        Notification::create("Failed to start argon auth", NotificationIcon::Error)
-            ->show();
-    };
+            auto token = std::move(res).unwrap();
+            Mod::get()->setSavedValue<std::string>("argon_token", token);
+            log::debug("Token: {}", token);
+
+            auto reportReq = web::WebRequest();
+            reportReq.userAgent("PlayerAdvertisements/1.0");
+            reportReq.timeout(std::chrono::seconds(15));
+            reportReq.header("Content-Type", "application/json");
+
+            matjson::Value body = matjson::Value::object();
+            body["ad_id"] = m_impl->m_adId;
+            body["account_id"] = GJAccountManager::sharedState()->m_accountID;
+            body["description"] = desc;
+            body["authtoken"] = token;
+            reportReq.bodyJSON(body);
+
+            async::spawn(
+                reportReq.post("https://ads.arcticwoof.xyz/api/report"),
+                [this](web::WebResponse res) {
+                    if (res.ok()) {
+                        Notification::create("Report Sent", NotificationIcon::Success)->show();
+                        this->onClose(nullptr);
+                    } else {
+                        Notification::create(res.code() == 403 ? "You've been banned from reporting ads" : "Failed to send report", NotificationIcon::Warning)->show();
+                    }
+                }
+            );
+        }
+    );
 };
 
 ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId, std::string_view description) {
@@ -120,11 +121,11 @@ ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId,
     ret->m_impl->m_description = description;
 
     // @geode-ignore(unknown-resource)
-    if (ret->initAnchored(340.f, 120.f, "geode.loader/GE_square03.png")) {
+    if (ret->init()) {
         ret->autorelease();
         return ret;
     };
 
-    CC_SAFE_DELETE(ret);
+    delete ret;
     return nullptr;
 };

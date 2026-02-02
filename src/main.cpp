@@ -30,6 +30,22 @@ class $modify(AdsMenuLayer, MenuLayer) {
         //         ->show();
         // };
 
+        // argon but with async spawn
+        async::spawn(
+            argon::startAuth(),
+            [this](geode::Result<std::string> res) {
+                if (res.isOk()) {
+                    auto token = std::move(res).unwrap();
+                    Mod::get()->setSavedValue<std::string>("argon_token", token);
+                    log::debug("Token: {}", token);
+                } else {
+                    log::warn("Auth failed: {}", res.unwrapErr());
+                    Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
+                        ->show();
+                }
+            }
+        );
+
         auto const winSize = CCDirector::sharedDirector()->getWinSize();
         if (Mod::get()->getSettingValue<bool>("MenuLayer")) {
             // banner ad at the center

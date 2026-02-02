@@ -6,8 +6,8 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsLeaderboardsLayer, LeaderboardsLayer) {
-    bool init(LeaderboardState layer) {
-        if (!LeaderboardsLayer::init(layer)) return false;
+    bool init(LeaderboardType type, LeaderboardStat stat) {
+        if (!LeaderboardsLayer::init(type, stat)) return false;
 
         if (Mod::get()->getSettingValue<bool>("LeaderboardsLayer")) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();

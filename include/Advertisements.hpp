@@ -102,5 +102,11 @@ namespace ads {
          * Get the LazySprite associated with the advertisement
          */
         LazySprite* getAdSprite() const;
+
+        /**
+         * Handle the response from the advertisement fetch request
+         * @param res The web response containing the advertisement data
+         */
+        void handleAdResponse(web::WebResponse const& res);
     };
 };
