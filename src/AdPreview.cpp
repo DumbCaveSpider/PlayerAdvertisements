@@ -90,12 +90,12 @@ bool AdPreview::init() {
 
   // @geode-ignore(unknown-resource)
   auto announcementBtnSprite =
-      CCSprite::createWithSpriteFrameName("geode.loader/news.png");
+      CircleButtonSprite::create(CCSprite::createWithSpriteFrameName("geode.loader/news.png"), CircleBaseColor::Green, CircleBaseSize::Medium);
   auto announcementBtn = CCMenuItemSpriteExtra::create(
       announcementBtnSprite, this,
       menu_selector(AdPreview::onAnnouncementButton));
   announcementBtn->setID("latest-announcement-btn");
-  announcementBtn->setPosition({m_mainLayer->getContentSize().width - 17, 18});
+  announcementBtn->setPosition({m_mainLayer->getContentSize().width, 0});
   m_buttonMenu->addChild(announcementBtn);
 
   this->scheduleUpdate();

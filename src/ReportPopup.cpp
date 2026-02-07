@@ -45,7 +45,7 @@ bool ReportPopup::init() {
         "<cr>Multiple false reports will lead to your account getting blacklisted.</c>",
         {260.f, 100.f}
     );
-    textArea->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 30 });
+    textArea->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 25 });
     m_mainLayer->addChild(textArea);
 
     return true;
