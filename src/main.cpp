@@ -37,7 +37,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
                 if (res.isOk()) {
                     auto token = std::move(res).unwrap();
                     Mod::get()->setSavedValue<std::string>("argon_token", token);
-                    log::debug("Token: {}", token);
+                    // log::debug("Token: {}", token);
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
                     Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)

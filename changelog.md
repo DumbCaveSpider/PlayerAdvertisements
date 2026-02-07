@@ -1,3 +1,7 @@
+# v1.1.4
+- Ported to Geode v5.0.0
+- Fixed issue where clicks are tracked multiple times if the user clicks multiple times
+
 # v1.1.3
 - Fixed Ad icon sometimes not appearing on ads
 - Improved report error message for users blacklisted from reporting ads

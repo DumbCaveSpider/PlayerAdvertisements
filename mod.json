@@ -18,6 +18,10 @@
         "geode.node-ids": {
             "importance": "required",
             "version": ">=1.21.0"
+        },
+        "prevter.imageplus": {
+            "importance": "required",
+            "version": ">=1.0.0"
         }
     },
     "resources": {
