@@ -1,5 +1,5 @@
 {
-    "geode": "5.0.0-alpha.1",
+    "geode": "5.0.0-alpha.2",
     "gd": {
         "win": "2.2081",
         "android": "2.2081",
@@ -8,17 +8,14 @@
     },
     "id": "arcticwoof.player_advertisements",
     "name": "Player Advertisements",
-    "version": "v1.1.4",
+    "version": "v1.1.4-beta.1",
     "developers": [
         "ArcticWoof",
         "Cheeseworks"
     ],
     "description": "Community-made ads for awesome levels!",
     "dependencies": {
-        "geode.node-ids": {
-            "importance": "required",
-            "version": ">=1.21.0"
-        }
+        "geode.node-ids": ">=1.21.0"
     },
     "resources": {
         "sprites": [

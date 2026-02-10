@@ -1,3 +1,6 @@
+# v1.1.4
+- Port to Geometry Dash 2.208 and Geode v5
+
 # v1.1.3
 - Fixed Ad icon sometimes not appearing on ads
 - Improved report error message for users blacklisted from reporting ads
