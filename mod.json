@@ -15,7 +15,8 @@
     ],
     "description": "Community-made ads for awesome levels!",
     "dependencies": {
-        "geode.node-ids": ">=1.21.0"
+        "geode.node-ids": ">=1.21.0",
+        "prevter.imageplus": ">=1.0.0"
     },
     "resources": {
         "sprites": [

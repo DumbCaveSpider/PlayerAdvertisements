@@ -167,7 +167,7 @@ bool AdManager::init() {
     bg3->addChild(m_impl->m_globalAdCountLabel);
 
     // button to the website at the bottom center of the main layer popup
-    auto webBtn = ButtonSprite::create("Manage Ads", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 0.8f);
+    auto webBtn = ButtonSprite::create("Manage Ads");
     auto webBtnMenu = CCMenuItemSpriteExtra::create(webBtn, this, menu_selector(AdManager::onWebButton));
 
     // button to open mod settings
@@ -176,8 +176,7 @@ bool AdManager::init() {
         "geode.loader/settings.png",
         1.f,
         CircleBaseColor::Green,
-        CircleBaseSize::Medium);
-    modSettingsBtnSprite->setScale(0.75f);
+        CircleBaseSize::Small);
 
     auto modSettingsBtn = CCMenuItemSpriteExtra::create(
         modSettingsBtnSprite,
@@ -210,13 +209,13 @@ bool AdManager::init() {
     kofiBtn->setPosition({ discordBtn->getPositionX() + 25.f, discordBtn->getPositionY() });
 
     // @geode-ignore(unknown-resource)
-    auto announcementBtnSprite = CCSprite::createWithSpriteFrameName("geode.loader/news.png");
+    auto announcementBtnSprite = CircleButtonSprite::create(CCSprite::createWithSpriteFrameName("geode.loader/news.png"), CircleBaseColor::Green, CircleBaseSize::Small);
     auto announcementBtn = CCMenuItemSpriteExtra::create(
         announcementBtnSprite,
         this,
         menu_selector(AdManager::onAnnouncement));
     announcementBtn->setID("latest-announcement-btn");
-    announcementBtn->setPosition({ m_mainLayer->getContentSize().width - 15, 18 });
+    announcementBtn->setPosition({ m_mainLayer->getContentSize().width, 0});
 
     auto menu = CCMenu::create();
     menu->setPosition({ 0.f, 0.f });

@@ -178,7 +178,7 @@ namespace ads {
                 if (res.isOk()) {
                     auto token = std::move(res).unwrap();
                     m_impl->m_token = token;
-                    log::debug("Token: {}", token);
+                    // log::debug("Token: {}", token);
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
                 }
@@ -193,7 +193,7 @@ namespace ads {
         req.param("type", static_cast<int>(m_impl->m_type));
 
         req.onProgress([](web::WebProgress const& progress) {
-            log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
+            // log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
         });
 
         async::spawn(

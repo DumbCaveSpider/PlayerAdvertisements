@@ -1,4 +1,5 @@
 #include "ReportPopup.hpp"
+#include "Geode/ui/MDTextArea.hpp"
 
 #include <Geode/Geode.hpp>
 #include <Geode/utils/async.hpp>
@@ -26,9 +27,9 @@ ReportPopup::~ReportPopup() {};
 bool ReportPopup::init() {
     if (!Popup::init(300.f, 200.f, "geode.loader/GE_square03.png")) return false;
     setTitle("Report AD ID: " + numToString(m_impl->m_adId));
-    auto descriptionInput = TextInput::create(300.f, "Report Reason...", "bigFont.fnt");
+    auto descriptionInput = TextInput::create(260.f, "Report Reason...", "chatFont.fnt");
     descriptionInput->setID("description-input");
-    descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 + 10 });
+    descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 50 });
     if (!m_impl->m_description.empty()) descriptionInput->setString(m_impl->m_description);
     m_mainLayer->addChild(descriptionInput);
 
@@ -39,24 +40,21 @@ bool ReportPopup::init() {
     menu->addChild(submitButton);
     m_mainLayer->addChild(menu);
 
-    // info1 label
-    auto infoLabel1 = CCLabelBMFont::create("Make sure to report this advertisement if you believe it violates the submission rules.", "chatFont.fnt");
-    infoLabel1->setScale(0.6f);
-    infoLabel1->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 20 });
-    m_mainLayer->addChild(infoLabel1);
-
-    // info2 label
-    auto infoLabel2 = CCLabelBMFont::create("Multiple false reports will lead to your account getting blacklisted.", "chatFont.fnt");
-    infoLabel2->setScale(0.6f);
-    infoLabel2->setColor({ 255, 100, 100 });
-    infoLabel2->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 30 });
-    m_mainLayer->addChild(infoLabel2);
+    auto textArea = MDTextArea::create(
+        "Make sure to report this advertisement if you believe it violates the submission rules.\n\n"
+        "<cr>Multiple false reports will lead to your account getting blacklisted.</c>",
+        {260.f, 100.f}
+    );
+    textArea->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 25 });
+    m_mainLayer->addChild(textArea);
 
     return true;
 };
 
 void ReportPopup::onSubmitButton(CCObject* sender) {
     auto descriptionInput = typeinfo_cast<TextInput*>(m_mainLayer->getChildByID("description-input"));
+    auto upopup = UploadActionPopup::create(nullptr, "Submitting Report...");
+    upopup->show();
     std::string desc;
     if (descriptionInput)
         desc = descriptionInput->getString();
@@ -64,21 +62,19 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
         desc = m_impl->m_description;
 
     if (desc.length() < 10) {
-        Notification::create("Report reason is too short", NotificationIcon::Warning)->show();
+        upopup->showFailMessage("Report reason is too short");
         return;
     };
 
     // argon token thing
-    argon::AuthOptions opts;
-    opts.progress = [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); };
+    auto accountData = argon::getGameAccountData();
 
     async::spawn(
-        argon::startAuth(std::move(opts)),
-        [this, desc](geode::Result<std::string> res) {
+        argon::startAuth(std::move(accountData)),
+        [this, desc, upopup](geode::Result<std::string> res) {
             if (!res) {
                 log::warn("Auth failed: {}", res.unwrapErr());
-                Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
-                    ->show();
+                upopup->showFailMessage("Failed to authenticate with Argon");
                 return;
             };
 
@@ -100,12 +96,12 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
 
             async::spawn(
                 reportReq.post("https://ads.arcticwoof.xyz/api/report"),
-                [this](web::WebResponse res) {
+                [this, upopup](web::WebResponse res) {
                     if (res.ok()) {
-                        Notification::create("Report Sent", NotificationIcon::Success)->show();
                         this->onClose(nullptr);
+                        upopup->showSuccessMessage("Report submitted successfully");
                     } else {
-                        Notification::create(res.code() == 403 ? "You've been banned from reporting ads" : "Failed to send report", NotificationIcon::Warning)->show();
+                        upopup->showFailMessage(res.code() == 403 ? "You've been banned from reporting ads" : "Failed to send report");
                     }
                 }
             );
