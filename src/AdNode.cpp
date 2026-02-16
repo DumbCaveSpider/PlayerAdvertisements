@@ -6,7 +6,7 @@ using namespace geode::prelude;
 
 AdNode* AdNode::create(const matjson::Value& adValue, AdManager* manager) {
     auto ret = new AdNode();
-    if (ret->initWithValue(adValue, manager)) {
+    if (ret->init(adValue, manager)) {
         ret->autorelease();
         return ret;
     }
@@ -15,7 +15,9 @@ AdNode* AdNode::create(const matjson::Value& adValue, AdManager* manager) {
     return nullptr;
 }
 
-bool AdNode::initWithValue(const matjson::Value& adValue, AdManager* manager) {
+bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
+    if (!CCNode::init()) return false;
+
     this->setContentSize({ 200.f, 85.f });
     this->setAnchorPoint({ 0.5f, 0.5f });
 
