@@ -331,7 +331,10 @@ namespace ads {
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
                 if (m_impl && m_impl->m_adSprite) {
-                    m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
+                    m_impl->m_adSprite->setVisible(false);
+                }
+                if (m_impl && m_impl->m_adButton) {
+                    m_impl->m_adButton->setEnabled(false);
                 };
             } else {
                 log::error("Unknown error loading ad image");
@@ -388,9 +391,11 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         });
         log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
 
-        if (m_impl->m_adSprite) {
+        if (m_impl->m_adSprite && !m_impl->m_ad.image.empty()) {
             log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
             m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown);
+        } else if (m_impl->m_ad.image.empty()) {
+            log::warn("Ad image URL is empty, skipping image load");
         } else {
             log::warn("Ad sprite missing when trying to load image");
         }
