@@ -196,7 +196,7 @@ namespace ads {
             // log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
         });
 
-        async::spawn(
+        m_impl->m_adListener.spawn(
             req.get("https://ads.arcticwoof.xyz/api/ad"),
             [this](web::WebResponse res) {
                 this->handleAdResponse(res);
@@ -418,7 +418,7 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("type", static_cast<int>(m_impl->m_type));
-        async::spawn(
+        m_impl->m_adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad"),
             [this](web::WebResponse res) { this->handleAdResponse(res); }
         );
@@ -435,7 +435,7 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("id", id);
-        async::spawn(
+        m_impl->m_adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad/get"),
             [this](web::WebResponse res) { this->handleAdResponse(res); }
         );
