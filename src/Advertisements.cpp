@@ -196,7 +196,7 @@ namespace ads {
             // log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
         });
 
-        async::spawn(
+        m_impl->m_adListener.spawn(
             req.get("https://ads.arcticwoof.xyz/api/ad"),
             [this](web::WebResponse res) {
                 this->handleAdResponse(res);
@@ -331,7 +331,10 @@ namespace ads {
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
                 if (m_impl && m_impl->m_adSprite) {
-                    m_impl->m_adSprite->initWithSpriteFrameName("squareTemp.png"_spr);
+                    m_impl->m_adSprite->setVisible(false);
+                }
+                if (m_impl && m_impl->m_adButton) {
+                    m_impl->m_adButton->setEnabled(false);
                 };
             } else {
                 log::error("Unknown error loading ad image");
@@ -388,9 +391,11 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         });
         log::debug("Sent view tracking request for ad_id={}, user_id={}", id, user);
 
-        if (m_impl->m_adSprite) {
+        if (m_impl->m_adSprite && !m_impl->m_ad.image.empty()) {
             log::info("Loading ad image from URL: {}", m_impl->m_ad.image);
             m_impl->m_adSprite->loadFromUrl(m_impl->m_ad.image.c_str(), CCImage::kFmtUnKnown);
+        } else if (m_impl->m_ad.image.empty()) {
+            log::warn("Ad image URL is empty, skipping image load");
         } else {
             log::warn("Ad sprite missing when trying to load image");
         }
@@ -413,7 +418,7 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("type", static_cast<int>(m_impl->m_type));
-        async::spawn(
+        m_impl->m_adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad"),
             [this](web::WebResponse res) { this->handleAdResponse(res); }
         );
@@ -430,7 +435,7 @@ void Advertisement::handleAdResponse(web::WebResponse const& res) {
         request.userAgent("PlayerAdvertisements/1.0");
         request.timeout(std::chrono::seconds(15));
         request.param("id", id);
-        async::spawn(
+        m_impl->m_adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad/get"),
             [this](web::WebResponse res) { this->handleAdResponse(res); }
         );
