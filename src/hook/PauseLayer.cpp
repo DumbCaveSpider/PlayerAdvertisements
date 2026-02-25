@@ -27,12 +27,9 @@ class $modify(AdsPauseLayer, PauseLayer) {
             auto normalBar = typeinfo_cast<CCSprite*>(getChildByID("normal-progress-bar"));
 
             // position the y values
-            if (practiceTitle && normalTitle)
-                normalTitle->setPositionY(practiceTitle->getPositionY());
-            if (practiceProgress && normalProgress)
-                normalProgress->setPositionY(practiceProgress->getPositionY());
-            if (practiceBar && normalBar)
-                normalBar->setPositionY(practiceBar->getPositionY());
+            if (practiceTitle && normalTitle) normalTitle->setPositionY(practiceTitle->getPositionY());
+            if (practiceProgress && normalProgress) normalProgress->setPositionY(practiceProgress->getPositionY());
+            if (practiceBar && normalBar) normalBar->setPositionY(practiceBar->getPositionY());
 
             // make all practice mode invisible by default
             if (practiceTitle) practiceTitle->setVisible(false);
@@ -55,9 +52,8 @@ class $modify(AdsPauseLayer, PauseLayer) {
             auto const winSize = CCDirector::get()->getWinSize();
 
             // insert ad banner (722x84)
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 50.f });
 
                 this->addChild(adBanner, 100);
@@ -69,20 +65,18 @@ class $modify(AdsPauseLayer, PauseLayer) {
         // im confused
         // add a button on the side on the menu
         if (auto rightButtonMenu = getChildByID("right-button-menu")) {
-            auto adButton = CircleButtonSprite::create(
-                CCSprite::create("adIcon.png"_spr),
-                CircleBaseColor::Green,
-                CircleBaseSize::Medium);
-
             auto popupButton = CCMenuItemSpriteExtra::create(
-                adButton,
+                CircleButtonSprite::create(
+                    CCSprite::create("adIcon.png"_spr),
+                    CircleBaseColor::Green,
+                    CircleBaseSize::Medium
+                ),
                 this,
-                menu_selector(AdsPauseLayer::onAdClicked));
+                menu_selector(AdsPauseLayer::onAdClicked)
+            );
 
-            if (auto menu = typeinfo_cast<CCMenu*>(rightButtonMenu)) {
-                menu->addChild(popupButton);
-                menu->updateLayout();
-            };
+            rightButtonMenu->addChild(popupButton);
+            rightButtonMenu->updateLayout();
         };
     };
 

@@ -13,9 +13,8 @@ class $modify(AdsCreatorLayer, CreatorLayer) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
 
                 this->addChild(adBanner);

@@ -13,9 +13,8 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // square ad left
-            if (auto adSquareLeft = Advertisement::create()) {
+            if (auto adSquareLeft = Advertisement::create(AdType::Square)) {
                 adSquareLeft->setID("square-left"_spr);
-                adSquareLeft->setType(AdType::Square);
                 adSquareLeft->setPosition({ winSize.width / 2.f - 140.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareLeft);
@@ -25,9 +24,8 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
             };
 
             // square ad center
-            if (auto adSquareCenter = Advertisement::create()) {
+            if (auto adSquareCenter = Advertisement::create(AdType::Square)) {
                 adSquareCenter->setID("square-center"_spr);
-                adSquareCenter->setType(AdType::Square);
                 adSquareCenter->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareCenter);
@@ -37,21 +35,20 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
             };
 
             // square ad right
-            if (auto adSquareRight = Advertisement::create()) {
+            if (auto adSquareRight = Advertisement::create(AdType::Square)) {
                 adSquareRight->setID("advertisement-menu"_spr);
-                adSquareRight->setType(AdType::Square);
                 adSquareRight->setPosition({ winSize.width / 2.f + 140.f, winSize.height / 2.f - 70.f });
 
                 m_mainLayer->addChild(adSquareRight);
+
                 this->positionForCommentType(adSquareRight, type);
 
                 adSquareRight->loadRandom();
             };
 
             // skyscraper ad on the right side
-            if (auto adSkyscraperRight = Advertisement::create()) {
+            if (auto adSkyscraperRight = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperRight->setID("skyscraper-right"_spr);
-                adSkyscraperRight->setType(AdType::Skyscraper);
                 adSkyscraperRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
 
                 m_mainLayer->addChild(adSkyscraperRight);
@@ -60,9 +57,8 @@ class $modify(AdsShareCommentLayer, ShareCommentLayer) {
             };
 
             // skyscraper ad on the left side
-            if (auto adSkyscraperLeft = Advertisement::create()) {
+            if (auto adSkyscraperLeft = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperLeft->setID("skyscraper-left"_spr);
-                adSkyscraperLeft->setType(AdType::Skyscraper);
                 adSkyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
 
                 m_mainLayer->addChild(adSkyscraperLeft);

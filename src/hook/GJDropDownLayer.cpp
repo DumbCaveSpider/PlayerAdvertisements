@@ -13,9 +13,8 @@ class $modify(AdsGJDropDownLayer, GJDropDownLayer) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
 
                 m_mainLayer->addChild(adBanner, 2);
@@ -26,9 +25,8 @@ class $modify(AdsGJDropDownLayer, GJDropDownLayer) {
             // check if hide-dropdown-menu exists, then dont show the left and right ad
             if (!m_mainLayer->getChildByID("hide-dropdown-menu")) {
                 // skyscraper ad on the left side
-                if (auto adSkyscraperLeft = Advertisement::create()) {
+                if (auto adSkyscraperLeft = Advertisement::create(AdType::Skyscraper)) {
                     adSkyscraperLeft->setID("advertisement-menu-skyscraper-left");
-                    adSkyscraperLeft->setType(AdType::Skyscraper);
                     adSkyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
 
                     m_mainLayer->addChild(adSkyscraperLeft);
@@ -37,9 +35,8 @@ class $modify(AdsGJDropDownLayer, GJDropDownLayer) {
                 };
 
                 // skyscraper ad on the right side
-                if (auto adSkyscraperRight = Advertisement::create()) {
+                if (auto adSkyscraperRight = Advertisement::create(AdType::Skyscraper)) {
                     adSkyscraperRight->setID("skyscraper-right"_spr);
-                    adSkyscraperRight->setType(AdType::Skyscraper);
                     adSkyscraperRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
 
                     m_mainLayer->addChild(adSkyscraperRight);

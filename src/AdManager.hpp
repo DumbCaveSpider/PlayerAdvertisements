@@ -10,7 +10,7 @@ private:
 
 protected:
     AdManager();
-    virtual ~AdManager();
+    ~AdManager();
 
     bool init() override;
 
@@ -22,11 +22,9 @@ protected:
     void onModSettingsButton(CCObject* sender);
     void onAnnouncement(CCObject* sender);
     void populateAdsScrollLayer();
-    void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
 
     void update(float dt) override;
 
 public:
-    void onPlayButton(CCObject* sender);
     static AdManager* create();
 };

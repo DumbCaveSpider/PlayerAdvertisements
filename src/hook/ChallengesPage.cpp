@@ -14,9 +14,8 @@ class $modify(AdsChallengesPage, ChallengesPage) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner ad at the top
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("advertisement-menu");
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, 30.f });
 
                 m_mainLayer->addChild(adBanner, 20);

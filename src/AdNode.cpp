@@ -4,18 +4,7 @@
 
 using namespace geode::prelude;
 
-AdNode* AdNode::create(const matjson::Value& adValue, AdManager* manager) {
-    auto ret = new AdNode();
-    if (ret->init(adValue, manager)) {
-        ret->autorelease();
-        return ret;
-    }
-
-    delete ret;
-    return nullptr;
-}
-
-bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
+bool AdNode::init(const matjson::Value& adValue) {
     if (!CCNode::init()) return false;
 
     this->setContentSize({ 200.f, 85.f });
@@ -30,6 +19,7 @@ bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
     stencil->setContentSize({ 200.f, 85.f });
     stencil->setAnchorPoint({ 0.0f, 0.0f });
     stencil->setPosition({ 0.0f, 0.0f });
+
     clipNode->setStencil(stencil);
     clipNode->setAlphaThreshold(0.1f);
 
@@ -37,6 +27,7 @@ bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
     auto bg = CCScale9Sprite::create("geode.loader/black-square.png");
     bg->setContentSize({ stencil->getContentSize() });
     bg->setAnchorPoint({ 0.0f, 0.0f });
+
     this->addChild(bg, 1);
 
     auto imageUrl = adValue["image_url"].asString();
@@ -46,6 +37,7 @@ bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
     lazySprite->setContentSize({ 200.f, 85.f });
     lazySprite->setScale(0.55f);
     lazySprite->setPosition({ this->getContentSize().width / 2, this->getContentSize().height / 2 });
+
     clipNode->addChild(lazySprite);
 
     this->addChild(clipNode);
@@ -61,34 +53,42 @@ bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
 
     // labels
     std::string adIdStr = adId.isOk() ? numToString(adId.unwrap()) : "N/A";
+
     auto adLabel = CCLabelBMFont::create(("Ad ID: " + adIdStr).c_str(), "goldFont.fnt");
     adLabel->setPosition({ this->getContentSize().width / 2, this->getContentSize().height - 10.f });
     adLabel->setAnchorPoint({ 0.5f, 0.5f });
     adLabel->setScale(0.4f);
+
     this->addChild(adLabel, 2);
 
     std::string levelIdStr = levelId.isOk() ? numToString(levelId.unwrap()) : "N/A";
+
     auto levelLabel = CCLabelBMFont::create(("Level ID: " + levelIdStr).c_str(), "goldFont.fnt");
     levelLabel->setPosition({ this->getContentSize().width / 2, this->getContentSize().height - 25.f });
     levelLabel->setAnchorPoint({ 0.5f, 0.5f });
     levelLabel->setScale(0.4f);
+
     this->addChild(levelLabel, 2);
 
     // views and clicks
     std::string viewsStr = viewCount.isOk() ? numToString(viewCount.unwrap()) : "0";
     auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).c_str(), "goldFont.fnt");
+
     viewsLabel->setPosition({ this->getContentSize().width / 4, this->getContentSize().height - 40.f });
     viewsLabel->setAnchorPoint({ 0.5f, 0.5f });
     viewsLabel->setColor({ 255, 125, 0 });
     viewsLabel->setScale(0.4f);
+
     this->addChild(viewsLabel, 2);
 
     std::string clicksStr = clickCount.isOk() ? numToString(clickCount.unwrap()) : "0";
     auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).c_str(), "goldFont.fnt");
+
     clicksLabel->setPosition({ this->getContentSize().width / 4 * 3, this->getContentSize().height - 40.f });
     clicksLabel->setAnchorPoint({ 0.5f, 0.5f });
     clicksLabel->setColor({ 0, 175, 255 });
     clicksLabel->setScale(0.4f);
+
     this->addChild(clicksLabel, 2);
 
     // pending label
@@ -97,34 +97,98 @@ bool AdNode::init(const matjson::Value& adValue, AdManager* manager) {
     pendingLabel->setAnchorPoint({ 0.f, 0.5f });
     pendingLabel->setColor({ 255, 0, 0 });
     pendingLabel->setScale(0.3f);
+
     this->addChild(pendingLabel, 2);
 
     if (pending.isOk() && !pending.unwrap()) {
         pendingLabel->setString("Approved");
         pendingLabel->setColor({ 0, 255, 0 });
-    }
+    };
 
     // created at
     auto createdAtLabel = CCLabelBMFont::create(("Created at: " + createdAt.unwrap()).c_str(), "chatFont.fnt");
     createdAtLabel->setPosition({ this->getContentSize().width / 2, 10.f });
     createdAtLabel->setAnchorPoint({ 0.5f, 0.5f });
     createdAtLabel->setScale(0.3f);
+
     this->addChild(createdAtLabel, 2);
 
     // play button at the bottom right
     auto playBtnSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
     playBtnSprite->setScale(0.35f);
+
     auto playBtn = CCMenuItemSpriteExtra::create(
         playBtnSprite,
-        manager,
-        menu_selector(AdManager::onPlayButton));
+        this,
+        menu_selector(AdNode::onPlayButton)
+    );
     playBtn->setID("play-btn");
     playBtn->setTag(levelId.isOk() ? levelId.unwrap() : 0);
 
     auto playMenu = CCMenu::create();
     playMenu->setPosition({ this->getContentSize().width / 2, this->getContentSize().height / 2 - 5 });
     playMenu->addChild(playBtn);
+
     this->addChild(playMenu, 3);
 
     return true;
-}
+};
+
+// open LevelInfo if stored otherwise prepare pending state and request
+void AdNode::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId) {
+    if (!menuItem) return;
+
+    auto searchObj = GJSearchObject::create(SearchType::Search, numToString(levelId));
+    auto key = std::string(searchObj->getKey());
+    auto glm = GameLevelManager::sharedState();
+
+    // check stored cache first
+    auto stored = glm->getStoredOnlineLevels(key.c_str());
+
+    if (stored && stored->count() > 0) {
+        auto level = typeinfo_cast<GJGameLevel*>(stored->objectAtIndex(0));
+
+        if (level && level->m_levelID == levelId) {
+            auto scene = LevelInfoLayer::scene(level, false);
+            auto transitionFade = CCTransitionFade::create(0.5f, scene);
+
+            CCDirector::sharedDirector()->pushScene(transitionFade);
+
+            return;
+        };
+    };
+
+    glm->getOnlineLevels(searchObj);
+};
+
+void AdNode::onPlayButton(CCObject* sender) {
+    auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
+    int levelId = menuItem ? menuItem->getTag() : -1;
+
+    if (PlayLayer::get()) {
+        createQuickPopup(
+            "Warning",
+            "You are already inside of a level, attempt to play another level before closing the current level will <cr>crash your game</c>.\n<cy>Do you still want to proceed?</c>",
+            "Cancel", "Proceed",
+            [this, sender](auto, bool btn) {
+                if (btn) {
+                    auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
+                    if (menuItem) this->tryOpenOrFetchLevel(menuItem, menuItem->getTag());
+                };
+            });
+    } else {
+        auto menuItemPtr = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
+        if (menuItemPtr) this->tryOpenOrFetchLevel(menuItemPtr, menuItemPtr->getTag());
+    };
+};
+
+AdNode* AdNode::create(const matjson::Value& adValue) {
+    auto ret = new AdNode();
+    if (ret->init(adValue)) {
+        ret->autorelease();
+        return ret;
+    };
+
+    delete ret;
+    return nullptr;
+};

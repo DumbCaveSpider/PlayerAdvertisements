@@ -13,9 +13,8 @@ class $modify(AdsEndLevelLayer, EndLevelLayer) {
 
         if (Mod::get()->getSettingValue<bool>("EndLevelLayer")) {
             // banner ad at the top
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
 
                 m_mainLayer->addChild(adBanner);
@@ -24,9 +23,8 @@ class $modify(AdsEndLevelLayer, EndLevelLayer) {
             };
 
             // skyscraper ad on the right side
-            if (auto adSkyscraperRight = Advertisement::create()) {
+            if (auto adSkyscraperRight = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperRight->setID("skyscraper-right"_spr);
-                adSkyscraperRight->setType(AdType::Skyscraper);
                 adSkyscraperRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
 
                 m_mainLayer->addChild(adSkyscraperRight);
@@ -35,9 +33,8 @@ class $modify(AdsEndLevelLayer, EndLevelLayer) {
             };
 
             // skyscraper ad on the left side
-            if (auto adSkyscraperLeft = Advertisement::create()) {
+            if (auto adSkyscraperLeft = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperLeft->setID("skyscraper-left"_spr);
-                adSkyscraperLeft->setType(AdType::Skyscraper);
                 adSkyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
 
                 m_mainLayer->addChild(adSkyscraperLeft);

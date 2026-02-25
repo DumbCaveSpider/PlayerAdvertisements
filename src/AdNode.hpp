@@ -9,8 +9,11 @@ using namespace geode::prelude;
 
 class AdNode final : public CCNode {
 protected:
-    bool init(const matjson::Value& adValue, AdManager* manager);
+    void onPlayButton(CCObject* sender);
+    void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
+
+    bool init(const matjson::Value& adValue);
 
 public:
-    static AdNode* create(const matjson::Value& adValue, AdManager* manager);
+    static AdNode* create(const matjson::Value& adValue);
 };

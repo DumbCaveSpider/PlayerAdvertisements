@@ -15,7 +15,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
         // auto res = argon::startAuth([](Result<std::string> res) {
         //     if (!res) {
         //         log::warn("Auth failed: {}", res.unwrapErr());
-        //         Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
+        //         Notification::create("Failed to authorize with Argon", NotificationIcon::Error)
         //             ->show();
         //         return;
         //     };
@@ -33,16 +33,16 @@ class $modify(AdsMenuLayer, MenuLayer) {
         // argon but with async spawn
         async::spawn(
             argon::startAuth(),
-            [this](geode::Result<std::string> res) {
+            [this](Result<std::string> res) {
                 if (res.isOk()) {
                     auto token = std::move(res).unwrap();
                     Mod::get()->setSavedValue<std::string>("argon_token", token);
+
                     // log::debug("Token: {}", token);
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
-                    Notification::create("Failed to authenticate with Argon", NotificationIcon::Error)
-                        ->show();
-                }
+                    Notification::create("Failed to authorize with Argon", NotificationIcon::Error)->show();
+                };
             }
         );
 

@@ -13,9 +13,8 @@ class $modify(AdsLeaderboardsLayer, LeaderboardsLayer) {
             auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
             // banner at the bottom center
-            if (auto adBanner = Advertisement::create()) {
+            if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("advertisement-leaderboards-bottom");
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, 30.f });
 
                 this->addChild(adBanner, 1);

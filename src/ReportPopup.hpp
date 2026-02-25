@@ -11,11 +11,11 @@ private:
 
 protected:
     ReportPopup();
-    virtual ~ReportPopup();
+    ~ReportPopup();
 
-    bool init() override;
+    bool init(unsigned int adId, int levelId, std::string userId, std::string description);
     void onSubmitButton(CCObject* sender);
 
 public:
-    static ReportPopup* create(int adId, int levelId, std::string_view userId, std::string_view description);
+    static ReportPopup* create(unsigned int adId, int levelId, std::string userId, std::string description);
 };

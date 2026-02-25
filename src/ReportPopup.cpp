@@ -15,35 +15,46 @@ public:
     int m_levelId = 0;
     std::string m_userId = "";
     std::string m_description = "";
+
     async::TaskHolder<web::WebResponse> m_listener;
 };
 
-ReportPopup::ReportPopup() {
-    m_impl = std::make_unique<Impl>();
-};
-
+ReportPopup::ReportPopup() : m_impl(std::make_unique<Impl>()) {};
 ReportPopup::~ReportPopup() {};
 
-bool ReportPopup::init() {
+bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::string description) {
+    m_impl->m_adId = adId;
+    m_impl->m_levelId = levelId;
+    m_impl->m_userId = std::move(userId);
+    m_impl->m_description = std::move(description);
+
+    // @geode-ignore(unknown-resource)
     if (!Popup::init(300.f, 200.f, "geode.loader/GE_square03.png")) return false;
+
     setTitle("Report AD ID: " + numToString(m_impl->m_adId));
+
     auto descriptionInput = TextInput::create(260.f, "Report Reason...", "chatFont.fnt");
     descriptionInput->setID("description-input");
     descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 50 });
+
     if (!m_impl->m_description.empty()) descriptionInput->setString(m_impl->m_description);
+
     m_mainLayer->addChild(descriptionInput);
 
     auto menu = CCMenu::create();
     menu->setPosition({ m_mainLayer->getContentSize().width / 2, 0.f });
+
     auto submitButtonSprite = ButtonSprite::create("Submit Report", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 1.f);
     auto submitButton = CCMenuItemSpriteExtra::create(submitButtonSprite, this, menu_selector(ReportPopup::onSubmitButton));
+
     menu->addChild(submitButton);
+
     m_mainLayer->addChild(menu);
 
     auto textArea = MDTextArea::create(
-        "Make sure to report this advertisement if you believe it violates the submission rules.\n\n"
+        "Make sure to report this advertisement if you believe it violates the rules.\n\n"
         "<cr>Multiple false reports will lead to your account getting blacklisted.</c>",
-        {260.f, 100.f}
+        { 260.f, 100.f }
     );
     textArea->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 25 });
     m_mainLayer->addChild(textArea);
@@ -53,13 +64,16 @@ bool ReportPopup::init() {
 
 void ReportPopup::onSubmitButton(CCObject* sender) {
     auto descriptionInput = typeinfo_cast<TextInput*>(m_mainLayer->getChildByID("description-input"));
+
     auto upopup = UploadActionPopup::create(nullptr, "Submitting Report...");
     upopup->show();
+
     std::string desc;
-    if (descriptionInput)
+    if (descriptionInput) {
         desc = descriptionInput->getString();
-    else
+    } else {
         desc = m_impl->m_description;
+    };
 
     if (desc.length() < 10) {
         upopup->showFailMessage("Report reason is too short");
@@ -71,10 +85,10 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
 
     async::spawn(
         argon::startAuth(std::move(accountData)),
-        [this, desc, upopup](geode::Result<std::string> res) {
+        [this, desc, upopup](Result<std::string> res) {
             if (!res) {
                 log::warn("Auth failed: {}", res.unwrapErr());
-                upopup->showFailMessage("Failed to authenticate with Argon");
+                upopup->showFailMessage("Failed to authorize with Argon");
                 return;
             };
 
@@ -92,6 +106,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
             body["account_id"] = GJAccountManager::sharedState()->m_accountID;
             body["description"] = desc;
             body["authtoken"] = token;
+
             reportReq.bodyJSON(body);
 
             async::spawn(
@@ -102,22 +117,17 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
                         upopup->showSuccessMessage("Report submitted successfully");
                     } else {
                         upopup->showFailMessage(res.code() == 403 ? "You've been banned from reporting ads" : "Failed to send report");
-                    }
+                    };
                 }
             );
         }
     );
 };
 
-ReportPopup* ReportPopup::create(int adId, int levelId, std::string_view userId, std::string_view description) {
+ReportPopup* ReportPopup::create(unsigned int adId, int levelId, std::string userId, std::string description) {
     auto ret = new ReportPopup();
-    ret->m_impl->m_adId = adId;
-    ret->m_impl->m_levelId = levelId;
-    ret->m_impl->m_userId = userId;
-    ret->m_impl->m_description = description;
-
     // @geode-ignore(unknown-resource)
-    if (ret->init()) {
+    if (ret->init(adId, levelId, std::move(userId), std::move(description))) {
         ret->autorelease();
         return ret;
     };
