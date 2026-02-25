@@ -4,7 +4,7 @@
 using namespace geode::prelude;
 using namespace ads;
 
-class ReportPopup : public Popup {
+class ReportPopup final : public Popup {
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;

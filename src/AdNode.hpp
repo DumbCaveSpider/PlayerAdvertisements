@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class AdNode : public CCNode {
+class AdNode final : public CCNode {
 protected:
     bool init(const matjson::Value& adValue, AdManager* manager);
 

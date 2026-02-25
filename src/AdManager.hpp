@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class AdManager : public Popup {
+class AdManager final : public Popup {
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
