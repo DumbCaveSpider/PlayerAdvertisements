@@ -1,7 +1,7 @@
 # v1.1.4 
 - Ported to Geode v5.0.0
-- Fixed issue where clicks are tracked multiple times if the user clicks multiple times
-- Internal optimizations
+- Fixed vulnerability allowing multiple clicks to count at once
+- Several optimizations
 
 # v1.1.3
 - Fixed Ad icon sometimes not appearing on ads
