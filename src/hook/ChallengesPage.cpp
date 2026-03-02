@@ -1,7 +1,8 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/ChallengesPage.hpp>
-#include "AdManager.hpp"
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/ChallengesPage.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

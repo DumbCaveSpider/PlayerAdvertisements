@@ -1,7 +1,10 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/PauseLayer.hpp>
-#include "AdManager.hpp"
 #include <Advertisements.hpp>
+
+#include "../ui/AdManager.hpp"
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/PauseLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
@@ -67,7 +70,7 @@ class $modify(AdsPauseLayer, PauseLayer) {
         if (auto rightButtonMenu = getChildByID("right-button-menu")) {
             auto popupButton = CCMenuItemSpriteExtra::create(
                 CircleButtonSprite::create(
-                    CCSprite::create("adIcon.png"_spr),
+                    CCSprite::createWithSpriteFrameName("adIcon.png"_spr),
                     CircleBaseColor::Green,
                     CircleBaseSize::Medium
                 ),

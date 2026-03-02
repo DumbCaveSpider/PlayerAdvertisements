@@ -1,5 +1,8 @@
-#include <Geode/Geode.hpp>
+#pragma once
+
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
@@ -13,7 +16,7 @@ protected:
     AdPreview();
     ~AdPreview();
 
-    bool init(unsigned int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);
+    bool init(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount);
 
     void onPlayButton(CCObject* sender);
     void onReportButton(CCObject* sender);
@@ -25,5 +28,5 @@ protected:
 
 
 public:
-    static AdPreview* create(unsigned int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount);
+    static AdPreview* create(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount);
 };

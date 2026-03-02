@@ -8,7 +8,7 @@
     },
     "id": "arcticwoof.player_advertisements",
     "name": "Player Advertisements",
-    "version": "v1.1.4",
+    "version": "v1.1.5",
     "developers": [
         "ArcticWoof",
         "Cheeseworks"
@@ -21,7 +21,12 @@
     "resources": {
         "sprites": [
             "resources/*.png"
-        ]
+        ],
+        "spritesheets": {
+            "ADS_icons": [
+                "resources/icons/*.png"
+            ]
+        }
     },
     "tags": [
         "modtober25",

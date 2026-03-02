@@ -1,3 +1,8 @@
+# v1.1.5 
+- Fixed UI positioning on Ads Manager for 4:3 ratio screens
+- Removed some unused textures
+- Several internal tweaks
+
 # v1.1.4 
 - Ported to Geode v5.0.0
 - Fixed vulnerability allowing multiple clicks to count on one ad

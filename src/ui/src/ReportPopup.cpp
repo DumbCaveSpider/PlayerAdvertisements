@@ -1,43 +1,47 @@
-#include "ReportPopup.hpp"
-#include "Geode/ui/MDTextArea.hpp"
+#include "../ReportPopup.hpp"
+
+#include <argon/argon.hpp>
 
 #include <Geode/Geode.hpp>
-#include <Geode/utils/async.hpp>
+
 #include <Geode/ui/GeodeUI.hpp>
-#include <argon/argon.hpp>
+#include <Geode/ui/MDTextArea.hpp>
+
+#include <Geode/utils/async.hpp>
 
 using namespace geode::prelude;
 using namespace geode::utils;
 
 class ReportPopup::Impl final {
 public:
-    int m_adId = 0;
-    int m_levelId = 0;
-    std::string m_userId = "";
-    std::string m_description = "";
+    unsigned int adId = 0;
+    int levelId = 0;
 
-    async::TaskHolder<web::WebResponse> m_listener;
+    std::string userId = "";
+    std::string description = "";
+
+    async::TaskHolder<web::WebResponse> listener;
 };
 
 ReportPopup::ReportPopup() : m_impl(std::make_unique<Impl>()) {};
 ReportPopup::~ReportPopup() {};
 
 bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::string description) {
-    m_impl->m_adId = adId;
-    m_impl->m_levelId = levelId;
-    m_impl->m_userId = std::move(userId);
-    m_impl->m_description = std::move(description);
+    m_impl->adId = adId;
+    m_impl->levelId = levelId;
+    m_impl->userId = std::move(userId);
+    m_impl->description = std::move(description);
 
     // @geode-ignore(unknown-resource)
     if (!Popup::init(300.f, 200.f, "geode.loader/GE_square03.png")) return false;
 
-    setTitle("Report AD ID: " + numToString(m_impl->m_adId));
+    setTitle("Report AD ID: " + numToString(m_impl->adId));
 
     auto descriptionInput = TextInput::create(260.f, "Report Reason...", "chatFont.fnt");
     descriptionInput->setID("description-input");
     descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 50 });
 
-    if (!m_impl->m_description.empty()) descriptionInput->setString(m_impl->m_description);
+    if (!m_impl->description.empty()) descriptionInput->setString(m_impl->description);
 
     m_mainLayer->addChild(descriptionInput);
 
@@ -72,7 +76,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
     if (descriptionInput) {
         desc = descriptionInput->getString();
     } else {
-        desc = m_impl->m_description;
+        desc = m_impl->description;
     };
 
     if (desc.length() < 10) {
@@ -102,7 +106,7 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
             reportReq.header("Content-Type", "application/json");
 
             matjson::Value body = matjson::Value::object();
-            body["ad_id"] = m_impl->m_adId;
+            body["ad_id"] = m_impl->adId;
             body["account_id"] = GJAccountManager::sharedState()->m_accountID;
             body["description"] = desc;
             body["authtoken"] = token;

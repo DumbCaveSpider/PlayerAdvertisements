@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
-#include "AdManager.hpp"
+#include "ui/AdManager.hpp"
 #include <Advertisements.hpp>
 #include <argon/argon.hpp>
 
@@ -64,7 +64,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
         // ad button in the bottom menu
         if (auto bottomMenu = this->getChildByID("bottom-menu")) {
             auto adButton = CircleButtonSprite::create(
-                CCSprite::create("adIcon.png"_spr),
+                CCSprite::createWithSpriteFrameName("adIcon.png"_spr),
                 CircleBaseColor::Green,
                 CircleBaseSize::MediumAlt
             );

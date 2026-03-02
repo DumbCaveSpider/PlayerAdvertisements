@@ -1,5 +1,6 @@
-#include <Geode/Geode.hpp>
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

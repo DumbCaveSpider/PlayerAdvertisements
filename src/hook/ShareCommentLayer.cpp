@@ -1,6 +1,8 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/ShareCommentLayer.hpp>
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/ShareCommentLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

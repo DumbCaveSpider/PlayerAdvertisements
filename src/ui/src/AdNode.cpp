@@ -1,6 +1,8 @@
+#include "../AdNode.hpp"
+
+#include "../AdManager.hpp"
+
 #include <Geode/Geode.hpp>
-#include "AdNode.hpp"
-#include "AdManager.hpp"
 
 using namespace geode::prelude;
 
@@ -15,7 +17,7 @@ bool AdNode::init(const matjson::Value& adValue) {
     clipNode->setAnchorPoint({ 0.0f, 0.0f });
     clipNode->setPosition({ 0.0f, 0.0f });
 
-    auto stencil = CCScale9Sprite::create("square02_001.png");
+    auto stencil = NineSlice::create("square02_001.png");
     stencil->setContentSize({ 200.f, 85.f });
     stencil->setAnchorPoint({ 0.0f, 0.0f });
     stencil->setPosition({ 0.0f, 0.0f });
@@ -24,7 +26,7 @@ bool AdNode::init(const matjson::Value& adValue) {
     clipNode->setAlphaThreshold(0.1f);
 
     // @geode-ignore(unknown-resource)
-    auto bg = CCScale9Sprite::create("geode.loader/black-square.png");
+    auto bg = NineSlice::create("geode.loader/black-square.png");
     bg->setContentSize({ stencil->getContentSize() });
     bg->setAnchorPoint({ 0.0f, 0.0f });
 

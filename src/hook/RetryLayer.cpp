@@ -1,6 +1,8 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/RetryLevelLayer.hpp>
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/RetryLevelLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

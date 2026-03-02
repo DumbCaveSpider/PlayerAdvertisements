@@ -1,7 +1,8 @@
+#include <Advertisements.hpp>
+
 #include <fmt/core.h>
 
-#include <AdPreview.hpp>
-#include <Advertisements.hpp>
+#include "ui/AdPreview.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/utils/async.hpp>
 #include <algorithm>
@@ -16,7 +17,7 @@ namespace ads {
         constexpr const char* banner = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
         constexpr const char* square = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
         constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-    };  // namespace particles
+    };
 
     CCSize const getAdSize(AdType type) {
         auto const banner = CCSize(364.f, 45.f);
@@ -76,17 +77,13 @@ namespace ads {
 
         int loadId = 0;
 
-        bool isInScene = false;
-
         std::string token;
 
         async::TaskHolder<web::WebResponse> viewListener;
     };
 
     Advertisement::Advertisement() : m_impl(std::make_unique<Impl>()) {};
-    Advertisement::~Advertisement() {
-        if (m_impl && m_impl->adSprite) m_impl->adSprite->release();
-    };
+    Advertisement::~Advertisement() {};
 
     bool Advertisement::init(AdType type) {
         m_impl->type = type;
@@ -101,7 +98,7 @@ namespace ads {
 
     void Advertisement::onEnter() {
         CCMenu::onEnter();
-        m_impl->isInScene = true;
+
         if (m_impl->hasLoaded) {
             log::info("reloading new random advertisement");
             reloadType();
@@ -110,7 +107,7 @@ namespace ads {
     };
 
     void Advertisement::onExit() {
-        m_impl->isInScene = false;
+        if (auto adSprite = m_impl->adSprite.take()) adSprite->removeMeAndCleanup();
         CCMenu::onExit();
     };
 
@@ -213,7 +210,7 @@ namespace ads {
             if (res.isOk()) {
                 log::info("Ad image loaded successfully");
                 // add the adIcon at the bottom right of the ad button
-                m_impl->adIcon = CCSprite::create("adIcon.png"_spr);
+                m_impl->adIcon = CCSprite::createWithSpriteFrameName("adIcon.png"_spr);
                 m_impl->adIcon->setAnchorPoint({ 0.f, 0.f });
                 m_impl->adIcon->setPosition({ 3.f, 3.f });
                 m_impl->adIcon->setScale(0.25f);
@@ -258,7 +255,7 @@ namespace ads {
                         m_impl->adButton->addChild(featuredStar, 9);
                     };
 
-                    auto glowNode = CCScale9Sprite::create("glow.png"_spr);
+                    auto glowNode = NineSlice::create("glow.png"_spr);
                     glowNode->setContentSize(size);
                     glowNode->setAnchorPoint({ 0.5, 0.5 });
                     glowNode->setPosition(m_impl->adButton->getContentSize() / 2);
@@ -467,4 +464,4 @@ namespace ads {
         delete ret;
         return nullptr;
     };
-};  // namespace ads
+};

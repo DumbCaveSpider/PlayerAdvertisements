@@ -1,6 +1,8 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/GJPathsLayer.hpp>
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/GJPathsLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

@@ -1,5 +1,7 @@
 #include <Advertisements.hpp>
+
 #include <Geode/Geode.hpp>
+
 #include <Geode/modify/GJDropDownLayer.hpp>
 
 using namespace geode::prelude;

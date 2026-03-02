@@ -1,6 +1,8 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/DailyLevelPage.hpp>
 #include <Advertisements.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/modify/DailyLevelPage.hpp>
 
 using namespace geode::prelude;
 using namespace ads;

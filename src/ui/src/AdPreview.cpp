@@ -1,11 +1,14 @@
-#include "AdPreview.hpp"
+#include "../AdPreview.hpp"
+
+#include "../ReportPopup.hpp"
 
 #include <Advertisements.hpp>
-#include <Geode/Geode.hpp>
-#include <Geode/utils/async.hpp>
+
 #include <argon/argon.hpp>
 
-#include "ReportPopup.hpp"
+#include <Geode/Geode.hpp>
+
+#include <Geode/utils/async.hpp>
 
 using namespace geode::prelude;
 using namespace geode::utils;
@@ -14,40 +17,41 @@ using namespace ads;
 
 class AdPreview::Impl final {
 public:
-    int m_adId = 0;
-    int m_levelId = 0;
-    std::string m_userId = "";
-    AdType m_type = AdType::Banner;
-    int m_viewCount = 0;
-    int m_clickCount = 0;
-    async::TaskHolder<web::WebResponse> m_announcementListener;
-    async::TaskHolder<web::WebResponse> m_clickListener;
+    unsigned int adId = 0;
+    int levelId = 0;
+    std::string userId = "";
+    AdType type = AdType::Banner;
+    unsigned int viewCount = 0;
+    unsigned int clickCount = 0;
 
-    std::string m_pendingKey;
-    int m_pendingLevelId = -1;
-    float m_pendingTimeout = 0.0f;
-    LoadingSpinner* m_pendingSpinner = nullptr;
-    bool m_hasClicked = false;
+    async::TaskHolder<web::WebResponse> announcementListener;
+    async::TaskHolder<web::WebResponse> clickListener;
+
+    std::string pendingKey;
+    int pendingLevelId = -1;
+    float pendingTimeout = 0.0f;
+    LoadingSpinner* pendingSpinner = nullptr;
+    bool hasClicked = false;
 };
 
 AdPreview::AdPreview() : m_impl(std::make_unique<Impl>()) {};
 AdPreview::~AdPreview() {};
 
-bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount) {
-    m_impl->m_adId = adId;
-    m_impl->m_levelId = levelId;
-    m_impl->m_userId = std::move(userId);
-    m_impl->m_type = type;
-    m_impl->m_viewCount = viewCount;
-    m_impl->m_clickCount = clickCount;
+bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount) {
+    m_impl->adId = adId;
+    m_impl->levelId = levelId;
+    m_impl->userId = std::move(userId);
+    m_impl->type = type;
+    m_impl->viewCount = viewCount;
+    m_impl->clickCount = clickCount;
 
     // @geode-ignore(unknown-resource)
     if (!Popup::init(250.f, 200.f, "geode.loader/GE_square03.png")) return false;
 
-    setTitle("Ad ID: " + numToString(m_impl->m_adId));
+    setTitle("Ad ID: " + numToString(m_impl->adId));
 
     auto levelIdLabel = CCLabelBMFont::create(
-        ("Level ID: " + numToString(m_impl->m_levelId)).c_str(),
+        ("Level ID: " + numToString(m_impl->levelId)).c_str(),
         "bigFont.fnt"
     );
     levelIdLabel->setID("level-id-label");
@@ -63,7 +67,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         menu_selector(AdPreview::onPlayButton)
     );
     playAdLevelBtn->setID("play-btn");
-    playAdLevelBtn->setTag(m_impl->m_levelId); // tag the play button with the level id so the scheduler can restore it later
+    playAdLevelBtn->setTag(m_impl->levelId); // tag the play button with the level id so the scheduler can restore it later
     playAdLevelBtn->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 });
 
     // store the menu for spinner placement / restoring state
@@ -71,7 +75,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
 
     // view and click counts
     auto viewCountLabel = CCLabelBMFont::create(
-        ("Views: " + numToString(m_impl->m_viewCount)).c_str(),
+        ("Views: " + numToString(m_impl->viewCount)).c_str(),
         "goldFont.fnt"
     );
     viewCountLabel->setID("view-count-label");
@@ -82,7 +86,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     m_mainLayer->addChild(viewCountLabel);
 
     auto clickCountLabel = CCLabelBMFont::create(
-        ("Clicks: " + numToString(m_impl->m_clickCount)).c_str(),
+        ("Clicks: " + numToString(m_impl->clickCount)).c_str(),
         "goldFont.fnt"
     );
     clickCountLabel->setID("click-count-label");
@@ -124,7 +128,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
 };
 
 void AdPreview::onReportButton(CCObject* sender) {
-    auto reportPopup = ReportPopup::create(m_impl->m_adId, m_impl->m_levelId, m_impl->m_userId, "");
+    auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, m_impl->userId, "");
     reportPopup->show();
 };
 
@@ -194,22 +198,22 @@ void AdPreview::onPlayButton(CCObject* sender) {
             "Cancel", "Proceed", [this, sender](auto, bool btn) {
                 if (btn) {
                     auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
-                    this->registerClick(m_impl->m_adId, m_impl->m_userId, menuItem);
-                    this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
+                    this->registerClick(m_impl->adId, m_impl->userId, menuItem);
+                    this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
                 };
             });
     } else {
         auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
-        if (!m_impl->m_hasClicked) {
-            m_impl->m_hasClicked = true;
-            this->registerClick(m_impl->m_adId, m_impl->m_userId, menuItem);
-            log::debug("click registered for ad_id={}, user_id={}", m_impl->m_adId,
-                m_impl->m_userId);
-            this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
+        if (!m_impl->hasClicked) {
+            m_impl->hasClicked = true;
+            this->registerClick(m_impl->adId, m_impl->userId, menuItem);
+            log::debug("click registered for ad_id={}, user_id={}", m_impl->adId,
+                m_impl->userId);
+            this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
         } else {
             log::debug("click already registered for ad_id={}, user_id={}",
-                m_impl->m_adId, m_impl->m_userId);
-            this->tryOpenOrFetchLevel(menuItem, m_impl->m_levelId);
+                m_impl->adId, m_impl->userId);
+            this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
         }
     };
 };
@@ -290,14 +294,14 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
     };
 
     // prepare pending state
-    m_impl->m_pendingKey = key;
-    m_impl->m_pendingLevelId = levelId;
-    m_impl->m_pendingTimeout = 10.0f; // seconds
+    m_impl->pendingKey = key;
+    m_impl->pendingLevelId = levelId;
+    m_impl->pendingTimeout = 10.0f; // seconds
 
     // show spinner on the clicked button and disable it
-    if (m_impl->m_pendingSpinner) {
-        m_impl->m_pendingSpinner->removeFromParent();
-        m_impl->m_pendingSpinner = nullptr;
+    if (m_impl->pendingSpinner) {
+        m_impl->pendingSpinner->removeFromParent();
+        m_impl->pendingSpinner = nullptr;
     };
 
     if (auto spinner = LoadingSpinner::create(100.f)) {
@@ -306,21 +310,21 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
 
         m_buttonMenu->addChild(spinner);
 
-        m_impl->m_pendingSpinner = spinner;
+        m_impl->pendingSpinner = spinner;
     };
 
     glm->getOnlineLevels(searchObj);
 };
 
 void AdPreview::update(float dt) {
-    if (!m_impl->m_pendingKey.empty()) {
+    if (!m_impl->pendingKey.empty()) {
         auto glm = GameLevelManager::sharedState();
-        auto stored = glm->getStoredOnlineLevels(m_impl->m_pendingKey.c_str());
+        auto stored = glm->getStoredOnlineLevels(m_impl->pendingKey.c_str());
 
         if (stored && stored->count() > 0) {
             auto level = typeinfo_cast<GJGameLevel*>(stored->objectAtIndex(0));
 
-            if (level && level->m_levelID == m_impl->m_pendingLevelId) {
+            if (level && level->m_levelID == m_impl->pendingLevelId) {
                 // open level info
                 auto scene = LevelInfoLayer::scene(level, false);
                 auto transitionFade = CCTransitionFade::create(0.5f, scene);
@@ -328,36 +332,36 @@ void AdPreview::update(float dt) {
                 CCDirector::sharedDirector()->pushScene(transitionFade);
 
                 // cleanup pending state and spinner
-                if (m_impl->m_pendingSpinner) {
-                    m_impl->m_pendingSpinner->removeFromParent();
-                    m_impl->m_pendingSpinner = nullptr;
+                if (m_impl->pendingSpinner) {
+                    m_impl->pendingSpinner->removeFromParent();
+                    m_impl->pendingSpinner = nullptr;
                 };
 
-                m_impl->m_pendingKey.clear();
-                m_impl->m_pendingLevelId = -1;
-                m_impl->m_pendingTimeout = 0.0;
+                m_impl->pendingKey.clear();
+                m_impl->pendingLevelId = -1;
+                m_impl->pendingTimeout = 0.0;
 
                 return;
             };
         };
 
-        m_impl->m_pendingTimeout -= dt;
-        if (m_impl->m_pendingTimeout <= 0.0) {
-            if (m_impl->m_pendingSpinner) {
-                m_impl->m_pendingSpinner->removeFromParent();
-                m_impl->m_pendingSpinner = nullptr;
+        m_impl->pendingTimeout -= dt;
+        if (m_impl->pendingTimeout <= 0.0) {
+            if (m_impl->pendingSpinner) {
+                m_impl->pendingSpinner->removeFromParent();
+                m_impl->pendingSpinner = nullptr;
             };
 
             Notification::create("Level not found", NotificationIcon::Warning)->show();
 
-            m_impl->m_pendingKey.clear();
-            m_impl->m_pendingLevelId = -1;
-            m_impl->m_pendingTimeout = 0.0;
+            m_impl->pendingKey.clear();
+            m_impl->pendingLevelId = -1;
+            m_impl->pendingTimeout = 0.0;
         };
     };
 };
 
-AdPreview* AdPreview::create(unsigned int adId, int levelId, std::string userId, AdType type, int viewCount, int clickCount) {
+AdPreview* AdPreview::create(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount) {
     auto ret = new AdPreview();
 
     if (ret->init(adId, levelId, userId, type, viewCount, clickCount)) {
