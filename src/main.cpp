@@ -7,6 +7,7 @@
 #include <Geode/Geode.hpp>
 
 #include <Geode/ui/GeodeUI.hpp>
+#include <Geode/ui/Button.hpp>
 
 #include <Geode/modify/MenuLayer.hpp>
 
@@ -14,33 +15,9 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsMenuLayer, MenuLayer) {
-    struct Fields {
-        std::string userId = Mod::get()->getSettingValue<std::string>("user-id");
-    };
-
     bool init() {
         if (!MenuLayer::init()) return false;
 
-        // // get argon token yum
-        // auto res = argon::startAuth([](Result<std::string> res) {
-        //     if (!res) {
-        //         log::warn("Auth failed: {}", res.unwrapErr());
-        //         Notification::create("Failed to authorize with Argon", NotificationIcon::Error)
-        //             ->show();
-        //         return;
-        //     };
-
-        //     auto token = std::move(res).unwrap();
-        //     Mod::get()->setSavedValue<std::string>("argon_token", token);
-        //     log::debug("Token: {}", token); }, [](argon::AuthProgress progress) { log::debug("Auth progress: {}", argon::authProgressToString(progress)); });
-
-        // if (!res) {
-        //     log::warn("Failed to start auth attempt: {}", res.unwrapErr());
-        //     Notification::create("Failed to start argon auth", NotificationIcon::Error)
-        //         ->show();
-        // };
-
-        // argon but with async spawn
         async::spawn(
             argon::startAuth(),
             [this](Result<std::string> res) {
@@ -73,16 +50,31 @@ class $modify(AdsMenuLayer, MenuLayer) {
 
         // ad button in the bottom menu
         if (auto bottomMenu = this->getChildByID("bottom-menu")) {
-            auto adButton = CircleButtonSprite::create(
-                CCSprite::createWithSpriteFrameName("adIcon.png"_spr),
-                CircleBaseColor::Green,
-                CircleBaseSize::MediumAlt
-            );
-
-            auto popupButton = CCMenuItemSpriteExtra::create(
-                adButton,
-                this,
-                menu_selector(AdsMenuLayer::onAdClicked)
+            auto popupButton = Button::createWithNode(
+                CircleButtonSprite::createWithSpriteFrameName(
+                    "adIcon.png"_spr,
+                    0.875f,
+                    CircleBaseColor::Green,
+                    CircleBaseSize::MediumAlt
+                ),
+                [userId = Mod::get()->getSettingValue<std::string>("user-id")](auto) {
+                    if (userId.empty()) {
+                        createQuickPopup(
+                            "No User ID Set",
+                            "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
+                            "No", "Yes",
+                            [](auto, bool ok) {
+                                if (ok) {
+                                    openSettingsPopup(getMod());
+                                    Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
+                                    web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
+                                };
+                            }
+                        );
+                    } else {
+                        if (auto popup = AdManager::create()) popup->show();
+                    };
+                }
             );
 
             bottomMenu->addChild(popupButton);
@@ -90,24 +82,5 @@ class $modify(AdsMenuLayer, MenuLayer) {
         };
 
         return true;
-    };
-
-    void onAdClicked(CCObject * sender) {
-        if (m_fields->userId.empty()) {
-            createQuickPopup(
-                "No User ID Set",
-                "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
-                "No", "Yes",
-                [](auto, bool ok) {
-                    if (ok) {
-                        openSettingsPopup(getMod());
-                        Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
-                        web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
-                    };
-                }
-            );
-        } else {
-            if (auto popup = AdManager::create()) popup->show();
-        };
     };
 };

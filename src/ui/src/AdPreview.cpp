@@ -116,7 +116,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         CircleButtonSprite::createWithSpriteFrameName(
             // @geode-ignore(unknown-resource)
             "geode.loader/news.png",
-            0.875f,
+            0.75f,
             CircleBaseColor::Green,
             CircleBaseSize::Medium
         ),

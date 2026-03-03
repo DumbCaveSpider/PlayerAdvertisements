@@ -71,7 +71,7 @@ namespace ads {
      */
     constexpr const char* getParticlesForAdType(AdType type);
 
-    class AWCW_ADS_API_DLL Advertisement final : public cocos2d::CCMenu {
+    class AWCW_ADS_API_DLL Advertisement final : public cocos2d::CCNode {
     private:
         class Impl;
         std::unique_ptr<Impl> m_impl;
@@ -79,9 +79,6 @@ namespace ads {
     protected:
         Advertisement();
         ~Advertisement();
-
-        // Send the user to the level
-        void activate(cocos2d::CCObject*);
 
         // Reloads the type of advertisement
         void reloadType();

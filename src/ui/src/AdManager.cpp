@@ -44,8 +44,6 @@ public:
             auto adsArray = adsData.asArray();
             if (!adsArray.isOk()) return;
 
-            auto ads = adsArray.unwrap();
-
             adCount = 0;
 
             auto layout = SimpleAxisLayout::create(Axis::Column);
@@ -56,7 +54,7 @@ public:
 
             if (adsScrollLayer->m_contentLayer) adsScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
 
-            for (const auto& adValue : ads) {
+            for (const auto& adValue : adsArray.unwrap()) {
                 if (auto node = AdNode::create(adValue)) {
                     adsScrollLayer->m_contentLayer->addChild(node);
                     adCount++;
@@ -75,18 +73,10 @@ public:
 
     void onFetchComplete(web::WebResponse const& res) {
         if (res.ok()) {
-            auto jsonStr = res.string().unwrapOr("");
+            auto json = res.json().unwrapOrDefault();
 
-            auto json = matjson::parse(jsonStr);
-            if (!json.isOk()) {
-                log::error("Failed to parse JSON");
-                return;
-            };
-
-            auto jsonValue = json.unwrap();
-
-            if (jsonValue.contains("ads")) {
-                adsData = jsonValue["ads"];
+            if (json.contains("ads")) {
+                adsData = json["ads"];
                 auto adsArray = adsData.asArray();
                 if (adsArray.isOk()) {
                     log::info("Fetched {} ads", adsArray.unwrap().size());
@@ -96,16 +86,16 @@ public:
                 };
             };
 
-            if (jsonValue.contains("user")) {
-                userData = jsonValue["user"];
+            if (json.contains("user")) {
+                userData = json["user"];
                 auto username = userData["username"].asString();
-                if (username) log::info("Fetched user data for: {}", username.unwrap());
+                if (username.isOk()) log::info("Fetched user data for: {}", username.unwrapOrDefault());
 
                 if (userData.contains("total_views")) {
                     auto totalViewsStat = userData["total_views"].asUInt();
 
                     if (totalViewsStat.isOk()) {
-                        totalViews = totalViewsStat.unwrap();
+                        totalViews = totalViewsStat.unwrapOrDefault();
                         log::info("Total Views: {}", totalViewsStat);
                     };
                 };
@@ -114,7 +104,7 @@ public:
                     auto totalClicksStat = userData["total_clicks"].asUInt();
 
                     if (totalClicksStat.isOk()) {
-                        totalClicks = totalClicksStat.unwrap();
+                        totalClicks = totalClicksStat.unwrapOrDefault();
                         log::info("Total Clicks: {}", totalClicksStat);
                     };
                 };
@@ -143,39 +133,31 @@ public:
 
     void onGlobalStatsFetchComplete(web::WebResponse const& res) {
         if (res.ok()) {
-            auto jsonStr = res.string().unwrapOr("");
+            auto json = res.json().unwrapOrDefault();
 
-            auto json = matjson::parse(jsonStr);
-            if (!json.isOk()) {
-                log::error("Failed to parse global stats JSON");
-                return;
-            };
-
-            auto jsonValue = json.unwrap();
-
-            if (jsonValue.contains("total_views")) {
-                auto totalViews = jsonValue["total_views"].asUInt();
+            if (json.contains("total_views")) {
+                auto totalViews = json["total_views"].asUInt();
 
                 if (totalViews.isOk()) {
-                    globalTotalViews = totalViews.unwrap();
+                    globalTotalViews = totalViews.unwrapOrDefault();
                     log::info("Global Total Views: {}", globalTotalViews);
                 };
             };
 
-            if (jsonValue.contains("total_clicks")) {
-                auto totalClicks = jsonValue["total_clicks"].asUInt();
+            if (json.contains("total_clicks")) {
+                auto totalClicks = json["total_clicks"].asUInt();
 
                 if (totalClicks.isOk()) {
-                    globalTotalClicks = totalClicks.unwrap();
+                    globalTotalClicks = totalClicks.unwrapOrDefault();
                     log::info("Global Total Clicks: {}", globalTotalClicks);
                 };
             };
 
-            if (jsonValue.contains("ad_count")) {
-                auto adCount = jsonValue["ad_count"].asUInt();
+            if (json.contains("ad_count")) {
+                auto adCount = json["ad_count"].asUInt();
 
                 if (adCount.isOk()) {
-                    globalAdCount = adCount.unwrap();
+                    globalAdCount = adCount.unwrapOrDefault();
                     log::info("Global Ad Count: {}", globalAdCount);
                 };
             };
@@ -211,7 +193,7 @@ bool AdManager::init() {
         req.get(urlStr),
         [this](web::WebResponse res) {
             if (res.ok()) {
-                m_impl->onFetchComplete(res);
+                if (auto impl = m_impl.get()) impl->onFetchComplete(res);
             } else {
                 log::error("Request failed with status code: {}", res.code());
                 Notification::create("Advertisement data fetch failed", NotificationIcon::Error)->show();
@@ -227,7 +209,7 @@ bool AdManager::init() {
         globalStatsReq.get("https://ads.arcticwoof.xyz/stats/global"),
         [this](web::WebResponse res) {
             if (res.ok()) {
-                m_impl->onGlobalStatsFetchComplete(res);
+                if (auto impl = m_impl.get()) impl->onGlobalStatsFetchComplete(res);
             } else {
                 log::error("Global stats request failed with status code: {}", res.code());
             };
@@ -235,95 +217,95 @@ bool AdManager::init() {
     );
 
     // @geode-ignore(unknown-resource)
-    auto bg1 = NineSlice::create("geode.loader/inverseborder.png");
-    bg1->setID("ads-list-container");
-    bg1->setPosition({ 115.f, m_mainLayer->getScaledContentHeight() / 2 - 30.f });
-    bg1->setContentSize({ 200.f, 200.f });
+    auto adsBg = NineSlice::create("geode.loader/inverseborder.png");
+    adsBg->setID("ads-list-container");
+    adsBg->setPosition({ 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 10.f });
+    adsBg->setContentSize({ 200.f, 200.f });
 
-    m_mainLayer->addChild(bg1, 5);
+    m_mainLayer->addChild(adsBg, 5);
 
     // create scroll layer for ads
-    m_impl->adsScrollLayer = ScrollLayer::create(bg1->getScaledContentSize(), true, true);
+    m_impl->adsScrollLayer = ScrollLayer::create(adsBg->getScaledContentSize(), true, true);
     m_impl->adsScrollLayer->setID("ads-list");
 
-    bg1->addChild(m_impl->adsScrollLayer, 1);
+    adsBg->addChild(m_impl->adsScrollLayer, 1);
 
     // title label at the top of each of the backgrounds
     auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->adCount).c_str(), "goldFont.fnt");
     titleLabel->setID("ads-title-label");
-    titleLabel->setPosition({ bg1->getScaledContentWidth() / 2.f, bg1->getScaledContentHeight() + 10.f });
+    titleLabel->setPosition({ adsBg->getScaledContentWidth() / 2.f, adsBg->getScaledContentHeight() + 10.f });
     titleLabel->setScale(0.4f);
 
     m_impl->titleLabel = titleLabel;
 
-    bg1->addChild(titleLabel);
+    adsBg->addChild(titleLabel);
 
     // @geode-ignore(unknown-resource)
-    auto bg2 = NineSlice::create("geode.loader/inverseborder.png");
-    bg2->setID("stats-container");
-    bg2->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, m_mainLayer->getScaledContentHeight() / 2.f + 30.f + 2.f });
-    bg2->setContentSize({ 200.f, 75.f });
+    auto statsBg = NineSlice::create("geode.loader/inverseborder.png");
+    statsBg->setID("stats-container");
+    statsBg->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) + 52.f });
+    statsBg->setContentSize({ 200.f, 75.f });
 
-    m_mainLayer->addChild(bg2, 5);
+    m_mainLayer->addChild(statsBg, 5);
 
     auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "goldFont.fnt");
     titleLabel2->setID("stats-label");
-    titleLabel2->setPosition({ bg2->getScaledContentWidth() / 2.f, bg2->getScaledContentHeight() + 10.f });
+    titleLabel2->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() + 10.f });
     titleLabel2->setScale(0.4f);
 
-    bg2->addChild(titleLabel2);
+    statsBg->addChild(titleLabel2);
 
     // total views and clicks labels on the right background
     m_impl->viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
     m_impl->viewsLabel->setID("views-label");
-    m_impl->viewsLabel->setPosition({ bg2->getScaledContentWidth() / 2.f, bg2->getScaledContentHeight() - 20.f });
+    m_impl->viewsLabel->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 20.f });
     m_impl->viewsLabel->setScale(0.5f);
 
-    bg2->addChild(m_impl->viewsLabel);
+    statsBg->addChild(m_impl->viewsLabel);
 
     m_impl->clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
     m_impl->clicksLabel->setID("clicks-label");
-    m_impl->clicksLabel->setPosition({ bg2->getScaledContentWidth() / 2.f, bg2->getScaledContentHeight() - 50.f });
+    m_impl->clicksLabel->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 50.f });
     m_impl->clicksLabel->setScale(0.5f);
 
-    bg2->addChild(m_impl->clicksLabel);
+    statsBg->addChild(m_impl->clicksLabel);
 
     // @geode-ignore(unknown-resource)
-    auto bg3 = NineSlice::create("geode.loader/inverseborder.png");
-    bg3->setID("global-stats-container");
-    bg3->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, m_mainLayer->getScaledContentHeight() / 2.f - 80.f });
-    bg3->setContentSize({ 200.f, 100.f });
+    auto globalBg = NineSlice::create("geode.loader/inverseborder.png");
+    globalBg->setID("global-stats-container");
+    globalBg->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 60.f });
+    globalBg->setContentSize({ 200.f, 100.f });
 
-    m_mainLayer->addChild(bg3, 5);
+    m_mainLayer->addChild(globalBg, 5);
 
     auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "goldFont.fnt");
     titleLabel3->setID("global-stats-label");
-    titleLabel3->setPosition({ bg3->getScaledContentWidth() / 2.f, bg3->getScaledContentHeight() + 10.f });
+    titleLabel3->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() + 10.f });
     titleLabel3->setScale(0.4f);
 
-    bg3->addChild(titleLabel3);
+    globalBg->addChild(titleLabel3);
 
     // global stats labels on the third background
     m_impl->globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
     m_impl->globalViewsLabel->setID("global-views-label");
-    m_impl->globalViewsLabel->setPosition({ bg3->getScaledContentWidth() / 2.f, bg3->getScaledContentHeight() - 20.f });
+    m_impl->globalViewsLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 20.f });
     m_impl->globalViewsLabel->setScale(0.5f);
 
-    bg3->addChild(m_impl->globalViewsLabel);
+    globalBg->addChild(m_impl->globalViewsLabel);
 
     m_impl->globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
     m_impl->globalClicksLabel->setID("global-clicks-label");
-    m_impl->globalClicksLabel->setPosition({ bg3->getScaledContentWidth() / 2.f, bg3->getScaledContentHeight() - 50.f });
+    m_impl->globalClicksLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 50.f });
     m_impl->globalClicksLabel->setScale(0.5f);
 
-    bg3->addChild(m_impl->globalClicksLabel);
+    globalBg->addChild(m_impl->globalClicksLabel);
 
     m_impl->globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
     m_impl->globalAdCountLabel->setID("global-ad-count-label");
-    m_impl->globalAdCountLabel->setPosition({ bg3->getScaledContentWidth() / 2.f, bg3->getScaledContentHeight() - 80.f });
+    m_impl->globalAdCountLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 80.f });
     m_impl->globalAdCountLabel->setScale(0.5f);
 
-    bg3->addChild(m_impl->globalAdCountLabel);
+    globalBg->addChild(m_impl->globalAdCountLabel);
 
     // button to the website at the bottom center of the main layer popup
     auto webBtnMenu = Button::createWithNode(
@@ -358,7 +340,57 @@ bool AdManager::init() {
         }
     );
     modSettingsBtn->setID("mod-settings-btn");
+    modSettingsBtn->setScale(0.75f);
     modSettingsBtn->setPosition(m_mainLayer->getContentSize());
+
+    auto announcementBtn = Button::createWithNode(
+        CircleButtonSprite::createWithSpriteFrameName(
+            // @geode-ignore(unknown-resource)
+            "geode.loader/news.png",
+            0.75f,
+            CircleBaseColor::Green,
+            CircleBaseSize::Small
+        ),
+        [](auto) {
+            // fetch from /api/announcement
+            auto request = web::WebRequest();
+            request.userAgent("PlayerAdvertisements/1.0");
+            request.timeout(std::chrono::seconds(15));
+            request.header("Content-Type", "application/json");
+
+            async::spawn(
+                request.get("https://ads.arcticwoof.xyz/api/announcement"),
+                [](web::WebResponse res) {
+                    if (res.ok()) {
+                        auto data = res.json();
+                        if (!data.isOk()) {
+                            log::error("Failed to parse announcement JSON");
+                            return;
+                        };
+
+                        auto val = data.unwrapOrDefault();
+
+                        std::string title = val.contains("title") && val["title"].asString().isOk()
+                            ? val["title"].asString().unwrapOrDefault()
+                            : "Announcement";
+
+                        std::string content = val.contains("content") && val["content"].asString().isOk()
+                            ? val["content"].asString().unwrapOrDefault()
+                            : "";
+
+                        if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
+
+                    } else {
+                        log::error("Failed to fetch announcement: (code: {})", res.code());
+                        Notification::create("Failed to fetch announcement", NotificationIcon::Error)->show();
+                    };
+                }
+            );
+        }
+    );
+    announcementBtn->setID("latest-announcement-btn");
+    announcementBtn->setScale(0.875f);
+    announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
 
     auto discordBtn = Button::createWithSpriteFrameName(
         "gj_discordIcon_001.png",
@@ -405,55 +437,11 @@ bool AdManager::init() {
     kofiBtn->setScale(0.5f);
     kofiBtn->setPosition({ discordBtn->getPositionX() + 25.f, discordBtn->getPositionY() });
 
-    auto announcementBtn = Button::createWithNode(
-        CircleButtonSprite::create(
-            // @geode-ignore(unknown-resource)
-            CCSprite::createWithSpriteFrameName("geode.loader/news.png"),
-            CircleBaseColor::Green,
-            CircleBaseSize::Small
-        ),
-        [](auto) {
-            // fetch from /api/announcement
-            auto request = web::WebRequest();
-            request.userAgent("PlayerAdvertisements/1.0");
-            request.timeout(std::chrono::seconds(15));
-            request.header("Content-Type", "application/json");
-
-            async::spawn(
-                request.get("https://ads.arcticwoof.xyz/api/announcement"),
-                [](web::WebResponse res) {
-                    if (res.ok()) {
-                        auto data = res.json();
-                        if (!data.isOk()) {
-                            log::error("Failed to parse announcement JSON");
-                            return;
-                        }
-                        auto val = data.unwrap();
-                        std::string title = val.contains("title") && val["title"].asString().isOk()
-                            ? val["title"].asString().unwrap()
-                            : "Announcement";
-                        std::string content = val.contains("content") && val["content"].asString().isOk()
-                            ? val["content"].asString().unwrap()
-                            : "";
-
-                        if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
-
-                    } else {
-                        log::error("Failed to fetch announcement: (code: {})", res.code());
-                        Notification::create("Failed to fetch announcement", NotificationIcon::Error)->show();
-                    };
-                }
-            );
-        }
-    );
-    announcementBtn->setID("latest-announcement-btn");
-    announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
-
     m_mainLayer->addChild(webBtnMenu);
     m_mainLayer->addChild(modSettingsBtn);
+    m_mainLayer->addChild(announcementBtn);
     m_mainLayer->addChild(discordBtn);
     m_mainLayer->addChild(kofiBtn);
-    m_mainLayer->addChild(announcementBtn);
 
     this->scheduleUpdate();
 

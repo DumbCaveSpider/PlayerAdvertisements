@@ -1,12 +1,16 @@
 #include <Advertisements.hpp>
 
+#include "ui/AdPreview.hpp"
+
+#include <argon/argon.hpp>
+
 #include <fmt/core.h>
 
-#include "ui/AdPreview.hpp"
 #include <Geode/Geode.hpp>
+
+#include <Geode/ui/Button.hpp>
+
 #include <Geode/utils/async.hpp>
-#include <algorithm>
-#include <argon/argon.hpp>
 
 using namespace geode::prelude;
 using namespace geode::utils;
@@ -68,7 +72,7 @@ namespace ads {
         Ad ad = Ad();
         AdType type = AdType::Banner;
 
-        CCMenuItemSpriteExtra* adButton = nullptr;
+        Button* adButton = nullptr;
         Ref<LazySprite> adSprite = nullptr;
         CCSprite* adIcon = nullptr;
 
@@ -111,22 +115,6 @@ namespace ads {
         CCMenu::onExit();
     };
 
-    void Advertisement::activate(CCObject*) {
-        auto const& ad = m_impl->ad;
-        if (ad.id == 0) {
-            log::warn("Ad not loaded yet or invalid ad ID");
-            Notification::create("Invalid Ad", NotificationIcon::Error)->show();
-            return;
-        };
-
-        log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
-        if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount)) {
-            popup->show();
-        } else {
-            log::error("Failed to create AdPreview popup");
-        };
-    };
-
     void Advertisement::reload() {
         this->removeAllChildrenWithCleanup(true);
 
@@ -137,18 +125,31 @@ namespace ads {
 
         log::info("Reloading advertisement");
 
-        m_impl->adButton = CCMenuItemSpriteExtra::create(
+        m_impl->adButton = Button::createWithNode(
             m_impl->adSprite,
-            this,
-            menu_selector(Advertisement::activate));
+            [this](auto) {
+                auto const& ad = m_impl->ad;
+                if (ad.id == 0) {
+                    log::warn("Ad not loaded yet or ad ID is invalid");
+                    Notification::create("Invalid Ad", NotificationIcon::Error)->show();
+                    return;
+                };
 
+                log::info("Opening AdPreview popup: ad_id={}, level_id={}, user_id={}, type={}", ad.id, ad.level, ad.user, static_cast<int>(ad.type));
+                if (auto popup = AdPreview::create(ad.id, ad.level, ad.user, ad.type, ad.viewCount, ad.clickCount)) {
+                    popup->show();
+                } else {
+                    log::error("Failed to create AdPreview popup");
+                };
+            }
+        );
         // m_impl->adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
 
         if (m_impl->adButton) {
             this->addChild(m_impl->adButton, 1);
             log::info("Advertisement button created and added to menu");
         } else {
-            log::error("Failed to create CCMenuItemSpriteExtra");
+            log::error("Failed to create button");
         };
     };
 
