@@ -143,7 +143,7 @@ namespace ads {
                 };
             }
         );
-        // m_impl->adButton->setPosition({getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f});
+        m_impl->adButton->ignoreAnchorPointForPosition(true);
 
         if (m_impl->adButton) {
             this->addChild(m_impl->adButton, 1);

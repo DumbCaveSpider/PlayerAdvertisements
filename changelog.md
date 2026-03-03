@@ -1,7 +1,7 @@
 # v1.1.5 
-- Fixed UI positioning on Ads Manager for some screens
-- Removed some unused texture resources
-- Several internal improvements
+- Fixed UI positioning on Ads Manager
+- Removed some unused textures
+- Internal improvements
 
 # v1.1.4 
 - Ported to Geode v5.0.0
