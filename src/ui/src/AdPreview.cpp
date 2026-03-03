@@ -107,7 +107,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         }
     );
     reportBtn->setID("report-ad-btn");
-    reportBtn->setScale(0.875f);
+    reportBtn->setScale(0.75f);
     reportBtn->setPosition({ 0, 0 });
 
     m_mainLayer->addChild(reportBtn);
@@ -161,7 +161,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         }
     );
     announcementBtn->setID("latest-announcement-btn");
-    announcementBtn->setScale(0.875f);
+    announcementBtn->setScale(0.75f);
     announcementBtn->setPosition({ m_mainLayer->getContentSize().width, 0 });
 
     m_mainLayer->addChild(announcementBtn);

@@ -143,7 +143,7 @@ namespace ads {
                 };
             }
         );
-        m_impl->adButton->ignoreAnchorPointForPosition(true);
+        m_impl->adButton->setPosition(getScaledContentSize() / 2.f);
 
         if (m_impl->adButton) {
             this->addChild(m_impl->adButton, 1);
@@ -166,7 +166,7 @@ namespace ads {
         log::info("Created LazySprite with size: {}x{}", getScaledContentSize().width, getScaledContentSize().height);
 
         m_impl->adSprite->retain();
-        m_impl->adSprite->setAnchorPoint({ 0.5f, 0.5f });
+        m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
         m_impl->adSprite->setVisible(true);
 
         log::info("LazySprite configured - setting up callbacks");
@@ -224,8 +224,8 @@ namespace ads {
                     return;
                 };
 
-                m_impl->adSprite->setAnchorPoint({ 0.5f, 0.5f });
-                //m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+                m_impl->adSprite->setAnchorPoint({ 0.5, 0.5 });
+                m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
                 m_impl->adSprite->setVisible(true);
 
                 auto const natural = m_impl->adSprite->getContentSize();

@@ -1,8 +1,7 @@
 # Player Advertisements
-
 **Community-made ads for awesome levels!**
 
-*by [Thing 1](user:7689052) & [Thing 2](user:6408873)!*
+*by [a dog](user:7689052) & [a rat](user:6408873)!*
 
 ###### ![?!](frame:geode.loader/tag-modtober25.png?scale=0.125) <co>Entry for Modtober 2025: What The Heck!?</c>
 
@@ -11,6 +10,8 @@
 <cj>You looooove advertisements, right?</c> Who doesn't?! Well, maybe you want to <cg>*promote some of your own levels*</c> with over-the-top, eye catching, MrBeast-type clickbaity advertisements! Or, maybe you just want to see some very funny ads while you play. Either way, <cy>this mod is for **everyone**</c>!
 
 <cl>This mod adds advertisements for levels everywhere in the game!</c> In most areas of the game, you will likely find an advertisement for someone's level! You can also click on these advertisements to get sent to their totally awesome levels.
+
+<cy>With just a few great ads, you could likely get *dozens to hundreds of players* to check out your level!</c>
 
 This mod is <cp>the perfect tool to find some very awesome levels that you otherwise may not have ever heard of</c>! So, what are you waiting for? ![$](frame:geode.loader/tag-paid.png?scale=0.25)<cg>**DOWNLOAD NOW!**</c>![$](frame:geode.loader/tag-paid.png?scale=0.25)
 
