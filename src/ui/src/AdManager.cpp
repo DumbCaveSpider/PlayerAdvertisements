@@ -128,7 +128,7 @@ public:
 
             createQuickPopup(
                 "Something went wrong",
-                "Either the provided User ID is <cr>incorrect</c> or the Advertisement Manager is <co>not responding</c>.\n<cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
+                "Either the provided User ID is <cr>incorrect</c> or the Advertisement Manager is <co>not responding</c>.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
                 "No", "Yes",
                 [](auto, bool ok) {
                     if (ok) {
@@ -196,32 +196,13 @@ AdManager::~AdManager() {};
 bool AdManager::init() {
     if (!Popup::init(450.f, 280.f)) return false;
 
+    setID("manager"_spr);
     setTitle("Advertisement Manager");
-
-    // get the user id
-    std::string const userID = Mod::get()->getSettingValue<std::string>("user-id");
-    if (userID == "") {
-        this->onClose(nullptr);
-        createQuickPopup(
-            "No User ID Set",
-            "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and Mod Options?</c>",
-            "No", "Yes",
-            [](auto, bool ok) {
-                if (ok) {
-                    openSettingsPopup(getMod());
-                    Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
-                    web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
-                };
-            }
-        );
-
-        return false;
-    };
 
     // fetch user ads and data
     std::string urlStr = "https://ads.arcticwoof.xyz/users/fetch?id=";
 
-    urlStr += userID;
+    urlStr += Mod::get()->getSettingValue<std::string>("user-id");
 
     auto req = web::WebRequest();
     req.header("User-Agent", "PlayerAdvertisements/1.0");
@@ -249,7 +230,7 @@ bool AdManager::init() {
                 m_impl->onGlobalStatsFetchComplete(res);
             } else {
                 log::error("Global stats request failed with status code: {}", res.code());
-            }
+            };
         }
     );
 
@@ -469,10 +450,10 @@ bool AdManager::init() {
     announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
 
     m_mainLayer->addChild(webBtnMenu);
-    m_buttonMenu->addChild(modSettingsBtn);
+    m_mainLayer->addChild(modSettingsBtn);
     m_mainLayer->addChild(discordBtn);
-    m_buttonMenu->addChild(kofiBtn);
-    m_buttonMenu->addChild(announcementBtn);
+    m_mainLayer->addChild(kofiBtn);
+    m_mainLayer->addChild(announcementBtn);
 
     this->scheduleUpdate();
 

@@ -35,6 +35,7 @@ bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::
     // @geode-ignore(unknown-resource)
     if (!Popup::init(300.f, 200.f, "geode.loader/GE_square03.png")) return false;
 
+    setID("report"_spr);
     setTitle("Report AD ID: " + numToString(m_impl->adId));
 
     auto descriptionInput = TextInput::create(260.f, "Report Reason...", "chatFont.fnt");

@@ -19,8 +19,7 @@ protected:
     bool init(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount);
 
     void onPlayButton(CCObject* sender);
-    void onReportButton(CCObject* sender);
-    void onAnnouncementButton(CCObject* sender);
+
     void registerClick(unsigned int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem);
     void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
 

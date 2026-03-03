@@ -1,13 +1,23 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/MenuLayer.hpp>
-#include "ui/AdManager.hpp"
 #include <Advertisements.hpp>
+
+#include "ui/AdManager.hpp"
+
 #include <argon/argon.hpp>
+
+#include <Geode/Geode.hpp>
+
+#include <Geode/ui/GeodeUI.hpp>
+
+#include <Geode/modify/MenuLayer.hpp>
 
 using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsMenuLayer, MenuLayer) {
+    struct Fields {
+        std::string userId = Mod::get()->getSettingValue<std::string>("user-id");
+    };
+
     bool init() {
         if (!MenuLayer::init()) return false;
 
@@ -83,6 +93,21 @@ class $modify(AdsMenuLayer, MenuLayer) {
     };
 
     void onAdClicked(CCObject * sender) {
-        if (auto popup = AdManager::create()) popup->show();
+        if (m_fields->userId.empty()) {
+            createQuickPopup(
+                "No User ID Set",
+                "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
+                "No", "Yes",
+                [](auto, bool ok) {
+                    if (ok) {
+                        openSettingsPopup(getMod());
+                        Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
+                        web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
+                    };
+                }
+            );
+        } else {
+            if (auto popup = AdManager::create()) popup->show();
+        };
     };
 };

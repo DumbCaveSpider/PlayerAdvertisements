@@ -8,6 +8,8 @@
 
 #include <Geode/Geode.hpp>
 
+#include <Geode/ui/Button.hpp>
+
 #include <Geode/utils/async.hpp>
 
 using namespace geode::prelude;
@@ -48,6 +50,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     // @geode-ignore(unknown-resource)
     if (!Popup::init(250.f, 200.f, "geode.loader/GE_square03.png")) return false;
 
+    setID("preview"_spr);
     setTitle("Ad ID: " + numToString(m_impl->adId));
 
     auto levelIdLabel = CCLabelBMFont::create(
@@ -97,77 +100,75 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     m_mainLayer->addChild(clickCountLabel);
 
     // report button
-    auto reportBtn = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_reportBtn_001.png"),
-        this,
-        menu_selector(AdPreview::onReportButton)
+    auto reportBtn = Button::createWithSpriteFrameName(
+        "GJ_reportBtn_001.png",
+        [this](auto) {
+            if (auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, m_impl->userId, "")) reportPopup->show();
+        }
     );
     reportBtn->setID("report-ad-btn");
+    reportBtn->setScale(0.875f);
     reportBtn->setPosition({ 0, 0 });
 
-    m_buttonMenu->addChild(reportBtn);
+    m_mainLayer->addChild(reportBtn);
 
-    auto announcementBtn = CCMenuItemSpriteExtra::create(
-        CircleButtonSprite::create(
+    auto announcementBtn = Button::createWithNode(
+        CircleButtonSprite::createWithSpriteFrameName(
             // @geode-ignore(unknown-resource)
-            CCSprite::createWithSpriteFrameName("geode.loader/news.png"),
+            "geode.loader/news.png",
+            0.875f,
             CircleBaseColor::Green,
             CircleBaseSize::Medium
         ),
-        this,
-        menu_selector(AdPreview::onAnnouncementButton)
+        [](auto) {
+            // fetch from /api/announcement
+            auto request = web::WebRequest();
+            request.userAgent("PlayerAdvertisements/1.0");
+            request.timeout(std::chrono::seconds(15));
+            request.header("Content-Type", "application/json");
+
+            async::spawn(
+                request.get("https://ads.arcticwoof.xyz/api/announcement"),
+                [](web::WebResponse res) {
+                    if (res.ok()) {
+                        auto data = res.json();
+                        if (!data.isOk()) {
+                            log::error("Failed to parse announcement JSON");
+                            return;
+                        };
+
+                        auto const val = data.unwrap();
+
+                        std::string const title =
+                            val.contains("title") && val["title"].asString().isOk()
+                            ? val["title"].asString().unwrap()
+                            : "Announcement";
+
+                        std::string const content =
+                            val.contains("content") && val["content"].asString().isOk()
+                            ? val["content"].asString().unwrap()
+                            : "";
+
+                        if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
+                    } else {
+                        log::error("Failed to fetch announcement: (code: {})", res.code());
+                        Notification::create("Failed to fetch announcement",
+                            NotificationIcon::Error)
+                            ->show();
+                    };
+                }
+            );
+        }
     );
     announcementBtn->setID("latest-announcement-btn");
+    announcementBtn->setScale(0.875f);
     announcementBtn->setPosition({ m_mainLayer->getContentSize().width, 0 });
 
-    m_buttonMenu->addChild(announcementBtn);
+    m_mainLayer->addChild(announcementBtn);
 
     this->scheduleUpdate();
 
     return true;
-};
-
-void AdPreview::onReportButton(CCObject* sender) {
-    auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, m_impl->userId, "");
-    reportPopup->show();
-};
-
-void AdPreview::onAnnouncementButton(CCObject* sender) {
-    // fetch from /api/announcement
-    auto request = web::WebRequest();
-    request.userAgent("PlayerAdvertisements/1.0");
-    request.timeout(std::chrono::seconds(15));
-    request.header("Content-Type", "application/json");
-
-    async::spawn(
-        request.get("https://ads.arcticwoof.xyz/api/announcement"),
-        [this](web::WebResponse res) {
-            if (res.ok()) {
-                auto data = res.json();
-                if (!data.isOk()) {
-                    log::error("Failed to parse announcement JSON");
-                    return;
-                };
-
-                auto const val = data.unwrap();
-                std::string const title =
-                    val.contains("title") && val["title"].asString().isOk()
-                    ? val["title"].asString().unwrap()
-                    : "Announcement";
-                std::string const content =
-                    val.contains("content") && val["content"].asString().isOk()
-                    ? val["content"].asString().unwrap()
-                    : "";
-
-                if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
-            } else {
-                log::error("Failed to fetch announcement: (code: {})", res.code());
-                Notification::create("Failed to fetch announcement",
-                    NotificationIcon::Error)
-                    ->show();
-            };
-        }
-    );
 };
 
 void AdPreview::onPlayButton(CCObject* sender) {
@@ -214,7 +215,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
             log::debug("click already registered for ad_id={}, user_id={}",
                 m_impl->adId, m_impl->userId);
             this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
-        }
+        };
     };
 };
 
