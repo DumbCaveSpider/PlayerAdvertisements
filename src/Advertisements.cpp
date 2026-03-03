@@ -92,7 +92,7 @@ namespace ads {
     bool Advertisement::init(AdType type) {
         m_impl->type = type;
 
-        if (!CCMenu::init()) return false;
+        if (!CCNode::init()) return false;
 
         setAnchorPoint({ 0.5, 0.5 });
         setContentSize(getAdSize(type));
@@ -101,7 +101,7 @@ namespace ads {
     };
 
     void Advertisement::onEnter() {
-        CCMenu::onEnter();
+        CCNode::onEnter();
 
         if (m_impl->hasLoaded) {
             log::info("reloading new random advertisement");
@@ -112,7 +112,7 @@ namespace ads {
 
     void Advertisement::onExit() {
         if (auto adSprite = m_impl->adSprite.take()) adSprite->removeMeAndCleanup();
-        CCMenu::onExit();
+        CCNode::onExit();
     };
 
     void Advertisement::reload() {

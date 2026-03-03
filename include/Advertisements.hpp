@@ -76,14 +76,14 @@ namespace ads {
         class Impl;
         std::unique_ptr<Impl> m_impl;
 
-    protected:
-        Advertisement();
-        ~Advertisement();
-
         // Reloads the type of advertisement
         void reloadType();
         // Reloads the advertisement button
         void reload();
+
+    protected:
+        Advertisement();
+        ~Advertisement();
 
         void onEnter() override;
         void onExit() override;
