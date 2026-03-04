@@ -13,8 +13,8 @@ protected:
     void onPlayButton(CCObject* sender);
     void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
 
-    bool init(const matjson::Value& adValue);
+    bool init(const matjson::Value& adValue, float width);
 
 public:
-    static AdNode* create(const matjson::Value& adValue);
+    static AdNode* create(const matjson::Value& adValue, float width);
 };

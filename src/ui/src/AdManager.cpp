@@ -44,28 +44,17 @@ public:
             auto adsArray = adsData.asArray();
             if (!adsArray.isOk()) return;
 
-            adCount = 0;
-
-            auto layout = SimpleAxisLayout::create(Axis::Column);
-            layout->setGap(5.f);
-            layout->setMainAxisScaling(AxisScaling::Fit);
-
-            adsScrollLayer->m_contentLayer->setLayout(layout);
-
             if (adsScrollLayer->m_contentLayer) adsScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
 
             for (const auto& adValue : adsArray.unwrap()) {
-                if (auto node = AdNode::create(adValue)) {
-                    adsScrollLayer->m_contentLayer->addChild(node);
-                    adCount++;
-                };
+                if (auto node = AdNode::create(adValue, adsScrollLayer->getScaledContentWidth())) adsScrollLayer->m_contentLayer->addChild(node);
             };
 
             adsScrollLayer->m_contentLayer->updateLayout();
             adsScrollLayer->scrollToTop();
 
             // Update the title label with the correct ad count
-            if (titleLabel) titleLabel->setString(fmt::format("Your Advertisements ({})", adCount).c_str());
+            if (titleLabel) titleLabel->setString(fmt::format("Your Advertisements ({})", adsScrollLayer->m_contentLayer->getChildrenCount()).c_str());
         } else {
             log::error("Ads list not found");
         };
@@ -225,8 +214,17 @@ bool AdManager::init() {
     m_mainLayer->addChild(adsBg, 5);
 
     // create scroll layer for ads
-    m_impl->adsScrollLayer = ScrollLayer::create(adsBg->getScaledContentSize(), true, true);
+    m_impl->adsScrollLayer = ScrollLayer::create(adsBg->getScaledContentSize() - 5.f, true, true);
     m_impl->adsScrollLayer->setID("ads-list");
+    m_impl->adsScrollLayer->setPosition(adsBg->getScaledContentSize() / 2.f);
+    m_impl->adsScrollLayer->ignoreAnchorPointForPosition(false);
+
+    auto layout = ColumnLayout::create()
+        ->setGap(5.f)
+        ->setAxisAlignment(AxisAlignment::End)
+        ->setAutoGrowAxis(m_impl->adsScrollLayer->getScaledContentHeight());
+
+    m_impl->adsScrollLayer->m_contentLayer->setLayout(layout);
 
     adsBg->addChild(m_impl->adsScrollLayer, 1);
 

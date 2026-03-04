@@ -6,19 +6,19 @@
 
 using namespace geode::prelude;
 
-bool AdNode::init(const matjson::Value& adValue) {
+bool AdNode::init(const matjson::Value& adValue, float width) {
     if (!CCNode::init()) return false;
 
-    this->setContentSize({ 200.f, 85.f });
+    this->setContentSize({ width, 85.f });
     this->setAnchorPoint({ 0.5f, 0.5f });
 
     auto clipNode = CCClippingNode::create();
-    clipNode->setContentSize({ 200.f, 85.f });
+    clipNode->setContentSize({ width, 85.f });
     clipNode->setAnchorPoint({ 0.0f, 0.0f });
     clipNode->setPosition({ 0.0f, 0.0f });
 
     auto stencil = NineSlice::create("square02_001.png");
-    stencil->setContentSize({ 200.f, 85.f });
+    stencil->setContentSize({ width, 85.f });
     stencil->setAnchorPoint({ 0.0f, 0.0f });
     stencil->setPosition({ 0.0f, 0.0f });
 
@@ -33,10 +33,10 @@ bool AdNode::init(const matjson::Value& adValue) {
     this->addChild(bg, 1);
 
     auto imageUrl = adValue["image_url"].asString();
-    auto lazySprite = LazySprite::create({ 200.f, 85.f });
+    auto lazySprite = LazySprite::create({ width, 85.f });
     if (imageUrl.isOk()) lazySprite->loadFromUrl(imageUrl.unwrap(), LazySprite::Format::kFmtWebp, true);
 
-    lazySprite->setContentSize({ 200.f, 85.f });
+    lazySprite->setContentSize({ width, 85.f });
     lazySprite->setScale(0.55f);
     lazySprite->setPosition({ this->getScaledContentWidth() / 2, this->getScaledContentHeight() / 2 });
 
@@ -179,9 +179,9 @@ void AdNode::onPlayButton(CCObject* sender) {
     };
 };
 
-AdNode* AdNode::create(const matjson::Value& adValue) {
+AdNode* AdNode::create(const matjson::Value& adValue, float width) {
     auto ret = new AdNode();
-    if (ret->init(adValue)) {
+    if (ret->init(adValue, width)) {
         ret->autorelease();
         return ret;
     };
