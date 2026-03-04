@@ -58,7 +58,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         "bigFont.fnt"
     );
     levelIdLabel->setID("level-id-label");
-    levelIdLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 40 });
+    levelIdLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() - 40 });
     levelIdLabel->setScale(0.5f);
 
     m_mainLayer->addChild(levelIdLabel);
@@ -71,7 +71,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     );
     playAdLevelBtn->setID("play-btn");
     playAdLevelBtn->setTag(m_impl->levelId); // tag the play button with the level id so the scheduler can restore it later
-    playAdLevelBtn->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 });
+    playAdLevelBtn->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 });
 
     // store the menu for spinner placement / restoring state
     m_buttonMenu->addChild(playAdLevelBtn);
@@ -83,7 +83,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     );
     viewCountLabel->setID("view-count-label");
     viewCountLabel->setColor({ 255, 125, 0 });
-    viewCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 55 });
+    viewCountLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 55 });
     viewCountLabel->setScale(0.7f);
 
     m_mainLayer->addChild(viewCountLabel);
@@ -94,7 +94,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     );
     clickCountLabel->setID("click-count-label");
     clickCountLabel->setColor({ 0, 175, 255 });
-    clickCountLabel->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 75 });
+    clickCountLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 75 });
     clickCountLabel->setScale(0.7f);
 
     m_mainLayer->addChild(clickCountLabel);
@@ -103,7 +103,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     auto reportBtn = Button::createWithSpriteFrameName(
         "GJ_reportBtn_001.png",
         [this](auto) {
-            if (auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, m_impl->userId, "")) reportPopup->show();
+            if (auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, "")) reportPopup->show();
         }
     );
     reportBtn->setID("report-ad-btn");
@@ -162,7 +162,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     );
     announcementBtn->setID("latest-announcement-btn");
     announcementBtn->setScale(0.75f);
-    announcementBtn->setPosition({ m_mainLayer->getContentSize().width, 0 });
+    announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
 
     m_mainLayer->addChild(announcementBtn);
 

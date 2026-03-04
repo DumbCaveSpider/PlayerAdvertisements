@@ -8,7 +8,7 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsEndLevelLayer, EndLevelLayer) {
-    void customSetup() override {
+    void customSetup() {
         EndLevelLayer::customSetup();
 
         auto const winSize = CCDirector::sharedDirector()->getWinSize();

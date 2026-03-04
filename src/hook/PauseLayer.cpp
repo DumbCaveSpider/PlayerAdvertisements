@@ -10,7 +10,7 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsPauseLayer, PauseLayer) {
-    void customSetup() override {
+    void customSetup() {
         PauseLayer::customSetup();
 
         if (Mod::get()->getSettingValue<bool>("PauseLayer")) {

@@ -26,10 +26,9 @@ public:
 ReportPopup::ReportPopup() : m_impl(std::make_unique<Impl>()) {};
 ReportPopup::~ReportPopup() {};
 
-bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::string description) {
+bool ReportPopup::init(unsigned int adId, int levelId, std::string description) {
     m_impl->adId = adId;
     m_impl->levelId = levelId;
-    m_impl->userId = std::move(userId);
     m_impl->description = std::move(description);
 
     // @geode-ignore(unknown-resource)
@@ -40,14 +39,14 @@ bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::
 
     auto descriptionInput = TextInput::create(260.f, "Report Reason...", "chatFont.fnt");
     descriptionInput->setID("description-input");
-    descriptionInput->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height - 50 });
+    descriptionInput->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() - 50 });
 
     if (!m_impl->description.empty()) descriptionInput->setString(m_impl->description);
 
     m_mainLayer->addChild(descriptionInput);
 
     auto menu = CCMenu::create();
-    menu->setPosition({ m_mainLayer->getContentSize().width / 2, 0.f });
+    menu->setPosition({ m_mainLayer->getScaledContentWidth() / 2, 0.f });
 
     auto submitButtonSprite = ButtonSprite::create("Submit Report", 0, false, "goldFont.fnt", "GJ_button_01.png", 0.f, 1.f);
     auto submitButton = CCMenuItemSpriteExtra::create(submitButtonSprite, this, menu_selector(ReportPopup::onSubmitButton));
@@ -61,7 +60,8 @@ bool ReportPopup::init(unsigned int adId, int levelId, std::string userId, std::
         "<cr>Multiple false reports will lead to your account getting blacklisted.</c>",
         { 260.f, 100.f }
     );
-    textArea->setPosition({ m_mainLayer->getContentSize().width / 2, m_mainLayer->getContentSize().height / 2 - 25 });
+    textArea->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 25 });
+
     m_mainLayer->addChild(textArea);
 
     return true;
@@ -129,10 +129,10 @@ void ReportPopup::onSubmitButton(CCObject* sender) {
     );
 };
 
-ReportPopup* ReportPopup::create(unsigned int adId, int levelId, std::string userId, std::string description) {
+ReportPopup* ReportPopup::create(unsigned int adId, int levelId, std::string description) {
     auto ret = new ReportPopup();
     // @geode-ignore(unknown-resource)
-    if (ret->init(adId, levelId, std::move(userId), std::move(description))) {
+    if (ret->init(adId, levelId, std::move(description))) {
         ret->autorelease();
         return ret;
     };

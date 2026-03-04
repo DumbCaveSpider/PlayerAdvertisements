@@ -8,7 +8,7 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsRetryLevelLayer, RetryLevelLayer) {
-    void customSetup() override {
+    void customSetup() {
         log::debug("RetryLevelLayer customSetup - layer is being set up");
         RetryLevelLayer::customSetup();
 

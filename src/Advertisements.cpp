@@ -154,7 +154,8 @@ namespace ads {
     };
 
     void Advertisement::reloadType() {
-        this->removeAllChildrenWithCleanup(true);
+        reload();
+
         this->setContentSize(getAdSize(m_impl->type));
 
         m_impl->adSprite = LazySprite::create(getScaledContentSize(), true);
@@ -180,7 +181,7 @@ namespace ads {
                     // log::debug("Token: {}", token);
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
-                }
+                };
             }
         );
 
@@ -253,6 +254,7 @@ namespace ads {
                         featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
                         featuredStar->setOpacity(200);
                         featuredStar->setColor({ 255, 255, 255 });
+
                         m_impl->adButton->addChild(featuredStar, 9);
                     };
 
@@ -275,43 +277,44 @@ namespace ads {
                     tag->setPosition({ this->getScaledContentWidth() - 12.f, 3.f });
                     tag->setOpacity(200);
 
-                    if (m_impl->ad.type == AdType::Skyscraper) {
-                        tag->setVisible(false);
-                    };
+                    if (m_impl->ad.type == AdType::Skyscraper) tag->setVisible(false);
 
                     switch (m_impl->ad.glowLevel) {
-                    case 1:
+                    case 1: {
                         glowNode->setOpacity(200);
                         glowNode->setColor({ 250, 250, 75 });
                         glowNode->setContentSize({ size.width + 6.25f, size.height + 6.25f });
                         particles->setStartColorVar({ 250, 250, 75, 255 });
                         tag->setColor({ 250, 250, 75 });
-                        if (featuredStar) featuredStar->setColor({ 250, 250, 75 });
-                        break;
 
-                    case 2:
+                        if (featuredStar) featuredStar->setColor({ 250, 250, 75 });
+                    } break;
+
+                    case 2: {
                         glowNode->setOpacity(225);
                         glowNode->setColor({ 50, 250, 250 });
                         glowNode->setContentSize({ size.width + 7.5f, size.height + 7.5f });
                         particles->setStartColorVar({ 50, 250, 250, 255 });
                         tag->setColor({ 50, 250, 250 });
-                        if (featuredStar) featuredStar->setColor({ 50, 250, 250 });
-                        break;
 
-                    case 3:
+                        if (featuredStar) featuredStar->setColor({ 50, 250, 250 });
+                    } break;
+
+                    case 3: {
                         glowNode->setOpacity(200);
                         glowNode->setColor({ 255, 125, 175 });
                         glowNode->setContentSize({ size.width + 8.75f, size.height + 8.75f });
                         particles->setStartColorVar({ 255, 125, 175, 255 });
                         tag->setColor({ 255, 125, 175 });
-                        if (featuredStar) featuredStar->setColor({ 255, 125, 175 });
-                        break;
 
-                    default:
+                        if (featuredStar) featuredStar->setColor({ 255, 125, 175 });
+                    } break;
+
+                    default: {
                         glowNode->removeMeAndCleanup();
                         particles->removeMeAndCleanup();
                         tag->removeMeAndCleanup();
-                        break;
+                    } break;
                     };
 
                     if (glowNode) {
@@ -323,23 +326,15 @@ namespace ads {
                         if (tag) m_impl->adButton->addChild(tag, 9);
                     };
                 };
-
-                // if (m_impl->adButton) {
-                //     m_impl->adButton->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-                // }
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
-                if (m_impl && m_impl->adSprite) {
-                    m_impl->adSprite->setVisible(false);
-                }
-                if (m_impl && m_impl->adButton) {
-                    m_impl->adButton->setEnabled(false);
-                };
+
+                if (m_impl->adSprite) m_impl->adSprite->setVisible(false);
+                if (m_impl->adButton) m_impl->adButton->setEnabled(false);
             } else {
                 log::error("Unknown error loading ad image");
-            } });
-
-            reload();
+            };
+            });
     };
 
     void Advertisement::handleAdResponse(web::WebResponse const& res) {

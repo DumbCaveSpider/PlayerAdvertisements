@@ -14,9 +14,9 @@ protected:
     ReportPopup();
     ~ReportPopup();
 
-    bool init(unsigned int adId, int levelId, std::string userId, std::string description);
+    bool init(unsigned int adId, int levelId, std::string description);
     void onSubmitButton(CCObject* sender);
 
 public:
-    static ReportPopup* create(unsigned int adId, int levelId, std::string userId, std::string description);
+    static ReportPopup* create(unsigned int adId, int levelId, std::string description);
 };

@@ -1,3 +1,7 @@
+# v1.1.6 
+- Fixed crash caused during ad load
+- Minor tweaks
+
 # v1.1.5 
 - Fixed UI positioning on Ads Manager
 - Removed some unused textures
