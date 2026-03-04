@@ -72,9 +72,9 @@ namespace ads {
         Ad ad = Ad();
         AdType type = AdType::Banner;
 
-        Button* adButton = nullptr;
-        LazySprite* adSprite = nullptr;
-        CCSprite* adIcon = nullptr;
+        Ref<Button> adButton = nullptr;
+        Ref<LazySprite> adSprite = nullptr;
+        Ref<CCSprite> adIcon = nullptr;
 
         bool hasLoaded = false;
         bool loadRandom = false;
@@ -86,7 +86,7 @@ namespace ads {
         async::TaskHolder<web::WebResponse> viewListener;
     };
 
-    Advertisement::Advertisement() : m_impl(std::make_unique<Impl>()) {};
+    Advertisement::Advertisement() : m_impl(std::make_shared<Impl>()) {};
     Advertisement::~Advertisement() {};
 
     bool Advertisement::init(AdType type) {
@@ -98,21 +98,6 @@ namespace ads {
         setContentSize(getAdSize(type));
 
         return true;
-    };
-
-    void Advertisement::onEnter() {
-        CCNode::onEnter();
-
-        if (m_impl->hasLoaded) {
-            log::info("reloading new random advertisement");
-            reloadType();
-            loadRandom();
-        };
-    };
-
-    void Advertisement::onExit() {
-        if (m_impl->adSprite) m_impl->adSprite->removeMeAndCleanup();
-        CCNode::onExit();
     };
 
     void Advertisement::reload() {
@@ -168,16 +153,21 @@ namespace ads {
         m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
         m_impl->adSprite->setVisible(true);
 
-        reload();
-
         log::info("setting up callbacks");
 
+        // capture weak impl to avoid touching freed memory if Advertisement is destroyed
+        auto weak_impl_auth = std::weak_ptr<Impl>(m_impl);
         async::spawn(
             argon::startAuth(),
-            [this](geode::Result<std::string> res) {
+            [weak_impl_auth](geode::Result<std::string> res) {
+                auto impl = weak_impl_auth.lock();
+                if (!impl) {
+                    log::warn("Auth callback: impl expired");
+                    return;
+                };
+
                 if (res.isOk()) {
-                    m_impl->token = std::move(res).unwrap();
-                    // log::debug("Token: {}", m_impl->token);
+                    impl->token = std::move(res).unwrap();
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
                 };
@@ -192,8 +182,10 @@ namespace ads {
         req.param("type", static_cast<int>(m_impl->type));
 
         req.onProgress([](web::WebProgress const& progress) {
-            // log::debug("ad progress: {}", progress.downloadProgress().value_or(0.f));
+            log::trace("ad progress: {}", progress.downloadProgress().value_or(0.f));
             });
+
+        reload();
 
         m_impl->adListener.spawn(
             req.get("https://ads.arcticwoof.xyz/api/ad"),
@@ -202,67 +194,84 @@ namespace ads {
             }
         );
 
-        m_impl->adSprite->setLoadCallback([this](Result<> res) {
-            if (!m_impl) {
-                log::error("m_impl is null in load callback");
+        // capture a weak_ptr to the Impl to avoid using a dangling `this`
+        auto weak_impl = std::weak_ptr<Impl>(m_impl);
+        m_impl->adSprite->setLoadCallback([weak_impl](Result<> res) {
+            auto impl = weak_impl.lock();
+            if (!impl) {
+                log::error("Impl expired in load callback");
                 return;
             };
 
             if (res.isOk()) {
                 log::info("Ad image loaded successfully");
+
                 // add the adIcon at the bottom right of the ad button
-                m_impl->adIcon = CCSprite::createWithSpriteFrameName("adIcon.png"_spr);
-                m_impl->adIcon->setAnchorPoint({ 0.f, 0.f });
-                m_impl->adIcon->setPosition({ 3.f, 3.f });
-                m_impl->adIcon->setScale(0.25f);
-                m_impl->adIcon->setOpacity(100);
+                impl->adIcon = CCSprite::createWithSpriteFrameName("adIcon.png"_spr);
+                impl->adIcon->setAnchorPoint({ 0.f, 0.f });
+                impl->adIcon->setPosition({ 3.f, 3.f });
+                impl->adIcon->setScale(0.25f);
+                impl->adIcon->setOpacity(100);
 
-                m_impl->adButton->addChild(m_impl->adIcon, 9);
+                if (impl->adButton) impl->adButton->addChild(impl->adIcon, 9);
 
-                if (!m_impl->adSprite) {
+                if (!impl->adSprite) {
                     log::warn("Load callback: ad sprite is null");
                     return;
                 };
 
-                m_impl->adSprite->setAnchorPoint({ 0.5, 0.5 });
-                m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-                m_impl->adSprite->setVisible(true);
+                impl->adSprite->setAnchorPoint({ 0.5, 0.5 });
 
-                auto const natural = m_impl->adSprite->getContentSize();
+                float posx = impl->adSprite->getScaledContentWidth() * impl->adSprite->getScale() / 2.f;
+                float posy = impl->adSprite->getScaledContentHeight() * impl->adSprite->getScale() / 2.f;
+
+                if (impl->adButton) {
+                    posx = impl->adButton->getScaledContentWidth() / 2.f;
+                    posy = impl->adButton->getScaledContentHeight() / 2.f;
+                };
+
+                impl->adSprite->setPosition({ posx, posy });
+                impl->adSprite->setVisible(true);
+
+                auto const natural = impl->adSprite->getContentSize();
                 if (natural.width <= 0.f || natural.height <= 0.f) {
                     log::warn("Ad sprite has invalid natural size ({}x{})", natural.width, natural.height);
                 } else {
-                    auto const target = getScaledContentSize();
+                    // try to determine target size from adButton if available, otherwise use sprite's container size
+                    CCSize target = impl->adSprite->getContentSize();
+                    if (impl->adButton) target = impl->adButton->getContentSize();
 
                     float sx = target.width / natural.width;
                     float sy = target.height / natural.height;
 
                     float scale = std::min(sx, sy);
 
-                    m_impl->adSprite->setScale(scale);
+                    impl->adSprite->setScale(scale);
                     log::info("Scaled ad sprite by {} to fit target {}x{} (natural {}x{})", scale, target.width, target.height, natural.width, natural.height);
-                };
+                }
 
-                if (m_impl->ad.glowLevel > 0) {
-                    auto const size = m_impl->adSprite->getScaledContentSize();
+                if (impl->ad.glowLevel > 0) {
+                    auto const size = impl->adSprite->getScaledContentSize();
 
                     auto featuredStar = CCSprite::createWithSpriteFrameName("GJ_starsIcon_gray_001.png");
                     if (featuredStar) {
                         featuredStar->setAnchorPoint({ 1.f, 0.f });
                         featuredStar->setScale(0.35f);
-                        featuredStar->setPosition({ this->getScaledContentWidth() - 3.f, 3.f });
+                        float xpos = 3.f;
+                        if (impl->adButton) xpos = impl->adButton->getScaledContentWidth() - 3.f;
+                        featuredStar->setPosition({ xpos, 3.f });
                         featuredStar->setOpacity(200);
                         featuredStar->setColor({ 255, 255, 255 });
 
-                        m_impl->adButton->addChild(featuredStar, 9);
-                    };
+                        if (impl->adButton) impl->adButton->addChild(featuredStar, 9);
+                    }
 
                     auto glowNode = NineSlice::create("glow.png"_spr);
                     glowNode->setContentSize(size);
                     glowNode->setAnchorPoint({ 0.5, 0.5 });
-                    glowNode->setPosition(m_impl->adButton->getContentSize() / 2);
+                    if (impl->adButton) glowNode->setPosition(impl->adButton->getContentSize() / 2);
 
-                    auto particles = GameToolbox::particleFromString(getParticlesForAdType(m_impl->ad.type), CCParticleSystemQuad::create(), false);
+                    auto particles = GameToolbox::particleFromString(getParticlesForAdType(impl->ad.type), CCParticleSystemQuad::create(), false);
                     particles->setScale(1.25f);
                     particles->setAnchorPoint({ 0.5, 0.5 });
                     particles->setPosition(glowNode->getPosition());
@@ -273,12 +282,14 @@ namespace ads {
                     tag->setScale(0.375f);
                     tag->setAnchorPoint({ 1, 0 });
                     tag->setAlignment(kCCTextAlignmentRight);
-                    tag->setPosition({ this->getScaledContentWidth() - 12.f, 3.f });
+                    float tagx = 12.f;
+                    if (impl->adButton) tagx = impl->adButton->getScaledContentWidth() - 12.f;
+                    tag->setPosition({ tagx, 3.f });
                     tag->setOpacity(200);
 
-                    if (m_impl->ad.type == AdType::Skyscraper) tag->setVisible(false);
+                    if (impl->ad.type == AdType::Skyscraper) tag->setVisible(false);
 
-                    switch (m_impl->ad.glowLevel) {
+                    switch (impl->ad.glowLevel) {
                     case 1: {
                         glowNode->setOpacity(200);
                         glowNode->setColor({ 250, 250, 75 });
@@ -310,9 +321,9 @@ namespace ads {
                     } break;
 
                     default: {
-                        glowNode->removeMeAndCleanup();
-                        particles->removeMeAndCleanup();
-                        tag->removeMeAndCleanup();
+                        if (glowNode) glowNode->removeMeAndCleanup();
+                        if (particles) particles->removeMeAndCleanup();
+                        if (tag) tag->removeMeAndCleanup();
                     } break;
                     };
 
@@ -320,19 +331,25 @@ namespace ads {
                         glowNode->setContentSize({ glowNode->getScaledContentWidth() * 2.5f, glowNode->getScaledContentHeight() * 2.5f });
                         glowNode->setScale(glowNode->getScale() / 2.5f);
 
-                        m_impl->adButton->addChild(glowNode, -5);
-                        if (m_impl->ad.type != AdType::Skyscraper) if (particles) this->addChild(particles, 2);
-                        if (tag) m_impl->adButton->addChild(tag, 9);
+                        if (impl->adButton) impl->adButton->addChild(glowNode, -5);
+
+                        if (impl->ad.type != AdType::Skyscraper) {
+                            if (particles) {
+                                if (impl->adButton && impl->adButton->getParent()) impl->adButton->getParent()->addChild(particles, 2);
+                            };
+                        };
+
+                        if (tag && impl->adButton) impl->adButton->addChild(tag, 9);
                     };
                 };
             } else if (res.isErr()) {
                 log::error("Failed to load ad image: {}", res.unwrapErr());
 
-                if (m_impl->adSprite) m_impl->adSprite->setVisible(false);
-                if (m_impl->adButton) m_impl->adButton->setEnabled(false);
+                if (impl->adSprite) impl->adSprite->setVisible(false);
+                if (impl->adButton) impl->adButton->setEnabled(false);
             } else {
                 log::error("Unknown error loading ad image");
-            };
+            }
             });
     };
 
@@ -342,7 +359,7 @@ namespace ads {
             if (!jsonRes) {
                 log::error("Failed to parse ad JSON");
                 return;
-            }
+            };
 
             auto json = jsonRes.unwrapOrDefault();
 

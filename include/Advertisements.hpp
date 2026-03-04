@@ -16,6 +16,8 @@
 
 #include <cocos2d.h>
 
+#include <memory>
+
 #include <Geode/ui/LazySprite.hpp>
 
 #include <Geode/utils/web.hpp>
@@ -55,8 +57,7 @@ namespace ads {
             user(std::move(user)),
             viewCount(viewCount),
             clickCount(clickCount),
-            glowLevel(glowLevel) {
-        };
+            glowLevel(glowLevel) {};
     };
 
     /**
@@ -74,7 +75,7 @@ namespace ads {
     class AWCW_ADS_API_DLL Advertisement final : public cocos2d::CCNode {
     private:
         class Impl;
-        std::unique_ptr<Impl> m_impl;
+        std::shared_ptr<Impl> m_impl;
 
         // Reloads the type of advertisement
         void reloadType();
@@ -84,9 +85,6 @@ namespace ads {
     protected:
         Advertisement();
         ~Advertisement();
-
-        void onEnter() override;
-        void onExit() override;
 
         bool init(AdType type);
 

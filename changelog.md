@@ -1,3 +1,6 @@
+# v1.1.7 
+- Hotfix
+
 # v1.1.6 
 - Fixed crash caused during ad load
 - Minor tweaks
