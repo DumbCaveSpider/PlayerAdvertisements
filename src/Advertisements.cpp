@@ -73,7 +73,7 @@ namespace ads {
         AdType type = AdType::Banner;
 
         Button* adButton = nullptr;
-        Ref<LazySprite> adSprite = nullptr;
+        LazySprite* adSprite = nullptr;
         CCSprite* adIcon = nullptr;
 
         bool hasLoaded = false;
@@ -111,7 +111,7 @@ namespace ads {
     };
 
     void Advertisement::onExit() {
-        if (auto adSprite = m_impl->adSprite.take()) adSprite->removeMeAndCleanup();
+        if (m_impl->adSprite) m_impl->adSprite->removeMeAndCleanup();
         CCNode::onExit();
     };
 
@@ -154,8 +154,6 @@ namespace ads {
     };
 
     void Advertisement::reloadType() {
-        reload();
-
         this->setContentSize(getAdSize(m_impl->type));
 
         m_impl->adSprite = LazySprite::create(getScaledContentSize(), true);
@@ -170,15 +168,16 @@ namespace ads {
         m_impl->adSprite->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
         m_impl->adSprite->setVisible(true);
 
-        log::info("LazySprite configured - setting up callbacks");
+        reload();
+
+        log::info("setting up callbacks");
 
         async::spawn(
             argon::startAuth(),
             [this](geode::Result<std::string> res) {
                 if (res.isOk()) {
-                    auto token = std::move(res).unwrap();
-                    m_impl->token = token;
-                    // log::debug("Token: {}", token);
+                    m_impl->token = std::move(res).unwrap();
+                    // log::debug("Token: {}", m_impl->token);
                 } else {
                     log::warn("Auth failed: {}", res.unwrapErr());
                 };
