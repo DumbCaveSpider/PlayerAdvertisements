@@ -14,7 +14,11 @@ With just a few great ads, you could likely get *dozens to hundreds of players* 
 This mod is the perfect tool to find some very awesome levels that you otherwise may not have ever heard of! So, what are you waiting for? **DOWNLOAD NOW!**
 
 #### Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!
+
+##### If you need help, join our [support Discord server](https://www.dsc.gg/cheeseworks) and ask! :)
+
 *Authorization via [Discord account](https://discord.com/login) will be required.*
+
 ##### Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads) to expand your reach!
 
 ## Credits

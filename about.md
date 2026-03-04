@@ -15,8 +15,12 @@
 
 This mod is <cp>the perfect tool to find some very awesome levels that you otherwise may not have ever heard of</c>! So, what are you waiting for? ![$](frame:geode.loader/tag-paid.png?scale=0.25)<cg>**DOWNLOAD NOW!**</c>![$](frame:geode.loader/tag-paid.png?scale=0.25)
 
-#### ![](frame:GJ_achImage_001.png?scale=0.3) <cy>Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!</c>
+#### ![**$**](frame:GJ_achImage_001.png?scale=0.3) <cy>Ready to advertise YOUR OWN levels? Create and manage your ads at the [Ads Manager](https://ads.arcticwoof.xyz)!</c>
+
+##### ![🗨️](frame:gj_discordIcon_001.png?scale=0.25) If you need help, join our [support Discord server](https://www.dsc.gg/cheeseworks) and ask! :)
+
 <cr>*Authorization via [Discord account](https://discord.com/login) will be required.*</c>
+
 ##### ![$](frame:shard0205ShardBig_001.png?scale=0.25) <cp>Buy boosts or subscribe to Verified on [our Ko-fi](https://ko-fi.com/playerads) to expand your reach!</c>
 
 ---
@@ -26,5 +30,3 @@ This mod is <cp>the perfect tool to find some very awesome levels that you other
 ---
 
 **![YT](frame:gj_ytIcon_001.png?scale=0.375) Watch the [Horrible Mods](https://www.youtube.com/watch?v=Ssl49pNmW_0&list=PL0dsSu2pR5cERnq7gojZTKVRvUwWo2Ohu) series out now on YouTube!**
-
-![King Clawthorne](arcticwoof.rated_layouts/king.png)
