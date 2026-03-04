@@ -72,9 +72,9 @@ namespace ads {
         Ad ad = Ad();
         AdType type = AdType::Banner;
 
-        Ref<Button> adButton = nullptr;
-        Ref<LazySprite> adSprite = nullptr;
-        Ref<CCSprite> adIcon = nullptr;
+        Button* adButton = nullptr;
+        LazySprite* adSprite = nullptr;
+        CCSprite* adIcon = nullptr;
 
         bool hasLoaded = false;
         bool loadRandom = false;
