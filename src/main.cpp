@@ -1,8 +1,6 @@
-#include <Advertisements.hpp>
+#include <PlayerAdsUtils/Include.hpp>
 
 #include "ui/AdManager.hpp"
-
-#include <argon/argon.hpp>
 
 #include <Geode/Geode.hpp>
 
@@ -18,28 +16,12 @@ class $modify(AdsMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) return false;
 
-        async::spawn(
-            argon::startAuth(),
-            [this](Result<std::string> res) {
-                if (res.isOk()) {
-                    auto token = std::move(res).unwrap();
-                    Mod::get()->setSavedValue<std::string>("argon_token", token);
-
-                    // log::debug("Token: {}", token);
-                } else {
-                    log::warn("Auth failed: {}", res.unwrapErr());
-                    Notification::create("Failed to authorize with Argon", NotificationIcon::Error)->show();
-                };
-            }
-        );
-
         auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
         if (Mod::get()->getSettingValue<bool>("MenuLayer")) {
             // banner ad at the center
             if (auto adBanner = Advertisement::create()) {
                 adBanner->setID("banner"_spr);
-                adBanner->setType(AdType::Banner);
                 adBanner->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
 
                 this->addChild(adBanner);

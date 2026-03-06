@@ -8,7 +8,7 @@ else()
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(PauseAdvertisements VERSION 1.0.0)
+project(PlayerAdvertisements VERSION 2.0.0)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -29,5 +29,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
 
-CPMAddPackage("gh:GlobedGD/argon@1.4.5")
-target_link_libraries(${PROJECT_NAME} argon)
+set(ADS_TRACK_STATS ON)
+
+CPMAddPackage("gh:BlueWitherer/PlayerAdsUtils@1.0.0")
+target_link_libraries(${PROJECT_NAME} PlayerAdsUtils)
