@@ -29,7 +29,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
 
-set(ADS_TRACK_STATS ON)
+set(PAU_TRACK_STATS ON)
 
-CPMAddPackage("gh:BlueWitherer/PlayerAdsUtils@1.0.0")
+CPMAddPackage("gh:BlueWitherer/PlayerAdsUtils@1.0.1")
 target_link_libraries(${PROJECT_NAME} PlayerAdsUtils)
