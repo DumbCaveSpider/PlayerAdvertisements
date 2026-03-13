@@ -35,7 +35,7 @@ class $modify(AdsRetryLevelLayer, RetryLevelLayer) {
 
                 if (auto adBanner = Advertisement::create(AdType::Square)) {
                     adBanner->setID("advertisement-menu");
-                    adBanner->setPosition({ winSize.width / 2.f, winSize.height / 2.f });
+                    adBanner->setPosition({winSize.width / 2.f, winSize.height / 2.f});
 
                     m_mainLayer->addChild(adBanner);
 

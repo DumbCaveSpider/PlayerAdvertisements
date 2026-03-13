@@ -17,7 +17,7 @@ class $modify(AdsCreatorLayer, CreatorLayer) {
             // banner ad at the top
             if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setPosition({ winSize.width / 2.f, winSize.height - 30.f });
+                adBanner->setPosition({winSize.width / 2.f, winSize.height - 30.f});
 
                 this->addChild(adBanner);
 

@@ -55,10 +55,9 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
 
     auto levelIdLabel = CCLabelBMFont::create(
         ("Level ID: " + numToString(m_impl->levelId)).c_str(),
-        "bigFont.fnt"
-    );
+        "bigFont.fnt");
     levelIdLabel->setID("level-id-label");
-    levelIdLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() - 40 });
+    levelIdLabel->setPosition({m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() - 40});
     levelIdLabel->setScale(0.5f);
 
     m_mainLayer->addChild(levelIdLabel);
@@ -67,11 +66,10 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     auto playAdLevelBtn = CCMenuItemSpriteExtra::create(
         playAdLevelSprite,
         this,
-        menu_selector(AdPreview::onPlayButton)
-    );
+        menu_selector(AdPreview::onPlayButton));
     playAdLevelBtn->setID("play-btn");
-    playAdLevelBtn->setTag(m_impl->levelId); // tag the play button with the level id so the scheduler can restore it later
-    playAdLevelBtn->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 });
+    playAdLevelBtn->setTag(m_impl->levelId);  // tag the play button with the level id so the scheduler can restore it later
+    playAdLevelBtn->setPosition({m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2});
 
     // store the menu for spinner placement / restoring state
     m_buttonMenu->addChild(playAdLevelBtn);
@@ -79,22 +77,20 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     // view and click counts
     auto viewCountLabel = CCLabelBMFont::create(
         ("Views: " + numToString(m_impl->viewCount)).c_str(),
-        "goldFont.fnt"
-    );
+        "goldFont.fnt");
     viewCountLabel->setID("view-count-label");
-    viewCountLabel->setColor({ 255, 125, 0 });
-    viewCountLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 55 });
+    viewCountLabel->setColor({255, 125, 0});
+    viewCountLabel->setPosition({m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 55});
     viewCountLabel->setScale(0.7f);
 
     m_mainLayer->addChild(viewCountLabel);
 
     auto clickCountLabel = CCLabelBMFont::create(
         ("Clicks: " + numToString(m_impl->clickCount)).c_str(),
-        "goldFont.fnt"
-    );
+        "goldFont.fnt");
     clickCountLabel->setID("click-count-label");
-    clickCountLabel->setColor({ 0, 175, 255 });
-    clickCountLabel->setPosition({ m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 75 });
+    clickCountLabel->setColor({0, 175, 255});
+    clickCountLabel->setPosition({m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2 - 75});
     clickCountLabel->setScale(0.7f);
 
     m_mainLayer->addChild(clickCountLabel);
@@ -104,11 +100,10 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
         "GJ_reportBtn_001.png",
         [this](auto) {
             if (auto reportPopup = ReportPopup::create(m_impl->adId, m_impl->levelId, "")) reportPopup->show();
-        }
-    );
+        });
     reportBtn->setID("report-ad-btn");
     reportBtn->setScale(0.75f);
-    reportBtn->setPosition({ 0, 0 });
+    reportBtn->setPosition({0, 0});
 
     m_mainLayer->addChild(reportBtn);
 
@@ -118,8 +113,7 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
             "geode.loader/news.png",
             0.75f,
             CircleBaseColor::Green,
-            CircleBaseSize::Medium
-        ),
+            CircleBaseSize::Medium),
         [](auto) {
             // fetch from /api/announcement
             auto request = web::WebRequest();
@@ -141,13 +135,13 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
 
                         std::string const title =
                             val.contains("title") && val["title"].asString().isOk()
-                            ? val["title"].asString().unwrap()
-                            : "Announcement";
+                                ? val["title"].asString().unwrap()
+                                : "Announcement";
 
                         std::string const content =
                             val.contains("content") && val["content"].asString().isOk()
-                            ? val["content"].asString().unwrap()
-                            : "";
+                                ? val["content"].asString().unwrap()
+                                : "";
 
                         if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
                     } else {
@@ -156,13 +150,11 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
                             NotificationIcon::Error)
                             ->show();
                     };
-                }
-            );
-        }
-    );
+                });
+        });
     announcementBtn->setID("latest-announcement-btn");
     announcementBtn->setScale(0.75f);
-    announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
+    announcementBtn->setPosition({m_mainLayer->getScaledContentWidth(), 0});
 
     m_mainLayer->addChild(announcementBtn);
 
@@ -180,7 +172,9 @@ void AdPreview::onPlayButton(CCObject* sender) {
             "You have <cr>too many scenes loaded</c> because you're opening too "
             "many ads. This may cause your game to become "
             "<cr>unstable</c>.\n<cy>Would you like to return to the main menu?</c>",
-            "Cancel", "Yes", [](auto, bool ok) {
+            "Cancel",
+            "Yes",
+            [](auto, bool ok) {
                 if (ok) {
                     // pop to root scene
                     CCDirector::sharedDirector()->popToRootScene();
@@ -196,7 +190,9 @@ void AdPreview::onPlayButton(CCObject* sender) {
             "You are already inside of a level, attempt to play another level "
             "before closing the current level may <cr>crash your game</c>.\n<cy>Do "
             "you still want to proceed?</c>",
-            "Cancel", "Proceed", [this, sender](auto, bool btn) {
+            "Cancel",
+            "Proceed",
+            [this, sender](auto, bool btn) {
                 if (btn) {
                     auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
                     this->registerClick(m_impl->adId, m_impl->userId, menuItem);
@@ -208,21 +204,19 @@ void AdPreview::onPlayButton(CCObject* sender) {
         if (!m_impl->hasClicked) {
             m_impl->hasClicked = true;
             this->registerClick(m_impl->adId, m_impl->userId, menuItem);
-            log::debug("click registered for ad_id={}, user_id={}", m_impl->adId,
-                m_impl->userId);
+            log::debug("click registered for ad_id={}, user_id={}", m_impl->adId, m_impl->userId);
             this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
         } else {
             log::debug("click already registered for ad_id={}, user_id={}",
-                m_impl->adId, m_impl->userId);
+                m_impl->adId,
+                m_impl->userId);
             this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
         };
     };
 };
 
-void AdPreview::registerClick(unsigned int adId, std::string_view userId,
-    CCMenuItemSpriteExtra* menuItem) {
-    log::debug("Sending click tracking request for ad_id={}, user_id={}", adId,
-        userId);
+void AdPreview::registerClick(unsigned int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem) {
+    log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
 
     // get argon token yum
     auto accountData = argon::getGameAccountData();
@@ -264,8 +258,10 @@ void AdPreview::registerClick(unsigned int adId, std::string_view userId,
                     } else {
                         log::error(
                             "Click failed with code {} for ad_id={}, user_id={}: {}",
-                            res.code(), adId, userId, res.errorMessage()
-                        );
+                            res.code(),
+                            adId,
+                            userId,
+                            res.errorMessage());
                     };
 
                     log::debug("Click request completed for ad_id={}, user_id={}", adId, userId);
@@ -297,7 +293,7 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
     // prepare pending state
     m_impl->pendingKey = key;
     m_impl->pendingLevelId = levelId;
-    m_impl->pendingTimeout = 10.0f; // seconds
+    m_impl->pendingTimeout = 10.0f;  // seconds
 
     // show spinner on the clicked button and disable it
     if (m_impl->pendingSpinner) {

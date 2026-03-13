@@ -17,7 +17,7 @@ class $modify(AdsGJPathsLayer, GJPathsLayer) {
             // square ad at the left side
             if (auto adBannerLeft = Advertisement::create(AdType::Skyscraper)) {
                 adBannerLeft->setID("banner-left"_spr);
-                adBannerLeft->setPosition({ 30.f, winSize.height / 2.f });
+                adBannerLeft->setPosition({30.f, winSize.height / 2.f});
 
                 this->addChild(adBannerLeft);
 
@@ -27,7 +27,7 @@ class $modify(AdsGJPathsLayer, GJPathsLayer) {
             // square ad at the right side
             if (auto adBannerRight = Advertisement::create(AdType::Skyscraper)) {
                 adBannerRight->setID("banner-right"_spr);
-                adBannerRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
+                adBannerRight->setPosition({winSize.width - 30.f, winSize.height / 2.f});
 
                 this->addChild(adBannerRight);
 

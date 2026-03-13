@@ -30,8 +30,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
                     log::warn("Auth failed: {}", res.unwrapErr());
                     Notification::create("Failed to authorize with Argon", NotificationIcon::Error)->show();
                 };
-            }
-        );
+            });
 
         auto const winSize = CCDirector::sharedDirector()->getWinSize();
 
@@ -40,7 +39,7 @@ class $modify(AdsMenuLayer, MenuLayer) {
             if (auto adBanner = Advertisement::create()) {
                 adBanner->setID("banner"_spr);
                 adBanner->setType(AdType::Banner);
-                adBanner->setPosition({ winSize.width / 2.f, winSize.height / 2.f - 70.f });
+                adBanner->setPosition({winSize.width / 2.f, winSize.height / 2.f - 70.f});
 
                 this->addChild(adBanner);
 
@@ -55,27 +54,25 @@ class $modify(AdsMenuLayer, MenuLayer) {
                     "adIcon.png"_spr,
                     0.875f,
                     CircleBaseColor::Green,
-                    CircleBaseSize::MediumAlt
-                ),
+                    CircleBaseSize::MediumAlt),
                 [userId = Mod::get()->getSettingValue<std::string>("user-id")](auto) {
                     if (userId.empty()) {
                         createQuickPopup(
                             "No User ID Set",
                             "You have not set a User ID yet.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
-                            "No", "Yes",
+                            "No",
+                            "Yes",
                             [](auto, bool ok) {
                                 if (ok) {
                                     openSettingsPopup(getMod());
                                     Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
                                     web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
                                 };
-                            }
-                        );
+                            });
                     } else {
                         if (auto popup = AdManager::create()) popup->show();
                     };
-                }
-            );
+                });
 
             bottomMenu->addChild(popupButton);
             bottomMenu->updateLayout();

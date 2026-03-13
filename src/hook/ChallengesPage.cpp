@@ -17,7 +17,7 @@ class $modify(AdsChallengesPage, ChallengesPage) {
             // banner ad at the top
             if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("advertisement-menu");
-                adBanner->setPosition({ winSize.width / 2.f, 30.f });
+                adBanner->setPosition({winSize.width / 2.f, 30.f});
 
                 m_mainLayer->addChild(adBanner, 20);
 

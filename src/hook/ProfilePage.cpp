@@ -17,7 +17,7 @@ class $modify(AdsProfilePage, ProfilePage) {
             // skyscraper ad on the right side
             if (auto adSkyscraperRight = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperRight->setID("skyscraper-right"_spr);
-                adSkyscraperRight->setPosition({ winSize.width - 30.f, winSize.height / 2.f });
+                adSkyscraperRight->setPosition({winSize.width - 30.f, winSize.height / 2.f});
 
                 m_mainLayer->addChild(adSkyscraperRight);
 
@@ -27,7 +27,7 @@ class $modify(AdsProfilePage, ProfilePage) {
             // skyscraper ad on the left side
             if (auto adSkyscraperLeft = Advertisement::create(AdType::Skyscraper)) {
                 adSkyscraperLeft->setID("skyscraper-left"_spr);
-                adSkyscraperLeft->setPosition({ 30.f, winSize.height / 2.f });
+                adSkyscraperLeft->setPosition({30.f, winSize.height / 2.f});
 
                 m_mainLayer->addChild(adSkyscraperLeft);
 

@@ -57,7 +57,7 @@ class $modify(AdsPauseLayer, PauseLayer) {
             // insert ad banner (722x84)
             if (auto adBanner = Advertisement::create(AdType::Banner)) {
                 adBanner->setID("banner"_spr);
-                adBanner->setPosition({ winSize.width / 2.f, winSize.height - 50.f });
+                adBanner->setPosition({winSize.width / 2.f, winSize.height - 50.f});
 
                 this->addChild(adBanner, 100);
 
@@ -72,18 +72,16 @@ class $modify(AdsPauseLayer, PauseLayer) {
                 CircleButtonSprite::create(
                     CCSprite::createWithSpriteFrameName("adIcon.png"_spr),
                     CircleBaseColor::Green,
-                    CircleBaseSize::Medium
-                ),
+                    CircleBaseSize::Medium),
                 this,
-                menu_selector(AdsPauseLayer::onAdClicked)
-            );
+                menu_selector(AdsPauseLayer::onAdClicked));
 
             rightButtonMenu->addChild(popupButton);
             rightButtonMenu->updateLayout();
         };
     };
 
-    void onAdClicked(CCObject * sender) {
+    void onAdClicked(CCObject* sender) {
         if (auto popup = AdManager::create()) popup->show();
     };
 };

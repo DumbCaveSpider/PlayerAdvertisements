@@ -108,15 +108,15 @@ public:
             createQuickPopup(
                 "Something went wrong",
                 "Either the provided User ID is <cr>incorrect</c> or the Advertisement Manager is <co>not responding</c>.\n<cy>Do you want to open the Advertisement Manager and mod settings?</c>",
-                "No", "Yes",
+                "No",
+                "Yes",
                 [](auto, bool ok) {
                     if (ok) {
                         openSettingsPopup(getMod());
                         Notification::create("Opening Advertisement Manager", NotificationIcon::Info)->show();
                         web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
                     }
-                }
-            );
+                });
         };
     };
 
@@ -187,8 +187,7 @@ bool AdManager::init() {
                 log::error("Request failed with status code: {}", res.code());
                 Notification::create("Advertisement data fetch failed", NotificationIcon::Error)->show();
             };
-        }
-    );
+        });
 
     // fetch global stats
     auto globalStatsReq = web::WebRequest();
@@ -202,14 +201,13 @@ bool AdManager::init() {
             } else {
                 log::error("Global stats request failed with status code: {}", res.code());
             };
-        }
-    );
+        });
 
     // @geode-ignore(unknown-resource)
     auto adsBg = NineSlice::create("geode.loader/inverseborder.png");
     adsBg->setID("ads-list-container");
-    adsBg->setPosition({ 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 10.f });
-    adsBg->setContentSize({ 200.f, 200.f });
+    adsBg->setPosition({115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 10.f});
+    adsBg->setContentSize({200.f, 200.f});
 
     m_mainLayer->addChild(adsBg, 5);
 
@@ -220,9 +218,9 @@ bool AdManager::init() {
     m_impl->adsScrollLayer->ignoreAnchorPointForPosition(false);
 
     auto layout = ColumnLayout::create()
-        ->setGap(5.f)
-        ->setAxisAlignment(AxisAlignment::End)
-        ->setAutoGrowAxis(m_impl->adsScrollLayer->getScaledContentHeight());
+                      ->setGap(5.f)
+                      ->setAxisAlignment(AxisAlignment::End)
+                      ->setAutoGrowAxis(m_impl->adsScrollLayer->getScaledContentHeight());
 
     m_impl->adsScrollLayer->m_contentLayer->setLayout(layout);
 
@@ -231,7 +229,7 @@ bool AdManager::init() {
     // title label at the top of each of the backgrounds
     auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->adCount).c_str(), "goldFont.fnt");
     titleLabel->setID("ads-title-label");
-    titleLabel->setPosition({ adsBg->getScaledContentWidth() / 2.f, adsBg->getScaledContentHeight() + 10.f });
+    titleLabel->setPosition({adsBg->getScaledContentWidth() / 2.f, adsBg->getScaledContentHeight() + 10.f});
     titleLabel->setScale(0.4f);
 
     m_impl->titleLabel = titleLabel;
@@ -241,14 +239,14 @@ bool AdManager::init() {
     // @geode-ignore(unknown-resource)
     auto statsBg = NineSlice::create("geode.loader/inverseborder.png");
     statsBg->setID("stats-container");
-    statsBg->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) + 52.f });
-    statsBg->setContentSize({ 200.f, 75.f });
+    statsBg->setPosition({m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) + 52.f});
+    statsBg->setContentSize({200.f, 75.f});
 
     m_mainLayer->addChild(statsBg, 5);
 
     auto titleLabel2 = CCLabelBMFont::create("Your Statistics", "goldFont.fnt");
     titleLabel2->setID("stats-label");
-    titleLabel2->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() + 10.f });
+    titleLabel2->setPosition({statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() + 10.f});
     titleLabel2->setScale(0.4f);
 
     statsBg->addChild(titleLabel2);
@@ -256,14 +254,14 @@ bool AdManager::init() {
     // total views and clicks labels on the right background
     m_impl->viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
     m_impl->viewsLabel->setID("views-label");
-    m_impl->viewsLabel->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 20.f });
+    m_impl->viewsLabel->setPosition({statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 20.f});
     m_impl->viewsLabel->setScale(0.5f);
 
     statsBg->addChild(m_impl->viewsLabel);
 
     m_impl->clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
     m_impl->clicksLabel->setID("clicks-label");
-    m_impl->clicksLabel->setPosition({ statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 50.f });
+    m_impl->clicksLabel->setPosition({statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 50.f});
     m_impl->clicksLabel->setScale(0.5f);
 
     statsBg->addChild(m_impl->clicksLabel);
@@ -271,14 +269,14 @@ bool AdManager::init() {
     // @geode-ignore(unknown-resource)
     auto globalBg = NineSlice::create("geode.loader/inverseborder.png");
     globalBg->setID("global-stats-container");
-    globalBg->setPosition({ m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 60.f });
-    globalBg->setContentSize({ 200.f, 100.f });
+    globalBg->setPosition({m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 60.f});
+    globalBg->setContentSize({200.f, 100.f});
 
     m_mainLayer->addChild(globalBg, 5);
 
     auto titleLabel3 = CCLabelBMFont::create("Global Statistics", "goldFont.fnt");
     titleLabel3->setID("global-stats-label");
-    titleLabel3->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() + 10.f });
+    titleLabel3->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() + 10.f});
     titleLabel3->setScale(0.4f);
 
     globalBg->addChild(titleLabel3);
@@ -286,21 +284,21 @@ bool AdManager::init() {
     // global stats labels on the third background
     m_impl->globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
     m_impl->globalViewsLabel->setID("global-views-label");
-    m_impl->globalViewsLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 20.f });
+    m_impl->globalViewsLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 20.f});
     m_impl->globalViewsLabel->setScale(0.5f);
 
     globalBg->addChild(m_impl->globalViewsLabel);
 
     m_impl->globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
     m_impl->globalClicksLabel->setID("global-clicks-label");
-    m_impl->globalClicksLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 50.f });
+    m_impl->globalClicksLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 50.f});
     m_impl->globalClicksLabel->setScale(0.5f);
 
     globalBg->addChild(m_impl->globalClicksLabel);
 
     m_impl->globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
     m_impl->globalAdCountLabel->setID("global-ad-count-label");
-    m_impl->globalAdCountLabel->setPosition({ globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 80.f });
+    m_impl->globalAdCountLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 80.f});
     m_impl->globalAdCountLabel->setScale(0.5f);
 
     globalBg->addChild(m_impl->globalAdCountLabel);
@@ -312,18 +310,17 @@ bool AdManager::init() {
             createQuickPopup(
                 "Manage Advertisements?",
                 "You will be redirected to <cp>GD Ads Manager</c>.\n<cy>Would you like to proceed?</c>",
-                "Cancel", "Proceed",
+                "Cancel",
+                "Proceed",
                 [](auto, bool ok) {
                     if (ok) {
                         utils::web::openLinkInBrowser("https://ads.arcticwoof.xyz/");
                         Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
                     };
-                }
-            );
-        }
-    );
+                });
+        });
     webBtnMenu->setID("ads-manager-btn");
-    webBtnMenu->setPosition({ m_buttonMenu->getScaledContentWidth() / 2, 0.f });
+    webBtnMenu->setPosition({m_buttonMenu->getScaledContentWidth() / 2, 0.f});
 
     auto modSettingsBtn = Button::createWithNode(
         CircleButtonSprite::createWithSpriteFrameName(
@@ -331,12 +328,10 @@ bool AdManager::init() {
             "geode.loader/settings.png",
             1.f,
             CircleBaseColor::Green,
-            CircleBaseSize::Small
-        ),
+            CircleBaseSize::Small),
         [](auto) {
             openSettingsPopup(Mod::get());
-        }
-    );
+        });
     modSettingsBtn->setID("mod-settings-btn");
     modSettingsBtn->setScale(0.75f);
     modSettingsBtn->setPosition(m_mainLayer->getContentSize());
@@ -347,8 +342,7 @@ bool AdManager::init() {
             "geode.loader/news.png",
             0.75f,
             CircleBaseColor::Green,
-            CircleBaseSize::Small
-        ),
+            CircleBaseSize::Small),
         [](auto) {
             // fetch from /api/announcement
             auto request = web::WebRequest();
@@ -369,12 +363,12 @@ bool AdManager::init() {
                         auto val = data.unwrapOrDefault();
 
                         std::string title = val.contains("title") && val["title"].asString().isOk()
-                            ? val["title"].asString().unwrapOrDefault()
-                            : "Announcement";
+                                                ? val["title"].asString().unwrapOrDefault()
+                                                : "Announcement";
 
                         std::string content = val.contains("content") && val["content"].asString().isOk()
-                            ? val["content"].asString().unwrapOrDefault()
-                            : "";
+                                                  ? val["content"].asString().unwrapOrDefault()
+                                                  : "";
 
                         if (auto popup = MDPopup::create(title.c_str(), content.c_str(), "Close")) popup->show();
 
@@ -382,13 +376,11 @@ bool AdManager::init() {
                         log::error("Failed to fetch announcement: (code: {})", res.code());
                         Notification::create("Failed to fetch announcement", NotificationIcon::Error)->show();
                     };
-                }
-            );
-        }
-    );
+                });
+        });
     announcementBtn->setID("latest-announcement-btn");
     announcementBtn->setScale(0.875f);
-    announcementBtn->setPosition({ m_mainLayer->getScaledContentWidth(), 0 });
+    announcementBtn->setPosition({m_mainLayer->getScaledContentWidth(), 0});
 
     auto discordBtn = Button::createWithSpriteFrameName(
         "gj_discordIcon_001.png",
@@ -396,44 +388,41 @@ bool AdManager::init() {
             createQuickPopup(
                 "Join our Discord?",
                 "You will be redirected to <cd>Cheeseworks's support Discord server</c>.\n<cy>Would you like to proceed?</c>",
-                "Cancel", "Proceed",
+                "Cancel",
+                "Proceed",
                 [](auto, bool ok) {
                     if (ok) {
                         utils::web::openLinkInBrowser("https://www.dsc.gg/cheeseworks");
                         Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
                     };
-                }
-            );
-        }
-    );
+                });
+        });
     discordBtn->setID("discord-btn");
     discordBtn->setScale(0.7f);
-    discordBtn->setPosition({ 15.f, 15.f });
+    discordBtn->setPosition({15.f, 15.f});
 
     auto kofiBtn = Button::createWithNode(
         BasedButtonSprite::create(
             CCSprite::createWithSpriteFrameName("kofiIcon.png"_spr),
             BaseType::Account,
             0,
-            2
-        ),
+            2),
         [](auto) {
             createQuickPopup(
                 "Support on Ko-fi",
                 "Would you like to explore our <cp>Ko-fi</c> shop?\n<cg>You can buy upgrades for your ads there.</c>",
-                "Cancel", "Proceed",
+                "Cancel",
+                "Proceed",
                 [](auto, bool ok) {
                     if (ok) {
                         utils::web::openLinkInBrowser("https://ko-fi.com/playerads");
                         Notification::create("Opening in your browser", NotificationIcon::Info, 1.f)->show();
                     };
-                }
-            );
-        }
-    );
+                });
+        });
     kofiBtn->setID("kofi-btn");
     kofiBtn->setScale(0.5f);
-    kofiBtn->setPosition({ discordBtn->getPositionX() + 25.f, discordBtn->getPositionY() });
+    kofiBtn->setPosition({discordBtn->getPositionX() + 25.f, discordBtn->getPositionY()});
 
     m_mainLayer->addChild(webBtnMenu);
     m_mainLayer->addChild(modSettingsBtn);

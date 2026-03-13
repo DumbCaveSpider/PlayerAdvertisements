@@ -1,3 +1,6 @@
+# v1.1.8 
+- Minor tweaks
+
 # v1.1.7 
 - Hotfix
 
