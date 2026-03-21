@@ -41,7 +41,7 @@ namespace ads {
 
         Ad() = default;
 
-        Ad(
+        inline Ad(
             unsigned int id,
             std::string image,
             int level,
@@ -49,28 +49,27 @@ namespace ads {
             std::string user,
             int viewCount = 0,
             int clickCount = 0,
-            int glowLevel = 0
-        ) : id(id),
-            image(std::move(image)),
-            level(level),
-            type(type),
-            user(std::move(user)),
-            viewCount(viewCount),
-            clickCount(clickCount),
-            glowLevel(glowLevel) {};
+            int glowLevel = 0) : id(id),
+                                 image(std::move(image)),
+                                 level(level),
+                                 type(type),
+                                 user(std::move(user)),
+                                 viewCount(viewCount),
+                                 clickCount(clickCount),
+                                 glowLevel(glowLevel) {};
     };
 
     /**
      * Get the size of an ad based on its type
      * @param type The type of ad
      */
-    cocos2d::CCSize const getAdSize(AdType type);
+    constexpr cocos2d::CCSize getAdSize(AdType type) noexcept;
 
     /**
      * Get the particle string based on an ad type
      * @param type The type of ad
      */
-    constexpr const char* getParticlesForAdType(AdType type);
+    constexpr const char* getParticlesForAdType(AdType type) noexcept;
 
     class AWCW_ADS_API_DLL Advertisement final : public cocos2d::CCNode {
     private:

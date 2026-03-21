@@ -23,7 +23,7 @@ namespace ads {
         constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
     };
 
-    CCSize const getAdSize(AdType type) {
+    constexpr CCSize getAdSize(AdType type) noexcept {
         auto const banner = CCSize(364.f, 45.f);
         auto const square = CCSize(122.6f, 122.6f);
         auto const skyscraper = CCSize(41.f, 314.f);
@@ -31,37 +31,23 @@ namespace ads {
         CCSize contentSize = banner;
 
         switch (type) {
-            case AdType::Banner:
-                contentSize = banner;
-                break;
-            case AdType::Square:
-                contentSize = square;
-                break;
-            case AdType::Skyscraper:
-                contentSize = skyscraper;
-                break;
+            default: [[fallthrough]];
 
-            default:
-                contentSize = banner;
-                break;
+            case AdType::Banner: contentSize = banner; break;
+            case AdType::Square: contentSize = square; break;
+            case AdType::Skyscraper: contentSize = skyscraper; break;
         };
 
         return contentSize;
     };
 
-    constexpr const char* getParticlesForAdType(AdType type) {
+    constexpr const char* getParticlesForAdType(AdType type) noexcept {
         switch (type) {
-            case AdType::Banner:
-                return particles::banner;
+            default: [[fallthrough]];
 
-            case AdType::Square:
-                return particles::square;
-
-            case AdType::Skyscraper:
-                return particles::skyscraper;
-
-            default:
-                return particles::square;
+            case AdType::Banner: return particles::banner;
+            case AdType::Square: return particles::square;
+            case AdType::Skyscraper: return particles::skyscraper;
         };
     };
 
@@ -154,12 +140,10 @@ namespace ads {
 
         log::info("setting up callbacks");
 
-        // capture weak impl to avoid touching freed memory if Advertisement is destroyed
-        auto weak_impl_auth = std::weak_ptr<Impl>(m_impl);
         async::spawn(
             argon::startAuth(),
-            [weak_impl_auth](geode::Result<std::string> res) {
-                auto impl = weak_impl_auth.lock();
+            [selfImpl = std::weak_ptr<Impl>(m_impl)](geode::Result<std::string> res) {
+                auto impl = selfImpl.lock();
                 if (!impl) {
                     log::warn("Auth callback: impl expired");
                     return;
@@ -191,10 +175,8 @@ namespace ads {
                 this->handleAdResponse(res);
             });
 
-        // capture a weak_ptr to the Impl to avoid using a dangling `this`
-        auto weak_impl = std::weak_ptr<Impl>(m_impl);
-        m_impl->adSprite->setLoadCallback([weak_impl](Result<> res) {
-            auto impl = weak_impl.lock();
+        m_impl->adSprite->setLoadCallback([selfImpl = std::weak_ptr<Impl>(m_impl)](Result<> res) {
+            auto impl = selfImpl.lock();
             if (!impl) {
                 log::error("Impl expired in load callback");
                 return;

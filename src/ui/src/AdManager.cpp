@@ -40,21 +40,21 @@ public:
     LoadingSpinner* pendingSpinner = nullptr;
 
     void setupAdsList() {
-        if (adsScrollLayer) {
+        if (auto adsList = WeakRef(adsScrollLayer).lock()) {
             auto adsArray = adsData.asArray();
             if (!adsArray.isOk()) return;
 
-            if (adsScrollLayer->m_contentLayer) adsScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
+            if (adsList->m_contentLayer) adsList->m_contentLayer->removeAllChildrenWithCleanup(true);
 
             for (const auto& adValue : adsArray.unwrap()) {
-                if (auto node = AdNode::create(adValue, adsScrollLayer->getScaledContentWidth())) adsScrollLayer->m_contentLayer->addChild(node);
+                if (auto node = AdNode::create(adValue, adsList->getScaledContentWidth())) adsList->m_contentLayer->addChild(node);
             };
 
-            adsScrollLayer->m_contentLayer->updateLayout();
-            adsScrollLayer->scrollToTop();
+            adsList->m_contentLayer->updateLayout();
+            adsList->scrollToTop();
 
             // Update the title label with the correct ad count
-            if (titleLabel) titleLabel->setString(fmt::format("Your Advertisements ({})", adsScrollLayer->m_contentLayer->getChildrenCount()).c_str());
+            if (titleLabel) titleLabel->setString(fmt::format("Your Advertisements ({})", adsList->m_contentLayer->getChildrenCount()).c_str());
         } else {
             log::error("Ads list not found");
         };
