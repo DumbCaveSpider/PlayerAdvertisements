@@ -122,5 +122,7 @@ namespace ads {
          * @param res The web response containing the advertisement data
          */
         void handleAdResponse(geode::utils::web::WebResponse const& res);
+
+        void onEnter() override;
     };
 };

@@ -86,6 +86,12 @@ namespace ads {
         return true;
     };
 
+    void Advertisement::onEnter() {
+        CCNode::onEnter();
+        log::trace("advertisement appeared on scene");
+        reloadType();
+    };
+
     void Advertisement::reload() {
         this->removeAllChildrenWithCleanup(true);
 
@@ -167,8 +173,8 @@ namespace ads {
 
         m_impl->adListener.spawn(
             req.get("https://ads.arcticwoof.xyz/api/ad"),
-            [this](web::WebResponse res) {
-                this->handleAdResponse(res);
+            [self = WeakRef(this)](web::WebResponse res) {
+                if (auto s = self.lock()) s->handleAdResponse(res);
             });
 
         m_impl->adSprite->setLoadCallback([self = WeakRef(this)](Result<> res) {
@@ -405,7 +411,9 @@ namespace ads {
 
         m_impl->adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad"),
-            [this](web::WebResponse res) { this->handleAdResponse(res); });
+            [self = WeakRef(this)](web::WebResponse res) {
+                if (auto s = self.lock()) s->handleAdResponse(res);
+            });
 
         m_impl->hasLoaded = true;
         m_impl->loadRandom = true;
@@ -425,7 +433,9 @@ namespace ads {
 
         m_impl->adListener.spawn(
             request.get("https://ads.arcticwoof.xyz/api/ad/get"),
-            [this](web::WebResponse res) { this->handleAdResponse(res); });
+            [self = WeakRef(this)](web::WebResponse res) {
+                if (auto s = self.lock()) s->handleAdResponse(res);
+            });
 
         m_impl->hasLoaded = true;
         m_impl->loadRandom = false;

@@ -180,12 +180,14 @@ bool AdManager::init() {
 
     async::spawn(
         req.get(urlStr),
-        [this](web::WebResponse res) {
-            if (res.ok()) {
-                if (auto impl = m_impl.get()) impl->onFetchComplete(res);
-            } else {
-                log::error("Request failed with status code: {}", res.code());
-                Notification::create("Advertisement data fetch failed", NotificationIcon::Error)->show();
+        [self = WeakRef(this)](web::WebResponse res) {
+            if (auto s = self.lock()) {
+                if (res.ok()) {
+                    s->m_impl->onFetchComplete(res);
+                } else {
+                    log::error("Request failed with status code: {}", res.code());
+                    Notification::create("Advertisement data fetch failed", NotificationIcon::Error)->show();
+                };
             };
         });
 
@@ -195,11 +197,13 @@ bool AdManager::init() {
 
     async::spawn(
         globalStatsReq.get("https://ads.arcticwoof.xyz/stats/global"),
-        [this](web::WebResponse res) {
-            if (res.ok()) {
-                if (auto impl = m_impl.get()) impl->onGlobalStatsFetchComplete(res);
-            } else {
-                log::error("Global stats request failed with status code: {}", res.code());
+        [self = WeakRef(this)](web::WebResponse res) {
+            if (auto s = self.lock()) {
+                if (res.ok()) {
+                    s->m_impl->onGlobalStatsFetchComplete(res);
+                } else {
+                    log::error("Global stats request failed with status code: {}", res.code());
+                };
             };
         });
 

@@ -1,5 +1,5 @@
 # v1.1.8 
-- Crash fixes
+- Several fixes
 
 # v1.1.7 
 - Hotfix
