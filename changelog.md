@@ -1,5 +1,5 @@
 # v1.1.9 
-- idk yet
+- Fixed crash when pressing play button on ad preview
 
 # v1.1.8 
 - Several fixes
