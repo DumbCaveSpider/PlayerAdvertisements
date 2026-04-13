@@ -3,6 +3,7 @@
 #include <Advertisements.hpp>
 
 #include <Geode/Geode.hpp>
+#include "Geode/cocos/menu_nodes/CCMenuItem.h"
 
 using namespace geode::prelude;
 using namespace ads;
@@ -11,6 +12,7 @@ class AdPreview final : public Popup {
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
+    CCMenuItemSprite* m_playAdLevelBtn;
 
 protected:
     AdPreview();

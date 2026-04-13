@@ -70,9 +70,10 @@ bool AdPreview::init(unsigned int adId, int levelId, std::string userId, AdType 
     playAdLevelBtn->setID("play-btn");
     playAdLevelBtn->setTag(m_impl->levelId);  // tag the play button with the level id so the scheduler can restore it later
     playAdLevelBtn->setPosition({m_mainLayer->getScaledContentWidth() / 2, m_mainLayer->getScaledContentHeight() / 2});
+    m_playAdLevelBtn = playAdLevelBtn;
 
     // store the menu for spinner placement / restoring state
-    m_buttonMenu->addChild(playAdLevelBtn);
+    m_buttonMenu->addChild(m_playAdLevelBtn);
 
     // view and click counts
     auto viewCountLabel = CCLabelBMFont::create(
@@ -286,6 +287,7 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
             auto scene = LevelInfoLayer::scene(level, false);
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
             CCDirector::sharedDirector()->pushScene(transitionFade);
+            glm->m_levelManagerDelegate = nullptr;
             return;
         };
     };
@@ -299,11 +301,13 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
     if (m_impl->pendingSpinner) {
         m_impl->pendingSpinner->removeFromParent();
         m_impl->pendingSpinner = nullptr;
+        m_playAdLevelBtn->setVisible(true);
     };
 
     if (auto spinner = LoadingSpinner::create(100.f)) {
         spinner->setPosition(menuItem->getPosition());
         spinner->setVisible(true);
+        m_playAdLevelBtn->setVisible(false);
 
         m_buttonMenu->addChild(spinner);
 
@@ -333,11 +337,13 @@ void AdPreview::update(float dt) {
                     m_impl->pendingSpinner->removeFromParent();
                     m_impl->pendingSpinner = nullptr;
                 };
+                m_playAdLevelBtn->setVisible(true);
 
                 m_impl->pendingKey.clear();
                 m_impl->pendingLevelId = -1;
                 m_impl->pendingTimeout = 0.0;
 
+                glm->m_levelManagerDelegate = nullptr;
                 return;
             };
         };
@@ -348,6 +354,7 @@ void AdPreview::update(float dt) {
                 m_impl->pendingSpinner->removeFromParent();
                 m_impl->pendingSpinner = nullptr;
             };
+            m_playAdLevelBtn->setVisible(true);
 
             Notification::create("Level not found", NotificationIcon::Warning)->show();
 
