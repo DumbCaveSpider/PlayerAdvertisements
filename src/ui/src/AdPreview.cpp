@@ -195,7 +195,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
             [this, sender](auto, bool btn) {
                 if (btn) {
                     auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
-                    this->registerClick(m_impl->adId, m_impl->userId, menuItem);
+                    this->registerClick(m_impl->adId, m_impl->userId);
                     this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
                 };
             });
@@ -203,7 +203,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
         auto menuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(sender);
         if (!m_impl->hasClicked) {
             m_impl->hasClicked = true;
-            this->registerClick(m_impl->adId, m_impl->userId, menuItem);
+            this->registerClick(m_impl->adId, m_impl->userId);
             log::debug("click registered for ad_id={}, user_id={}", m_impl->adId, m_impl->userId);
             this->tryOpenOrFetchLevel(menuItem, m_impl->levelId);
         } else {
@@ -215,7 +215,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
     };
 };
 
-void AdPreview::registerClick(unsigned int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem) {
+void AdPreview::registerClick(unsigned int adId, std::string_view userId) {
     log::debug("Sending click tracking request for ad_id={}, user_id={}", adId, userId);
 
     // get argon token yum
@@ -266,6 +266,7 @@ void AdPreview::registerClick(unsigned int adId, std::string_view userId, CCMenu
 
                     log::debug("Click request completed for ad_id={}, user_id={}", adId, userId);
                 });
+
             log::debug("Sent click tracking request for ad_id={}, user_id={}", adId, userId);
         });
 };
@@ -281,7 +282,7 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
     // check stored cache first
     auto stored = glm->getStoredOnlineLevels(key.c_str());
     if (stored && stored->count() > 0) {
-        auto level = static_cast<GJGameLevel*>(stored->objectAtIndex(0));
+        auto level = typeinfo_cast<GJGameLevel*>(stored->objectAtIndex(0));
         if (level && level->m_levelID == levelId) {
             auto scene = LevelInfoLayer::scene(level, false);
             auto transitionFade = CCTransitionFade::create(0.5f, scene);

@@ -20,11 +20,10 @@ protected:
 
     void onPlayButton(CCObject* sender);
 
-    void registerClick(unsigned int adId, std::string_view userId, CCMenuItemSpriteExtra* menuItem);
+    void registerClick(unsigned int adId, std::string_view userId);
     void tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId);
 
     void update(float dt) override;
-
 
 public:
     static AdPreview* create(unsigned int adId, int levelId, std::string userId, AdType type, unsigned int viewCount, unsigned int clickCount);
