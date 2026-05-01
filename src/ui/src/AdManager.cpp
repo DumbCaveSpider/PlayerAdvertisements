@@ -428,11 +428,11 @@ bool AdManager::init() {
     kofiBtn->setScale(0.5f);
     kofiBtn->setPosition({discordBtn->getPositionX() + 25.f, discordBtn->getPositionY()});
 
-    m_mainLayer->addChild(webBtnMenu);
-    m_mainLayer->addChild(modSettingsBtn);
-    m_mainLayer->addChild(announcementBtn);
-    m_mainLayer->addChild(discordBtn);
-    m_mainLayer->addChild(kofiBtn);
+    m_buttonMenu->addChild(webBtnMenu);
+    m_buttonMenu->addChild(modSettingsBtn);
+    m_buttonMenu->addChild(announcementBtn);
+    m_buttonMenu->addChild(discordBtn);
+    m_buttonMenu->addChild(kofiBtn);
 
     this->scheduleUpdate();
 

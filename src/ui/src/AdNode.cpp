@@ -157,6 +157,7 @@ void AdNode::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* playBtn, int levelId) {
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
             if (PlayLayer::get()) {
                 CCDirector::sharedDirector()->replaceScene(transitionFade);
+                FMODAudioEngine::sharedEngine()->resumeAllAudio();
             } else {
                 CCDirector::sharedDirector()->pushScene(transitionFade);
             }
@@ -177,7 +178,7 @@ void AdNode::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* playBtn, int levelId) {
         }
     };
 
-    if (auto spinner = LoadingSpinner::create(100.f)) {
+    if (auto spinner = LoadingSpinner::create(25.f)) {
         spinner->setPosition(playBtn->getPosition());
         spinner->setVisible(true);
         if (m_playMenu) {
@@ -229,6 +230,7 @@ void AdNode::update(float dt) {
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
             if (PlayLayer::get()) {
                 CCDirector::sharedDirector()->replaceScene(transitionFade);
+                FMODAudioEngine::sharedEngine()->resumeAllAudio();
             } else {
                 CCDirector::sharedDirector()->pushScene(transitionFade);
             }

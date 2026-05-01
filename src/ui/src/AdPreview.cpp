@@ -287,6 +287,7 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
             if (PlayLayer::get()) {
                 CCDirector::sharedDirector()->replaceScene(transitionFade);
+                FMODAudioEngine::sharedEngine()->resumeAllAudio();
             } else {
                 CCDirector::sharedDirector()->pushScene(transitionFade);
             }
@@ -334,6 +335,7 @@ void AdPreview::update(float dt) {
                 auto transitionFade = CCTransitionFade::create(0.5f, scene);
                 if (PlayLayer::get()) {
                     CCDirector::sharedDirector()->replaceScene(transitionFade);
+                    FMODAudioEngine::sharedEngine()->resumeAllAudio();
                 } else {
                     CCDirector::sharedDirector()->pushScene(transitionFade);
                 }

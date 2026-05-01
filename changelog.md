@@ -1,8 +1,10 @@
 # v1.2.0
-- Reduce the scale when clicking on the advertisement
+- Reduce scaling when clicking/holding on the advertisement
 - Added **Show Spinner on unloaded Ads** in the mod settings
-- Fixed the particles showing less than expected
-- Formatted the numbes on the Ad Manager popup
+- Fixed particles showing less than expected
+- Formatted the numbers on the Ad Manager popup
+- Fixed ad menu button scaling in the Pause Menu
+- Removed the notification when failed to authenticate with Argon when viewing an ad
 
 # v1.1.9 
 - Fixed crash when pressing play button on ad preview

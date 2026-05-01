@@ -75,6 +75,7 @@ class $modify(AdsPauseLayer, PauseLayer) {
         // add a button on the side on the menu
         if (auto rightButtonMenu = getChildByID("right-button-menu")) {
             auto adButtonSpr = CircleButtonSprite::create(CCSprite::createWithSpriteFrameName("adIcon.png"_spr));
+            adButtonSpr->setScale(0.675f);
             auto popupButton = CCMenuItemSpriteExtra::create(
                 adButtonSpr,
                 this,

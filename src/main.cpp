@@ -16,7 +16,6 @@ using namespace geode::prelude;
 using namespace ads;
 
 class $modify(AdsMenuLayer, MenuLayer) {
-protected:
     bool init() {
         if (!MenuLayer::init()) return false;
 
