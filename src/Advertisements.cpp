@@ -18,9 +18,9 @@ using namespace ads;
 
 namespace ads {
     namespace particles {
-        constexpr const char* banner = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-        constexpr const char* square = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
-        constexpr const char* skyscraper = "1,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* banner = "75,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a100a25a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* square = "75,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a50a50a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
+        constexpr const char* skyscraper = "75,2065,2,4515,3,855,155,1,156,20,145,20a-1a1a0.3a15a90a0a20a0a25a100a0a25a0a0a0a0a10a5a0a180a1a0a1a0a1a0a1a0a5a0a180a0a1a0a1a0a1a0a1a0a0a1a1a0a0a0a0a0a0a0a0a2a1a0a0a0a41a0a0a0a0a0a0a0a0a0a0a0a0a0a0;";
     };
 
     constexpr CCSize getAdSize(AdType type) noexcept {
@@ -123,6 +123,7 @@ namespace ads {
 
         if (m_impl->adButton) {
             this->addChild(m_impl->adButton, 1);
+            m_impl->adButton->setScaleMultiplier(1.05f);
             log::info("Advertisement button created and added to menu");
         } else {
             log::error("Failed to create button");
@@ -132,7 +133,7 @@ namespace ads {
     void Advertisement::reloadType() {
         this->setContentSize(getAdSize(m_impl->type));
 
-        m_impl->adSprite = LazySprite::create(getScaledContentSize(), true);
+        m_impl->adSprite = LazySprite::create(getScaledContentSize(), Mod::get()->getSettingValue<bool>("adLoading"));
         if (!m_impl->adSprite) {
             log::error("Failed to create LazySprite");
             return;
@@ -189,7 +190,10 @@ namespace ads {
                     s->m_impl->adIcon->setScale(0.25f);
                     s->m_impl->adIcon->setOpacity(100);
 
-                    if (s->m_impl->adButton) s->m_impl->adButton->addChild(s->m_impl->adIcon, 9);
+                    if (s->m_impl->adButton) {
+                        s->m_impl->adButton->addChild(s->m_impl->adIcon, 9);
+                        s->m_impl->adButton->setScaleMultiplier(1.05f);
+                    }
 
                     if (!s->m_impl->adSprite) {
                         log::warn("Load callback: ad sprite is null");
@@ -252,8 +256,8 @@ namespace ads {
                         particles->setScale(1.25f);
                         particles->setAnchorPoint({0.5, 0.5});
                         particles->setPosition(glowNode->getPosition());
-                        particles->setEmissionRate(2500.f);
-                        particles->setTotalParticles(125);
+                        particles->resetSystem();
+                        particles->update(0.15f);
 
                         auto tag = CCLabelBMFont::create("Featured", "bigFont.fnt");
                         tag->setScale(0.375f);
@@ -324,8 +328,12 @@ namespace ads {
                 } else if (res.isErr()) {
                     log::error("Failed to load ad image: {}", res.unwrapErr());
 
-                    if (s->m_impl->adSprite) s->m_impl->adSprite->setVisible(false);
+                    if (s->m_impl->adSprite) {
+                        s->m_impl->adSprite->setVisible(false);
+                        s->m_impl->adSprite->cancelLoad();
+                    }
                     if (s->m_impl->adButton) s->m_impl->adButton->setEnabled(false);
+
                 } else {
                     log::error("Unknown error loading ad image");
                 };

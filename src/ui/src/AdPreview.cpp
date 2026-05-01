@@ -188,9 +188,7 @@ void AdPreview::onPlayButton(CCObject* sender) {
     if (PlayLayer::get()) {
         createQuickPopup(
             "Warning",
-            "You are already inside of a level, attempt to play another level "
-            "before closing the current level may <cr>crash your game</c>.\n<cy>Do "
-            "you still want to proceed?</c>",
+            "You are already inside of a level, opening this level will <cr>close your current level</c>.\n<cy>Do you still want to proceed?</c>",
             "Cancel",
             "Proceed",
             [this, sender](auto, bool btn) {
@@ -227,9 +225,9 @@ void AdPreview::registerClick(unsigned int adId, std::string_view userId) {
         [this, adId, userId](Result<std::string> res) {
             if (res.isErr()) {
                 log::warn("Auth failed: {}", res.unwrapErr());
-                Notification::create("Failed to authorize with Argon",
-                    NotificationIcon::Error)
-                    ->show();
+                // Notification::create("Failed to authorize with Argon",
+                //     NotificationIcon::Error)
+                //     ->show();
                 return;
             };
 
@@ -287,7 +285,11 @@ void AdPreview::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* menuItem, int levelId
         if (level && level->m_levelID == levelId) {
             auto scene = LevelInfoLayer::scene(level, false);
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
-            CCDirector::sharedDirector()->pushScene(transitionFade);
+            if (PlayLayer::get()) {
+                CCDirector::sharedDirector()->replaceScene(transitionFade);
+            } else {
+                CCDirector::sharedDirector()->pushScene(transitionFade);
+            }
             glm->m_levelManagerDelegate = nullptr;
             return;
         };
@@ -330,8 +332,11 @@ void AdPreview::update(float dt) {
                 // open level info
                 auto scene = LevelInfoLayer::scene(level, false);
                 auto transitionFade = CCTransitionFade::create(0.5f, scene);
-
-                CCDirector::sharedDirector()->pushScene(transitionFade);
+                if (PlayLayer::get()) {
+                    CCDirector::sharedDirector()->replaceScene(transitionFade);
+                } else {
+                    CCDirector::sharedDirector()->pushScene(transitionFade);
+                }
 
                 // cleanup pending state and spinner
                 if (m_impl->pendingSpinner) {

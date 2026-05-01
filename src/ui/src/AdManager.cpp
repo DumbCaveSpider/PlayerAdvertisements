@@ -99,8 +99,8 @@ public:
                 };
 
                 // Update labels after fetching
-                if (viewsLabel) viewsLabel->setString(fmt::format("Total Views: {}", totalViews).c_str());
-                if (clicksLabel) clicksLabel->setString(fmt::format("Total Clicks: {}", totalClicks).c_str());
+                if (viewsLabel) viewsLabel->setString(fmt::format("Total Views: {}", GameToolbox::pointsToString(totalViews)).c_str());
+                if (clicksLabel) clicksLabel->setString(fmt::format("Total Clicks: {}", GameToolbox::pointsToString(totalClicks)).c_str());
             };
         } else {
             log::error("Request failed with status code: {}", res.code());
@@ -152,9 +152,9 @@ public:
             };
 
             // Update labels with global stats
-            if (globalViewsLabel) globalViewsLabel->setString(fmt::format("Views: {}", globalTotalViews).c_str());
-            if (globalClicksLabel) globalClicksLabel->setString(fmt::format("Clicks: {}", globalTotalClicks).c_str());
-            if (globalAdCountLabel) globalAdCountLabel->setString(fmt::format("Active Ads: {}", globalAdCount).c_str());
+            if (globalViewsLabel) globalViewsLabel->setString(fmt::format("Views: {}", GameToolbox::pointsToString(globalTotalViews)).c_str());
+            if (globalClicksLabel) globalClicksLabel->setString(fmt::format("Clicks: {}", GameToolbox::pointsToString(globalTotalClicks)).c_str());
+            if (globalAdCountLabel) globalAdCountLabel->setString(fmt::format("Active Ads: {}", GameToolbox::pointsToString(globalAdCount)).c_str());
         } else {
             log::error("Global stats request failed with status code: {}", res.code());
         };
@@ -208,7 +208,7 @@ bool AdManager::init() {
         });
 
     // @geode-ignore(unknown-resource)
-    auto adsBg = NineSlice::create("geode.loader/inverseborder.png");
+    auto adsBg = ListBorders::create();
     adsBg->setID("ads-list-container");
     adsBg->setPosition({115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 10.f});
     adsBg->setContentSize({200.f, 200.f});
@@ -228,7 +228,7 @@ bool AdManager::init() {
 
     m_impl->adsScrollLayer->m_contentLayer->setLayout(layout);
 
-    adsBg->addChild(m_impl->adsScrollLayer, 1);
+    adsBg->addChild(m_impl->adsScrollLayer, -1);
 
     // title label at the top of each of the backgrounds
     auto titleLabel = CCLabelBMFont::create(fmt::format("Your Advertisements ({})", m_impl->adCount).c_str(), "goldFont.fnt");
@@ -241,7 +241,7 @@ bool AdManager::init() {
     adsBg->addChild(titleLabel);
 
     // @geode-ignore(unknown-resource)
-    auto statsBg = NineSlice::create("geode.loader/inverseborder.png");
+    auto statsBg = ListBorders::create();
     statsBg->setID("stats-container");
     statsBg->setPosition({m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) + 52.f});
     statsBg->setContentSize({200.f, 75.f});
@@ -259,19 +259,19 @@ bool AdManager::init() {
     m_impl->viewsLabel = CCLabelBMFont::create("Total Views: -", "bigFont.fnt");
     m_impl->viewsLabel->setID("views-label");
     m_impl->viewsLabel->setPosition({statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 20.f});
-    m_impl->viewsLabel->setScale(0.5f);
+    m_impl->viewsLabel->limitLabelWidth(adsBg->getScaledContentWidth() - 10., 0.5f, 0.3f);
 
     statsBg->addChild(m_impl->viewsLabel);
 
     m_impl->clicksLabel = CCLabelBMFont::create("Total Clicks: -", "bigFont.fnt");
     m_impl->clicksLabel->setID("clicks-label");
     m_impl->clicksLabel->setPosition({statsBg->getScaledContentWidth() / 2.f, statsBg->getScaledContentHeight() - 50.f});
-    m_impl->clicksLabel->setScale(0.5f);
+    m_impl->clicksLabel->limitLabelWidth(adsBg->getScaledContentWidth() - 10., 0.5f, 0.3f);
 
     statsBg->addChild(m_impl->clicksLabel);
 
     // @geode-ignore(unknown-resource)
-    auto globalBg = NineSlice::create("geode.loader/inverseborder.png");
+    auto globalBg = ListBorders::create();
     globalBg->setID("global-stats-container");
     globalBg->setPosition({m_mainLayer->getScaledContentWidth() - 115.f, (m_mainLayer->getScaledContentHeight() / 2.f) - 60.f});
     globalBg->setContentSize({200.f, 100.f});
@@ -289,21 +289,21 @@ bool AdManager::init() {
     m_impl->globalViewsLabel = CCLabelBMFont::create("Views: -", "bigFont.fnt");
     m_impl->globalViewsLabel->setID("global-views-label");
     m_impl->globalViewsLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 20.f});
-    m_impl->globalViewsLabel->setScale(0.5f);
+    m_impl->globalViewsLabel->limitLabelWidth(globalBg->getScaledContentWidth() - 10., 0.5f, 0.3f);
 
     globalBg->addChild(m_impl->globalViewsLabel);
 
     m_impl->globalClicksLabel = CCLabelBMFont::create("Clicks: -", "bigFont.fnt");
     m_impl->globalClicksLabel->setID("global-clicks-label");
     m_impl->globalClicksLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 50.f});
-    m_impl->globalClicksLabel->setScale(0.5f);
+    m_impl->globalClicksLabel->limitLabelWidth(globalBg->getScaledContentWidth() - 10., 0.5f, 0.3f);
 
     globalBg->addChild(m_impl->globalClicksLabel);
 
     m_impl->globalAdCountLabel = CCLabelBMFont::create("Active Ads: -", "bigFont.fnt");
     m_impl->globalAdCountLabel->setID("global-ad-count-label");
     m_impl->globalAdCountLabel->setPosition({globalBg->getScaledContentWidth() / 2.f, globalBg->getScaledContentHeight() - 80.f});
-    m_impl->globalAdCountLabel->setScale(0.5f);
+    m_impl->globalAdCountLabel->limitLabelWidth(globalBg->getScaledContentWidth() - 10., 0.5f, 0.3f);
 
     globalBg->addChild(m_impl->globalAdCountLabel);
 

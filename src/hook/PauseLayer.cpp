@@ -19,7 +19,6 @@ class $modify(AdsPauseLayer, PauseLayer) {
             levelName->setVisible(false);
 
             // get the practice mode positions
-
             auto practiceTitle = typeinfo_cast<CCLabelBMFont*>(getChildByID("practice-mode-label"));
             auto practiceProgress = typeinfo_cast<CCLabelBMFont*>(getChildByID("practice-progress-label"));
             auto practiceBar = typeinfo_cast<CCSprite*>(getChildByID("practice-progress-bar"));
@@ -28,6 +27,9 @@ class $modify(AdsPauseLayer, PauseLayer) {
             auto normalTitle = typeinfo_cast<CCLabelBMFont*>(getChildByID("normal-mode-label"));
             auto normalProgress = typeinfo_cast<CCLabelBMFont*>(getChildByID("normal-progress-label"));
             auto normalBar = typeinfo_cast<CCSprite*>(getChildByID("normal-progress-bar"));
+
+            auto playTime = typeinfo_cast<CCLabelBMFont*>(getChildByID("play-time"));
+            auto pointslabel = typeinfo_cast<CCLabelBMFont*>(getChildByID("points-label"));
 
             // position the y values
             if (practiceTitle && normalTitle) normalTitle->setPositionY(practiceTitle->getPositionY());
@@ -38,6 +40,10 @@ class $modify(AdsPauseLayer, PauseLayer) {
             if (practiceTitle) practiceTitle->setVisible(false);
             if (practiceProgress) practiceProgress->setVisible(false);
             if (practiceBar) practiceBar->setVisible(false);
+
+            // move the play time and points label down a bit by 30
+            if (playTime) playTime->setPositionY(playTime->getPositionY() - 30.f);
+            if (pointslabel) pointslabel->setPositionY(pointslabel->getPositionY() - 30.f);
 
             // player is practice mode, show practice mode elements
             if (GJBaseGameLayer::get()->m_isPracticeMode) {
@@ -68,11 +74,9 @@ class $modify(AdsPauseLayer, PauseLayer) {
         // im confused
         // add a button on the side on the menu
         if (auto rightButtonMenu = getChildByID("right-button-menu")) {
+            auto adButtonSpr = CircleButtonSprite::create(CCSprite::createWithSpriteFrameName("adIcon.png"_spr));
             auto popupButton = CCMenuItemSpriteExtra::create(
-                CircleButtonSprite::create(
-                    CCSprite::createWithSpriteFrameName("adIcon.png"_spr),
-                    CircleBaseColor::Green,
-                    CircleBaseSize::Medium),
+                adButtonSpr,
                 this,
                 menu_selector(AdsPauseLayer::onAdClicked));
 

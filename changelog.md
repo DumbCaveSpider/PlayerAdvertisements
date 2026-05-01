@@ -1,3 +1,9 @@
+# v1.2.0
+- Reduce the scale when clicking on the advertisement
+- Added **Show Spinner on unloaded Ads** in the mod settings
+- Fixed the particles showing less than expected
+- Formatted the numbes on the Ad Manager popup
+
 # v1.1.9 
 - idk yet
 

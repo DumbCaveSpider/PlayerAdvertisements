@@ -1,5 +1,5 @@
 {
-    "geode": "5.0.0",
+    "geode": "5.6.1",
     "gd": {
         "win": "2.2081",
         "android": "2.2081",
@@ -8,7 +8,7 @@
     },
     "id": "arcticwoof.player_advertisements",
     "name": "Player Advertisements",
-    "version": "v1.1.9",
+    "version": "v1.2.0",
     "developers": [
         "ArcticWoof",
         "Cheeseworks"
@@ -51,6 +51,12 @@
             "name": "Disable Scene Limit Protection",
             "default": false,
             "description": "Disabling will remove the 10 scene limit. <c>This usually occur when you kept opening ads after ads without going back to the previous scene.</c> <cr>Highly recommended to keep this enabled to prevent your game from lagging.</c>"
+        },
+        "adLoading": {
+            "type": "bool",
+            "name": "Show Spinner on unloaded Ads",
+            "default": true,
+            "description": "Show a loading spinner on ads that haven't loaded yet. <c>Recommended to keep this enabled to prevent confusion.</c>"
         },
         "Placements": {
             "type": "title",

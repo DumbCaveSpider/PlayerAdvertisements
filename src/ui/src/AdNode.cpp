@@ -73,7 +73,7 @@ bool AdNode::init(const matjson::Value& adValue, float width) {
     this->addChild(levelLabel, 2);
 
     // views and clicks
-    std::string viewsStr = viewCount.isOk() ? numToString(viewCount.unwrap()) : "0";
+    std::string viewsStr = viewCount.isOk() ? numToString(GameToolbox::pointsToString(viewCount.unwrap())) : "0";
     auto viewsLabel = CCLabelBMFont::create(("Views: " + viewsStr).c_str(), "goldFont.fnt");
 
     viewsLabel->setPosition({this->getScaledContentWidth() / 4, this->getScaledContentHeight() - 40.f});
@@ -83,7 +83,7 @@ bool AdNode::init(const matjson::Value& adValue, float width) {
 
     this->addChild(viewsLabel, 2);
 
-    std::string clicksStr = clickCount.isOk() ? numToString(clickCount.unwrap()) : "0";
+    std::string clicksStr = clickCount.isOk() ? numToString(GameToolbox::pointsToString(clickCount.unwrap())) : "0";
     auto clicksLabel = CCLabelBMFont::create(("Clicks: " + clicksStr).c_str(), "goldFont.fnt");
 
     clicksLabel->setPosition({this->getScaledContentWidth() / 4 * 3, this->getScaledContentHeight() - 40.f});
@@ -125,12 +125,15 @@ bool AdNode::init(const matjson::Value& adValue, float width) {
         menu_selector(AdNode::onPlayButton));
     playBtn->setID("play-btn");
     playBtn->setTag(levelId.isOk() ? levelId.unwrap() : 0);
+    m_playBtn = playBtn;
 
     auto playMenu = CCMenu::create();
     playMenu->setPosition({this->getScaledContentWidth() / 2, this->getScaledContentHeight() / 2 - 5});
     playMenu->addChild(playBtn);
+    m_playMenu = playMenu;
 
     this->addChild(playMenu, 3);
+    this->scheduleUpdate();
 
     return true;
 };
@@ -152,11 +155,42 @@ void AdNode::tryOpenOrFetchLevel(CCMenuItemSpriteExtra* playBtn, int levelId) {
         if (level && level->m_levelID == levelId) {
             auto scene = LevelInfoLayer::scene(level, false);
             auto transitionFade = CCTransitionFade::create(0.5f, scene);
-
-            CCDirector::sharedDirector()->pushScene(transitionFade);
-
+            if (PlayLayer::get()) {
+                CCDirector::sharedDirector()->replaceScene(transitionFade);
+            } else {
+                CCDirector::sharedDirector()->pushScene(transitionFade);
+            }
             return;
         };
+    };
+
+    // prepare pending state
+    m_pendingKey = key;
+    m_pendingLevelId = levelId;
+    m_pendingTimeout = 10.0f;  // seconds
+
+    if (m_pendingSpinner) {
+        m_pendingSpinner->removeFromParent();
+        m_pendingSpinner = nullptr;
+        if (m_playBtn) {
+            m_playBtn->setVisible(true);
+        }
+    };
+
+    if (auto spinner = LoadingSpinner::create(100.f)) {
+        spinner->setPosition(playBtn->getPosition());
+        spinner->setVisible(true);
+        if (m_playMenu) {
+            m_playMenu->addChild(spinner);
+        } else {
+            this->addChild(spinner);
+        }
+
+        if (m_playBtn) {
+            m_playBtn->setVisible(false);
+        }
+
+        m_pendingSpinner = spinner;
     };
 
     glm->getOnlineLevels(searchObj);
@@ -177,6 +211,61 @@ void AdNode::onPlayButton(CCObject* sender) {
             this->tryOpenOrFetchLevel(playBtn, playBtn->getTag());
         };
     };
+};
+
+void AdNode::update(float dt) {
+    if (m_pendingKey.empty()) {
+        return;
+    }
+
+    auto glm = GameLevelManager::sharedState();
+    auto stored = glm->getStoredOnlineLevels(m_pendingKey.c_str());
+
+    if (stored && stored->count() > 0) {
+        auto level = typeinfo_cast<GJGameLevel*>(stored->objectAtIndex(0));
+
+        if (level && level->m_levelID == m_pendingLevelId) {
+            auto scene = LevelInfoLayer::scene(level, false);
+            auto transitionFade = CCTransitionFade::create(0.5f, scene);
+            if (PlayLayer::get()) {
+                CCDirector::sharedDirector()->replaceScene(transitionFade);
+            } else {
+                CCDirector::sharedDirector()->pushScene(transitionFade);
+            }
+
+            if (m_pendingSpinner) {
+                m_pendingSpinner->removeFromParent();
+                m_pendingSpinner = nullptr;
+            }
+            if (m_playBtn) {
+                m_playBtn->setVisible(true);
+            }
+
+            m_pendingKey.clear();
+            m_pendingLevelId = -1;
+            m_pendingTimeout = 0.0f;
+
+            glm->m_levelManagerDelegate = nullptr;
+            return;
+        };
+    }
+
+    m_pendingTimeout -= dt;
+    if (m_pendingTimeout <= 0.0f) {
+        if (m_pendingSpinner) {
+            m_pendingSpinner->removeFromParent();
+            m_pendingSpinner = nullptr;
+        }
+        if (m_playBtn) {
+            m_playBtn->setVisible(true);
+        }
+
+        Notification::create("Level not found", NotificationIcon::Warning)->show();
+
+        m_pendingKey.clear();
+        m_pendingLevelId = -1;
+        m_pendingTimeout = 0.0f;
+    }
 };
 
 AdNode* AdNode::create(const matjson::Value& adValue, float width) {
